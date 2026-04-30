@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eccolo Gelato — Málaga</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+:root {
+  --purple: #C5A5CB;
+  --purple-mid: #a888af;
+  --ink: #111;
+  --white: #fff;
+  --border: rgba(0,0,0,0.1);
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #fff;
+  color: #111;
+  overflow-x: hidden;
+}
+
+/* ─── NAV ─── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 300;
+  height: 70px; background: var(--purple);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 3rem;
+}
+.nav-logo img { height: 46px; }
+.nav-links { display: flex; gap: 2.5rem; list-style: none; }
+.nav-links a {
+  font-size: 0.72rem; font-weight: 600; letter-spacing: 0.12em;
+  text-transform: uppercase; color: rgba(255,255,255,0.9); text-decoration: none;
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: #fff; }
+
+/* ─── HERO ─── */
+.hero {
+  margin-top: 70px;
+  display: grid; grid-template-columns: 1fr 1fr;
+  min-height: calc(100vh - 70px);
+  border-bottom: 1px solid var(--border);
+}
+.hero-left {
+  padding: 5rem 4rem;
+  display: flex; flex-direction: column; justify-content: center;
+  border-right: 1px solid var(--border);
+}
+.hero-tag {
+  font-size: 0.65rem; font-weight: 500; letter-spacing: 0.28em;
+  text-transform: uppercase; color: #aaa; margin-bottom: 1.8rem;
+}
+.hero-title {
+  font-size: clamp(3rem, 5vw, 5.5rem);
+  font-weight: 700; line-height: 1; letter-spacing: -0.03em; color: #111;
+}
+.hero-title span {
+  display: block; font-weight: 300; color: var(--purple-mid);
+  font-size: 0.75em; letter-spacing: -0.01em;
+}
+.hero-facts { margin-top: 2.8rem; display: flex; flex-direction: column; gap: 0.7rem; }
+.hero-fact {
+  font-size: 0.78rem; font-weight: 400; color: #555;
+  display: flex; align-items: center; gap: 0.8rem;
+}
+.hero-fact::before {
+  content: ''; width: 14px; height: 1px; background: var(--purple); flex-shrink: 0;
+}
+.hero-right { display: flex; flex-direction: column; }
+.map-embed { flex: 1; width: 100%; border: 0; filter: grayscale(10%); min-height: 300px; }
+.loc-strip {
+  display: grid; grid-template-columns: 1fr 1fr;
+  border-top: 1px solid var(--border);
+}
+.loc-cell { padding: 1.5rem 2rem; border-right: 1px solid var(--border); }
+.loc-cell:last-child { border-right: 0; }
+.loc-label {
+  font-size: 0.55rem; font-weight: 600; letter-spacing: 0.22em;
+  text-transform: uppercase; color: #bbb; display: block; margin-bottom: 0.3rem;
+}
+.loc-val { font-size: 0.82rem; font-weight: 500; color: #111; line-height: 1.45; }
+.loc-val a { color: inherit; text-decoration: none; }
+
+/* ─── FLAVOURS ─── */
+#flavours { background: var(--purple); position: relative; }
+.flavours-sticky-wrap { position: relative; }
+.flavours-sticky {
+  position: sticky; top: 70px;
+  height: calc(100vh - 70px);
+  background: var(--purple);
+  overflow: hidden;
+  display: flex; flex-direction: column; justify-content: center;
+}
+.flavours-label {
+  position: absolute; top: 2.2rem; left: 3rem;
+  font-size: 0.6rem; font-weight: 600; letter-spacing: 0.3em;
+  text-transform: uppercase; color: rgba(255,255,255,0.35);
+}
+.scoop-track {
+  display: flex; align-items: center; will-change: transform; gap: 0;
+}
+.scoop-slide {
+  flex-shrink: 0; width: 100vw;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 2rem;
+}
+.scoop-img-wrap {
+  position: relative;
+  width: clamp(200px, 26vw, 340px);
+  height: clamp(200px, 26vw, 340px);
+  flex-shrink: 0;
+}
+.scoop-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 16px 48px rgba(0,0,0,0.22));
+  will-change: transform;
+  display: block;
+}
+/* Gradient masks cover pngtree watermarks at top-left */
+.scoop-img-wrap::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 28%;
+  background: linear-gradient(to bottom, var(--purple) 0%, transparent 100%);
+  z-index: 2;
+  pointer-events: none;
+}
+.scoop-img-wrap::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 35%;
+  height: 35%;
+  background: radial-gradient(ellipse at top left, var(--purple) 30%, transparent 70%);
+  z-index: 2;
+  pointer-events: none;
+}
+.scoop-label { margin-top: 1.8rem; text-align: center; }
+.scoop-name {
+  font-size: clamp(1.8rem, 3vw, 2.8rem);
+  font-weight: 700; color: #fff; letter-spacing: -0.02em;
+}
+.scoop-cat {
+  margin-top: 0.3rem;
+  font-size: 0.6rem; font-weight: 500; letter-spacing: 0.25em;
+  text-transform: uppercase; color: rgba(255,255,255,0.45);
+}
+.flavours-progress {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  height: 2px; background: rgba(255,255,255,0.12);
+}
+.flavours-progress-fill {
+  height: 100%; background: rgba(255,255,255,0.65); width: 0%;
+}
+.flavours-counter {
+  position: absolute; bottom: 1.5rem; right: 3rem;
+  font-size: 0.72rem; font-weight: 500; color: rgba(255,255,255,0.3);
+  letter-spacing: 0.08em;
+}
+
+/* ─── TRIPADVISOR ─── */
+.tripadvisor { background: #fff; padding: 6rem 3rem; border-bottom: 1px solid var(--border); }
+.ta-inner { max-width: 1100px; margin: 0 auto; }
+.ta-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 3rem; padding-bottom: 2rem; border-bottom: 1px solid var(--border);
+}
+.ta-logo-img { height: 38px; width: auto; object-fit: contain; }
+.ta-rating-block { text-align: right; }
+.ta-score { font-size: 3rem; font-weight: 700; color: #111; line-height: 1; }
+.ta-stars { display: flex; gap: 3px; justify-content: flex-end; margin-top: 0.3rem; }
+.ta-star {
+  width: 18px; height: 18px; border-radius: 2px; background: #00AA6C;
+  display: flex; align-items: center; justify-content: center;
+}
+.ta-star svg { width: 11px; height: 11px; fill: #fff; }
+.ta-rank {
+  font-size: 0.62rem; font-weight: 400; letter-spacing: 0.1em;
+  text-transform: uppercase; color: #bbb; margin-top: 0.4rem;
+}
+.ta-reviews {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 1px; background: var(--border); border: 1px solid var(--border);
+}
+.ta-card { background: #fff; padding: 2rem; }
+.ta-card-top {
+  display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.9rem;
+}
+.ta-card-stars { display: flex; gap: 2px; }
+.ta-card-star {
+  width: 13px; height: 13px; border-radius: 2px; background: #00AA6C;
+  display: flex; align-items: center; justify-content: center;
+}
+.ta-card-star.grey { background: #d0d0d0; }
+.ta-card-star svg { width: 8px; height: 8px; fill: #fff; }
+.ta-card-date { font-size: 0.6rem; font-weight: 400; letter-spacing: 0.1em; text-transform: uppercase; color: #ccc; }
+.ta-card-title { font-size: 0.88rem; font-weight: 700; color: #111; margin-bottom: 0.5rem; }
+.ta-card-text { font-size: 0.82rem; font-weight: 400; line-height: 1.75; color: #555; }
+.ta-card-author {
+  margin-top: 1rem; font-size: 0.62rem; font-weight: 500;
+  letter-spacing: 0.08em; text-transform: uppercase; color: #aaa;
+}
+
+/* ─── CONTACT (white/black, professional) ─── */
+.contact { background: #fff; border-top: 1px solid var(--border); }
+.contact-inner { max-width: 1100px; margin: 0 auto; }
+
+.contact-top {
+  padding: 5rem 3rem 0;
+}
+.contact-top-label {
+  font-size: 0.6rem; font-weight: 600; letter-spacing: 0.3em;
+  text-transform: uppercase; color: #bbb; display: block; margin-bottom: 1.2rem;
+}
+.contact-top-title {
+  font-size: clamp(2.2rem, 4vw, 3.8rem);
+  font-weight: 700; line-height: 1.05; letter-spacing: -0.02em; color: #111;
+}
+.contact-top-title span { font-weight: 300; color: #888; }
+
+.contact-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 1px; background: var(--border);
+  margin-top: 4rem;
+  border-top: 1px solid var(--border);
+  border-left: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+}
+.contact-cell {
+  background: #fff; padding: 2.5rem;
+  border-bottom: 1px solid var(--border);
+}
+.contact-cell-label {
+  font-size: 0.55rem; font-weight: 600; letter-spacing: 0.25em;
+  text-transform: uppercase; color: #bbb; display: block; margin-bottom: 0.6rem;
+}
+.contact-cell-val {
+  font-size: 0.9rem; font-weight: 500; color: #111; line-height: 1.5;
+}
+.contact-cell-val a { color: #111; text-decoration: none; border-bottom: 1px solid #e0e0e0; }
+.contact-cell-val a:hover { border-color: #111; }
+
+.contact-bottom {
+  padding: 2.5rem 3rem;
+  display: flex; justify-content: space-between; align-items: center;
+  border-top: 1px solid var(--border);
+}
+.contact-bottom-text {
+  font-size: 0.78rem; font-weight: 400; color: #999;
+}
+.contact-bottom-link {
+  font-size: 0.72rem; font-weight: 600; letter-spacing: 0.1em;
+  text-transform: uppercase; color: #111; text-decoration: none;
+  border-bottom: 1px solid #111; padding-bottom: 1px;
+  transition: color 0.2s;
+}
+.contact-bottom-link:hover { color: var(--purple-mid); border-color: var(--purple-mid); }
+
+/* ─── FOOTER ─── */
+footer {
+  background: var(--purple); padding: 1.8rem 3rem;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.footer-brand { font-size: 0.95rem; font-weight: 700; color: #fff; }
+.footer-note { font-size: 0.62rem; font-weight: 400; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.5); }
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 900px) {
+  .hero { grid-template-columns: 1fr; }
+  .hero-left { padding: 3rem 1.5rem; border-right: 0; border-bottom: 1px solid var(--border); }
+  .hero-right { min-height: 50vh; }
+  .ta-header { flex-direction: column; align-items: flex-start; gap: 1.5rem; }
+  .ta-reviews { grid-template-columns: 1fr; }
+  .contact-grid { grid-template-columns: 1fr 1fr; }
+  .contact-top, .contact-bottom { padding-left: 1.5rem; padding-right: 1.5rem; }
+  nav { padding: 0 1.5rem; }
+  footer { flex-direction: column; gap: 0.8rem; text-align: center; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">
+    <img src="https://i.imgur.com/Q3pTpf1.png" alt="Eccolo Gelato" onerror="this.style.display='none'">
+  </div>
+  <ul class="nav-links">
+    <li><a href="#flavours">Flavours</a></li>
+    <li><a href="#contact">Contact</a></li>
+    <li><a href="#">Home</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <span class="hero-tag">Calle San Juan 32 &mdash; M&aacute;laga</span>
+    <h1 class="hero-title">
+      Eccolo
+      <span>Gelato</span>
+    </h1>
+    <div class="hero-facts">
+      <span class="hero-fact">Fresh fruit &mdash; no artificial flavours, ever</span>
+      <span class="hero-fact">Made fresh every single day</span>
+      <span class="hero-fact">Gluten-free certified &mdash; M&aacute;laga Sin Gluten</span>
+      <span class="hero-fact">Open daily, 2:00 PM &ndash; 11:00 PM</span>
+      <span class="hero-fact">Rated 4.8 &mdash; #61 Desserts in M&aacute;laga</span>
+      <span class="hero-fact">Heart of historic M&aacute;laga</span>
+    </div>
+  </div>
+  <div class="hero-right">
+    <iframe class="map-embed"
+      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3198.32!2d-4.42257!3d36.72025!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd72f79b9c09ae35%3A0xabc!2sCalle+San+Juan+32%2C+29005+M%C3%A1laga!5e0!3m2!1sen!2ses!4v1700000000000"
+      allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+    </iframe>
+    <div class="loc-strip">
+      <div class="loc-cell">
+        <span class="loc-label">Address</span>
+        <div class="loc-val">Calle San Juan 32<br>29005 M&aacute;laga</div>
+      </div>
+      <div class="loc-cell">
+        <span class="loc-label">Hours &amp; Phone</span>
+        <div class="loc-val">Daily 2&ndash;11 PM<br><a href="tel:+34669005611">+34 669 00 56 11</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FLAVOURS -->
+<section id="flavours">
+  <div class="flavours-sticky-wrap" id="flavourWrap">
+    <div class="flavours-sticky">
+      <span class="flavours-label">Our Flavours &mdash; Scroll</span>
+      <div class="scoop-track" id="scoopTrack"></div>
+      <div class="flavours-counter" id="flavourCount">01 / 07</div>
+      <div class="flavours-progress"><div class="flavours-progress-fill" id="progFill"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- TRIPADVISOR -->
+<section class="tripadvisor">
+  <div class="ta-inner">
+    <div class="ta-header">
+      <img class="ta-logo-img"
+        src="https://www.designmantic.com/blog/wp-content/uploads/2025/08/Tripadvisor-Logo.jpg"
+        alt="TripAdvisor"
+        onerror="this.outerHTML='<span style='font-size:1.4rem;font-weight:700;color:#00AA6C;'>Tripadvisor</span>'">
+      <div class="ta-rating-block">
+        <div class="ta-score">4.8</div>
+        <div class="ta-stars">
+          <div class="ta-star"><svg viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9.2,11 6,9.2 2.8,11 3.5,7.5 1,5 4.5,4.5"/></svg></div>
+          <div class="ta-star"><svg viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9.2,11 6,9.2 2.8,11 3.5,7.5 1,5 4.5,4.5"/></svg></div>
+          <div class="ta-star"><svg viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9.2,11 6,9.2 2.8,11 3.5,7.5 1,5 4.5,4.5"/></svg></div>
+          <div class="ta-star"><svg viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9.2,11 6,9.2 2.8,11 3.5,7.5 1,5 4.5,4.5"/></svg></div>
+          <div class="ta-star"><svg viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9.2,11 6,9.2 2.8,11 3.5,7.5 1,5 4.5,4.5"/></svg></div>
+        </div>
+        <div class="ta-rank">#61 of 123 Desserts in M&aacute;laga &mdash; 5 reviews</div>
+      </div>
+    </div>
+
+    <div class="ta-reviews">
+
+      <div class="ta-card">
+        <div class="ta-card-top">
+          <div class="ta-card-stars">
+            <div class="ta-card-star"><svg viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9.2,11 6,9.2 2.8,11 3.5,7.5 1,5 4.5,4.5"/></svg></div>
+            <div class="ta-card-star"><svg viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9.2,11 6,9.2 2.8,11 3.5,7.5 1,5 4.5,4.5"/></svg></div>
+            <div class="ta-card-star"><svg viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9.2,11 6,9.2 2.8,11 3.5,7.5 1,5 4.5,4.5"/></svg></div>
+            <div class="ta-card-star"><svg viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9.2,11 6,9.2 2.8,11 3.5,7.5 1,5 4.5,4.5"/></svg></div>
+            <div class="ta-card-star"><svg viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9.2,11 6,9.2 2.8,11 3.5,7.5 1,5 4.5,4.5"/></svg></div>
+          </div>
+          <span class="ta-card-date">Jun 2025</span>
+        </div>
+        <div class="ta-card-title">Genuine gelato!</div>
+        <p class="ta-card-text">Nice Italian ice cream shop with possibly best gelato from M&aacute;laga! Fruit flavors made with fresh fruit, not frozen!</p>
+        <div class="ta-card-author">Dejan M. &mdash; Madrid</div>
+      </div>
+
+      <div class="ta-card">
+        <div class="ta-card-top">
+          <div class="ta-card-stars">
+            <div class="ta-card-star"><svg viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9.2,11 6,9.2 2.8,11 3.5,7.5 1,5 4.5,4.5"/></svg></div>
+            <div class="ta-card-star"><svg viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9.2,11 6,9.2 2.8,11 3.5,7.5 1,5 4.5,4.5"/></svg></div>
+            <div class="ta-card-star"><svg viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9.2,11 6,9.2 2.8,11 3.5,7.5 1,5 4.5,4.5"/></svg></div>
+            <div class="ta-card-star"><svg viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9.2,11 6,9.2 2.8,11 3.5,7.5 1,5 4.5,4.5"/></svg></div>
+            <div class="ta-card-star"><svg viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9.2,11 6,9.2 2.8,11 3.5,7.5 1,5 4.5,4.5"/></svg></div>
+          </div>
+          <span class="ta-card-date">Jan 2026</span>
+        </div>
+        <div class="ta-card-title">Gluten free heaven</div>
+        <p class="ta-card-text">Fantastic little gem! Amazing selection of gluten free cakes &mdash; very tasty. The staff even insisted we had a free gelato sample: delicious.</p>
+        <div class="ta-card-author">Ugly Bug</div>
+      </div>
+
+      <div class="ta-card">
+        <div class="ta-card-top">
+          <div class="ta-card-stars">
+            <div class="ta-card-star"><svg viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9.2,11 6,9.2 2.8,11 3.5,7.5 1,5 4.5,4.5"/></svg></div>
+            <div class="ta-card-star"><svg viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9.2,11 6,9.2 2.8,11 3.5,7.5 1,5 4.5,4.5"/></svg></div>
+            <div class="ta-card-star"><svg viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9.2,11 6,9.2 2.8,11 3.5,7.5 1,5 4.5,4.5"/></svg></div>
+            <div class="ta-card-star"><svg viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9.2,11 6,9.2 2.8,11 3.5,7.5 1,5 4.5,4.5"/></svg></div>
+            <div class="ta-card-star"><svg viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9.2,11 6,9.2 2.8,11 3.5,7.5 1,5 4.5,4.5"/></svg></div>
+          </div>
+          <span class="ta-card-date">Nov 2025</span>
+        </div>
+        <div class="ta-card-title">M&aacute;laga best ice cream</div>
+        <p class="ta-card-text">Fresh place with super good ice cream. Quiet and cozy. A place for anyone who likes ice cream and freshly squeezed juice.</p>
+        <div class="ta-card-author">Anders W.</div>
+      </div>
+
+      <div class="ta-card">
+        <div class="ta-card-top">
+          <div class="ta-card-stars">
+            <div class="ta-card-star"><svg viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9.2,11 6,9.2 2.8,11 3.5,7.5 1,5 4.5,4.5"/></svg></div>
+            <div class="ta-card-star"><svg viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9.2,11 6,9.2 2.8,11 3.5,7.5 1,5 4.5,4.5"/></svg></div>
+            <div class="ta-card-star"><svg viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9.2,11 6,9.2 2.8,11 3.5,7.5 1,5 4.5,4.5"/></svg></div>
+            <div class="ta-card-star"><svg viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9.2,11 6,9.2 2.8,11 3.5,7.5 1,5 4.5,4.5"/></svg></div>
+            <div class="ta-card-star"><svg viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9.2,11 6,9.2 2.8,11 3.5,7.5 1,5 4.5,4.5"/></svg></div>
+          </div>
+          <span class="ta-card-date">Mar 2026</span>
+        </div>
+        <div class="ta-card-title">Great ice cream</div>
+        <p class="ta-card-text">Delicious ice cream, great variety for GF/DF intolerance. Really nice selection of cakes as well. Really enjoyed this place.</p>
+        <div class="ta-card-author">Farmps</div>
+      </div>
+
+      <div class="ta-card" style="grid-column: span 2;">
+        <div class="ta-card-top">
+          <div class="ta-card-stars">
+            <div class="ta-card-star"><svg viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9.2,11 6,9.2 2.8,11 3.5,7.5 1,5 4.5,4.5"/></svg></div>
+            <div class="ta-card-star"><svg viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9.2,11 6,9.2 2.8,11 3.5,7.5 1,5 4.5,4.5"/></svg></div>
+            <div class="ta-card-star"><svg viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9.2,11 6,9.2 2.8,11 3.5,7.5 1,5 4.5,4.5"/></svg></div>
+            <div class="ta-card-star"><svg viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9.2,11 6,9.2 2.8,11 3.5,7.5 1,5 4.5,4.5"/></svg></div>
+            <div class="ta-card-star grey"><svg viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9.2,11 6,9.2 2.8,11 3.5,7.5 1,5 4.5,4.5"/></svg></div>
+          </div>
+          <span class="ta-card-date">Feb 2026</span>
+        </div>
+        <div class="ta-card-title">Good discovery</div>
+        <p class="ta-card-text">In Calle San Juan we found this place for a snack or ice cream. I didn&rsquo;t know it before and really liked it. The tiramisu is very good.</p>
+        <div class="ta-card-author">Marga DOraDO &mdash; Costa del Sol</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact" id="contact">
+  <div class="contact-inner">
+    <div class="contact-top">
+      <span class="contact-top-label">Get in touch</span>
+      <h2 class="contact-top-title">Come find us <span>in M&aacute;laga</span></h2>
+    </div>
+    <div class="contact-grid">
+      <div class="contact-cell">
+        <span class="contact-cell-label">Address</span>
+        <div class="contact-cell-val">Calle San Juan 32<br>29005 M&aacute;laga, Spain</div>
+      </div>
+      <div class="contact-cell">
+        <span class="contact-cell-label">Phone</span>
+        <div class="contact-cell-val"><a href="tel:+34669005611">+34 669 00 56 11</a></div>
+      </div>
+      <div class="contact-cell">
+        <span class="contact-cell-label">Opening Hours</span>
+        <div class="contact-cell-val">Mon &ndash; Sun<br>2:00 PM &ndash; 11:00 PM</div>
+      </div>
+      <div class="contact-cell">
+        <span class="contact-cell-label">Certification</span>
+        <div class="contact-cell-val">M&aacute;laga Sin Gluten<br>Gluten-Free Certified</div>
+      </div>
+    </div>
+    <div class="contact-bottom">
+      <span class="contact-bottom-text">No reservation needed &mdash; walk in and pick your scoops.</span>
+      <a class="contact-bottom-link"
+        href="https://www.tripadvisor.com/Restaurant_Review-g187438-d33234112-Reviews-Eccolo_Gelato_Malaga-Malaga_Costa_del_Sol_Province_of_Malaga_Andalucia.html"
+        target="_blank" rel="noopener noreferrer">View on TripAdvisor &rarr;</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-brand">Eccolo Gelato M&aacute;laga</div>
+  <div class="footer-note">Real Fruit &middot; No Artificial Flavours &middot; Fresh Daily</div>
+</footer>
+
+<script>
+const flavours = [
+  { name:"Mango",     cat:"Fresh Fruit",    src:"https://brandsitesplatform-res.cloudinary.com/image/fetch/w_auto:100,c_scale,q_auto:eco,f_auto,fl_lossy,dpr_auto,e_sharpen:85/https://assets.brandplatform.generalmills.com%2F-%2Fmedia%2Fproject%2Fgmi%2Fhaagendazs%2Fhaagendazs-master%2Fbsp%2Fhd%2Fproduct-images%2Fscoops%2Fmango-sorbet-v2.png%3Frev%3Dd20b5851ca364cbfab7e34a2c52a5b31" },
+  { name:"Lim\u00f3n",    cat:"Fresh Fruit",    src:"https://png.pngtree.com/png-clipart/20240610/original/pngtree-yellow-icecream-scoop-isolated-at-transparent-background-png-image_15298656.png" },
+  { name:"Banana",    cat:"Fresh Fruit",    src:"https://png.pngtree.com/png-clipart/20240610/original/pngtree-a-scoop-of-banana-ice-cream-isolated-on-transparent-background-delicacy-png-image_15298540.png" },
+  { name:"Fresa",     cat:"Fresh Fruit",    src:"https://png.pngtree.com/png-clipart/20250517/original/pngtree-strawberry-ice-cream-scoop-on-transparent-background-png-image_21011224.png" },
+  { name:"Frambuesa", cat:"Fresh Fruit",    src:"https://brandsitesplatform-res.cloudinary.com/image/fetch/w_auto:100,c_scale,q_auto:eco,f_auto,fl_lossy,dpr_auto,e_sharpen:85/https://assets.brandplatform.generalmills.com%2F-%2Fmedia%2Fproject%2Fgmi%2Fhaagendazs%2Fhaagendazs-master%2Fbsp%2Fhd%2Fproduct-images%2Fscoops%2Fraspberry-sorbet-v2.png%3Frev%3Da4eebb90257f41248024154e5b234b39" },
+  { name:"Chocolate", cat:"Rich Chocolate", src:"https://png.pngtree.com/png-vector/20251218/ourmid/pngtree-chocolate-ice-cream-scoop-bowl-png-image_18273552.webp" }
+];
+
+const N     = flavours.length;
+const track = document.getElementById('scoopTrack');
+const count = document.getElementById('flavourCount');
+const fill  = document.getElementById('progFill');
+const wrap  = document.getElementById('flavourWrap');
+
+// Try to remove watermarks via canvas (works if CORS allowed)
+async function tryCleanImage(imgEl, src) {
+  try {
+    const tmp = new Image();
+    tmp.crossOrigin = 'anonymous';
+    await new Promise((res, rej) => { tmp.onload = res; tmp.onerror = rej; tmp.src = src; });
+
+    const c = document.createElement('canvas');
+    c.width  = tmp.naturalWidth;
+    c.height = tmp.naturalHeight;
+    const ctx = c.getContext('2d');
+    ctx.drawImage(tmp, 0, 0);
+
+    const id = ctx.getImageData(0, 0, c.width, c.height);
+    const px = id.data;
+
+    for (let i = 0; i < px.length; i += 4) {
+      const r = px[i], g = px[i+1], b = px[i+2], a = px[i+3];
+      if (a === 0) continue;
+      // Detect low-saturation (grayish) pixels — typical watermark colour
+      const max = Math.max(r, g, b), min = Math.min(r, g, b);
+      const sat = max > 0 ? (max - min) / max : 0;
+      if (sat < 0.18 && r > 140 && r < 235) {
+        // Fade watermark pixel to transparent
+        px[i+3] = Math.round(a * Math.max(0, (r - 140) / 95 - 0.6));
+      }
+    }
+
+    ctx.putImageData(id, 0, 0);
+    imgEl.src = c.toDataURL('image/png');
+  } catch (_) {
+    // CORS blocked — CSS overlay already handles it
+  }
+}
+
+const imgEls = [];
+
+flavours.forEach((f) => {
+  const slide = document.createElement('div');
+  slide.className = 'scoop-slide';
+
+  const wrap2 = document.createElement('div');
+  wrap2.className = 'scoop-img-wrap';
+
+  const img = document.createElement('img');
+  img.alt = f.name; img.draggable = false;
+  img.src = f.src;
+  imgEls.push(img);
+
+  // Try canvas watermark removal for pngtree images
+  if (f.src.includes('pngtree')) tryCleanImage(img, f.src);
+
+  wrap2.appendChild(img);
+  slide.appendChild(wrap2);
+
+  const label = document.createElement('div');
+  label.className = 'scoop-label';
+  label.innerHTML = `<div class="scoop-name">${f.name}</div><div class="scoop-cat">${f.cat}</div>`;
+  slide.appendChild(label);
+  track.appendChild(slide);
+});
+
+// Tighter scroll: 0.35 per flavour step
+const PER = window.innerHeight * 0.35;
+wrap.style.height = (window.innerHeight + PER * (N - 1)) + 'px';
+
+function update() {
+  const rect    = wrap.getBoundingClientRect();
+  const scrolled= Math.max(0, -rect.top);
+  const total   = wrap.offsetHeight - window.innerHeight;
+  const clamped = Math.min(scrolled, total);
+  const progress = clamped / total;
+
+  const maxShift = (N - 1) * window.innerWidth;
+  const shift = progress * maxShift;
+  track.style.transform = `translateX(${-shift}px)`;
+
+  // Each scoop spins as it scrolls past
+  imgEls.forEach((img, i) => {
+    const rel = (shift - i * window.innerWidth) / window.innerWidth;
+    img.style.transform = `rotate(${rel * -160}deg)`;
+  });
+
+  const idx = Math.min(Math.round(progress * (N - 1)), N - 1);
+  count.textContent = String(idx + 1).padStart(2,'0') + ' / ' + String(N).padStart(2,'0');
+  fill.style.width = (progress * 100) + '%';
+}
+
+window.addEventListener('scroll', update, { passive: true });
+update();
+</script>
+</body>
+</html>
