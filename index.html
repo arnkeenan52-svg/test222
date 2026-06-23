@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<meta name="theme-color" content="#ffffff" />
+<meta name="theme-color" content="#f4f2ec" />
 <title>FadeClipper — Fade your own hair in minutes</title>
-<meta name="description" content="The auto-fading clipper that blends a salon-quality fade for you. One swipe, fade done. Cordless, waterproof, 240-minute runtime. Stop paying for barber touch-ups." />
+<meta name="description" content="The auto-fading clipper that blends a salon-quality fade for you. One swipe, fade done. Cordless, waterproof, 240-minute runtime." />
 <meta property="og:title" content="FadeClipper — Fade your own hair in minutes" />
 <meta property="og:description" content="The auto-fading clipper that blends your fade for you. One swipe, fade done." />
 <meta property="og:type" content="website" />
@@ -13,23 +13,23 @@
 <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800;900&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
 
-<!-- ░ PROMO BAR ░ -->
-<div class="promo">Free worldwide shipping &amp; a 90-day money-back guarantee</div>
+<!-- ░ PROMO ░ -->
+<div class="promo"><span>Free worldwide shipping</span><i>·</i><span>90-day money-back guarantee</span></div>
 
 <!-- ░ NAV ░ -->
 <div class="nav-wrap" id="navwrap">
   <nav id="nav">
     <a href="#top" class="brand" aria-label="FadeClipper home">
       <svg class="brand-mark" viewBox="0 0 40 28" aria-hidden="true">
-        <rect x="2" y="3" width="3.6" height="22" rx="1.8"/><rect x="11" y="7" width="3.6" height="18" rx="1.8"/>
-        <rect x="20" y="11" width="3.6" height="14" rx="1.8"/><rect x="29" y="15" width="3.6" height="10" rx="1.8"/>
+        <rect x="2" y="3" width="3.4" height="22" rx="1.7"/><rect x="11" y="7" width="3.4" height="18" rx="1.7"/>
+        <rect x="20" y="11" width="3.4" height="14" rx="1.7"/><rect x="29" y="15" width="3.4" height="10" rx="1.7"/>
       </svg>
-      <span class="brand-name">FadeClipper</span>
+      <span class="brand-name">FADECLIPPER</span>
     </a>
     <ul class="nav-links">
       <li><a href="#how">How it works</a></li>
@@ -37,192 +37,154 @@
       <li><a href="#savings">Savings</a></li>
       <li><a href="#faq">FAQ</a></li>
     </ul>
-    <a href="#buy" class="btn btn-pill">Get FadeClipper</a>
+    <a href="#buy" class="btn btn-sm">Get FadeClipper</a>
     <button class="nav-toggle" aria-label="Open menu" aria-expanded="false"><span></span><span></span></button>
   </nav>
 </div>
 <div class="mobile-menu" id="mobileMenu">
   <a href="#how">How it works</a><a href="#features">Features</a><a href="#savings">Savings</a><a href="#faq">FAQ</a>
-  <a href="#buy" class="btn btn-pill">Get FadeClipper</a>
+  <a href="#buy" class="btn">Get FadeClipper</a>
 </div>
 
 <main id="top">
 
   <!-- ░ HERO ░ -->
   <header class="hero">
-    <div class="hero-inner">
+    <div class="hero-grid">
       <div class="hero-copy">
-        <span class="pill-tag">★ 4.9/5 · <span class="edit">2,000+</span> happy faders</span>
+        <p class="eyebrow">The auto-fading clipper</p>
         <h1>Fade your own hair in minutes.</h1>
-        <p class="hero-sub">The auto-fading clipper that blends your fade for you. One swipe, fade done.</p>
-        <div class="hero-cta">
+        <p class="lead">FadeClipper blends the gradient for you — no skill, no barber, no chair. Place it flat, glide up, flick out. One swipe, fade done.</p>
+        <div class="hero-actions">
           <a href="#buy" class="btn btn-lg">Get FadeClipper</a>
-          <a href="#how" class="btn-ghost">See how it works →</a>
+          <a href="#how" class="btn-text">See how it works</a>
         </div>
-        <div class="hero-proof">
-          <div class="avatars" aria-hidden="true"><span class="av1"></span><span class="av2"></span><span class="av3"></span><span class="av4"></span></div>
-          <span>Loved by <span class="edit">2,000+</span> people fading at home</span>
-        </div>
+        <ul class="hero-trust">
+          <li>Cordless &amp; waterproof</li><li>240-min runtime</li><li>90-day guarantee</li>
+        </ul>
       </div>
-      <div class="hero-visual">
-        <div class="blob" aria-hidden="true"></div>
-        <figure class="hero-card">
-          <img src="assets/img/product-hero.jpg" alt="FadeClipper auto-fading cordless hair clipper held in hand" width="1100" height="1366" />
-        </figure>
-        <div class="hero-badge"><b>240<span>min</span></b><i>runtime</i></div>
-        <div class="hero-badge b2"><b>70<span>rpm</span></b><i>adjustable</i></div>
-      </div>
+      <figure class="hero-media">
+        <img src="assets/img/product-hero.jpg" alt="FadeClipper auto-fading cordless hair clipper" width="1100" height="1366" />
+      </figure>
     </div>
   </header>
 
-  <!-- ░ STAT BAR ░ -->
-  <section class="statbar">
-    <div class="statbar-inner">
-      <div><b>14</b><span>fade styles</span></div>
-      <div><b>4</b><span>fade lengths</span></div>
+  <!-- ░ VALUE BAR (honest offer terms) ░ -->
+  <section class="valuebar">
+    <div><span>Free worldwide shipping</span></div>
+    <div><span>90-day money-back</span></div>
+    <div><span>1-year warranty</span></div>
+    <div><span>Ships in 24h</span></div>
+  </section>
+
+  <!-- ░ SPECS (real product facts) ░ -->
+  <section class="specs">
+    <div class="specs-row">
       <div><b>240<small>min</small></b><span>cordless runtime</span></div>
+      <div><b>70</b><span>adjustable RPM</span></div>
+      <div><b>4</b><span>fade lengths</span></div>
+      <div><b>0.4<small>mm</small></b><span>closest blend</span></div>
       <div><b>IPX</b><span>fully waterproof</span></div>
-      <div><b>USB-C</b><span>fast charging</span></div>
     </div>
   </section>
 
-  <!-- ░ PROBLEM → SOLUTION ░ -->
-  <section class="sec" id="why">
-    <div class="wrap">
-      <div class="sec-head">
-        <span class="kicker">Why FadeClipper</span>
+  <!-- ░ WHY ░ -->
+  <section class="section" id="why">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">Why FadeClipper</p>
         <h2>The hard part of every fade — automated.</h2>
       </div>
-      <div class="cards-3">
-        <div class="card reveal">
-          <span class="card-k">The problem</span>
-          <p>Blending lengths by hand is hard. Get it wrong and you're back in the chair.</p>
-        </div>
-        <div class="card reveal">
-          <span class="card-k">The mechanism</span>
-          <p>A tapered auto-fade blade blends the gradient for you as you glide up.</p>
-        </div>
-        <div class="card reveal">
-          <span class="card-k">The outcome</span>
-          <p>A sharp, seamless fade at home — in minutes, on your own head.</p>
-        </div>
+      <div class="trio">
+        <div class="trio-item reveal"><span class="num">01</span><h3>The problem</h3><p>Blending lengths by hand is hard. Get it wrong and you're back in the chair.</p></div>
+        <div class="trio-item reveal"><span class="num">02</span><h3>The mechanism</h3><p>A tapered auto-fade blade blends the gradient for you as you glide up.</p></div>
+        <div class="trio-item reveal"><span class="num">03</span><h3>The outcome</h3><p>A sharp, seamless fade at home — in minutes, on your own head.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ░ HOW ░ -->
+  <section class="section alt" id="how">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">Step by step</p>
+        <h2>Your first fade in four moves.</h2>
+        <p class="section-sub">If you can comb your hair, you can run a FadeClipper.</p>
+      </div>
+      <div class="how-grid">
+        <ol class="steps">
+          <li class="step reveal"><span class="step-num">1</span><div><h3>Charge &amp; power on</h3><p>Dock it to full, tap power, set your speed.</p></div></li>
+          <li class="step reveal"><span class="step-num">2</span><div><h3>Pick your length</h3><p>Slide to 0.4, 0.8 or 1.2mm. Start low and tight.</p></div></li>
+          <li class="step reveal"><span class="step-num">3</span><div><h3>Glide up &amp; flick out</h3><p>Hold flat, glide up, flick your wrist out at the top.</p></div></li>
+          <li class="step reveal"><span class="step-num">4</span><div><h3>Blend &amp; finish</h3><p>Step up a length, repeat higher to melt the lines.</p></div></li>
+        </ol>
+        <figure class="how-media reveal">
+          <video controls muted loop playsinline preload="none" poster="assets/img/demo-poster.jpg"><source src="assets/video/demo.mp4" type="video/mp4" /></video>
+        </figure>
       </div>
     </div>
   </section>
 
   <!-- ░ FEATURES ░ -->
-  <section class="sec sec-soft" id="features">
-    <div class="wrap">
-      <div class="sec-head">
-        <span class="kicker">Built for the fade</span>
+  <section class="section" id="features">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">Built for the fade</p>
         <h2>Everything that makes the blend effortless.</h2>
       </div>
-      <div class="feat-grid">
-        <div class="feat reveal">
-          <span class="ic-chip"><svg viewBox="0 0 24 24"><path d="M3 7h7l4 5 7 0M3 17h7l4-5"/><circle cx="4.5" cy="7" r="1.6"/><circle cx="4.5" cy="17" r="1.6"/></svg></span>
-          <h3>Auto-fade blade</h3>
-          <p>Static + moving blades taper the cut so the fade blends itself.</p>
-        </div>
-        <div class="feat reveal">
-          <span class="ic-chip"><svg viewBox="0 0 24 24"><path d="M4 18h16M7 18V9M12 18V5M17 18v-6"/></svg></span>
-          <h3>Four fade lengths</h3>
-          <p>Switch 0.4, 0.8 and 1.2mm with one lever.</p>
-        </div>
-        <div class="feat reveal">
-          <span class="ic-chip"><svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="7"/><path d="M12 13V9M9.5 2h5"/></svg></span>
-          <h3>240-minute runtime</h3>
-          <p>Weeks of fades per charge, with a live battery display.</p>
-        </div>
-        <div class="feat reveal">
-          <span class="ic-chip"><svg viewBox="0 0 24 24"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg></span>
-          <h3>Adjustable power</h3>
-          <p>Dial RPM up for thick hair, down for detail.</p>
-        </div>
-        <div class="feat reveal">
-          <span class="ic-chip"><svg viewBox="0 0 24 24"><path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/></svg></span>
-          <h3>Fully waterproof</h3>
-          <p>Fade in the shower; rinse it clean under the tap.</p>
-        </div>
-        <div class="feat reveal">
-          <span class="ic-chip"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></span>
-          <h3>Safety lock</h3>
-          <p>Lock your settings so nothing shifts mid-fade.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ░ HOW IT WORKS ░ -->
-  <section class="sec" id="how">
-    <div class="wrap">
-      <div class="sec-head">
-        <span class="kicker">Step by step</span>
-        <h2>Your first fade in four moves.</h2>
-        <p class="sec-lead">If you can comb your hair, you can run a FadeClipper.</p>
-      </div>
-      <div class="how-layout">
-        <ol class="steps">
-          <li class="step reveal"><span class="step-n">1</span><div><h3>Charge &amp; power on</h3><p>Dock it to full, tap power, set your speed.</p></div></li>
-          <li class="step reveal"><span class="step-n">2</span><div><h3>Pick your length</h3><p>Slide to 0.4, 0.8 or 1.2mm. Start low and tight.</p></div></li>
-          <li class="step reveal"><span class="step-n">3</span><div><h3>Glide up &amp; flick out</h3><p>Hold flat, glide up, flick your wrist out at the top.</p></div></li>
-          <li class="step reveal"><span class="step-n">4</span><div><h3>Blend &amp; finish</h3><p>Step up a length, repeat higher to melt the lines.</p></div></li>
-        </ol>
-        <figure class="how-video reveal">
-          <video controls muted loop playsinline preload="none" poster="assets/img/demo-poster.jpg"><source src="assets/video/demo.mp4" type="video/mp4" /></video>
-          <figcaption>A real self-fade, start to finish</figcaption>
-        </figure>
+      <div class="features">
+        <div class="feature reveal"><svg class="f-icon" viewBox="0 0 24 24"><path d="M3 7h7l4 5 7 0M3 17h7l4-5"/><circle cx="4.5" cy="7" r="1.5"/><circle cx="4.5" cy="17" r="1.5"/></svg><h3>Auto-fade blade</h3><p>Static + moving blades taper the cut so the fade blends itself.</p></div>
+        <div class="feature reveal"><svg class="f-icon" viewBox="0 0 24 24"><path d="M4 18h16M7 18V9M12 18V5M17 18v-6"/></svg><h3>Four fade lengths</h3><p>Switch 0.4, 0.8 and 1.2mm with one lever.</p></div>
+        <div class="feature reveal"><svg class="f-icon" viewBox="0 0 24 24"><circle cx="12" cy="13" r="7"/><path d="M12 13V9M9.5 2h5"/></svg><h3>240-minute runtime</h3><p>Weeks of fades per charge, with a live battery display.</p></div>
+        <div class="feature reveal"><svg class="f-icon" viewBox="0 0 24 24"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg><h3>Adjustable power</h3><p>Dial RPM up for thick hair, down for detail.</p></div>
+        <div class="feature reveal"><svg class="f-icon" viewBox="0 0 24 24"><path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/></svg><h3>Fully waterproof</h3><p>Fade in the shower; rinse it clean under the tap.</p></div>
+        <div class="feature reveal"><svg class="f-icon" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><h3>Safety lock</h3><p>Lock your settings so nothing shifts mid-fade.</p></div>
       </div>
     </div>
   </section>
 
   <!-- ░ SAVINGS ░ -->
-  <section class="sec sec-soft" id="savings">
-    <div class="wrap">
-      <div class="savings-grid">
+  <section class="section alt" id="savings">
+    <div class="container">
+      <div class="savings">
         <div class="savings-copy">
-          <span class="kicker">The math</span>
+          <p class="eyebrow">The math</p>
           <h2>Your barber charges you every two weeks. Forever.</h2>
-          <p class="sec-lead">A one-time buy that pays for itself in about two haircuts.</p>
+          <p class="section-sub">A one-time buy that pays for itself in about two haircuts.</p>
           <a href="#buy" class="btn btn-lg">Start saving</a>
         </div>
-        <div class="ledger card reveal">
-          <div class="ledger-row"><span class="lr-l"><b>Barber fade</b><small class="edit">~$35, every 2 weeks</small></span><span class="lr-a strike edit">$910/yr</span></div>
-          <div class="ledger-row"><span class="lr-l"><b>…every year after</b><small>it never stops</small></span><span class="lr-a strike edit">$910/yr</span></div>
-          <div class="ledger-row hot"><span class="lr-l"><b>FadeClipper</b><small>one-time · fade whenever</small></span><span class="lr-a edit">$59</span></div>
-          <p class="ledger-foot">First-year saving: <b class="edit">$850+</b>, then it only grows.</p>
+        <div class="compare reveal">
+          <div class="compare-row"><span class="c-l">Barber fade<small class="edit">~$35, every 2 weeks</small></span><span class="c-a edit">$910/yr</span></div>
+          <div class="compare-row"><span class="c-l">…and every year after<small>it never stops</small></span><span class="c-a edit">$910/yr</span></div>
+          <div class="compare-row c-good"><span class="c-l">FadeClipper<small>one-time · fade whenever</small></span><span class="c-a edit">$59</span></div>
+          <p class="compare-foot">First-year saving: <b class="edit">$850+</b>, then it only grows.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ░ RESULTS ░ -->
-  <section class="sec" id="results">
-    <div class="wrap">
-      <div class="sec-head">
-        <span class="kicker">The results</span>
-        <h2>Barber-sharp. Done by you.</h2>
+  <!-- ░ IN ACTION (real footage — honest proof) ░ -->
+  <section class="section" id="action">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">See it in action</p>
+        <h2>Real fades. Real footage.</h2>
       </div>
-      <div class="results-grid">
-        <figure class="result reveal"><video autoplay muted loop playsinline preload="none" poster="assets/img/fade-closeup.jpg"><source src="assets/video/loop-fade.mp4" type="video/mp4" /></video><figcaption>Fading the back — no second mirror</figcaption></figure>
-        <figure class="result reveal"><img src="assets/img/fade-closeup.jpg" alt="Close-up of a clean blended skin fade" loading="lazy" /><figcaption>The blend the auto-fade blade leaves</figcaption></figure>
-        <figure class="result reveal"><video autoplay muted loop playsinline preload="none" poster="assets/img/demo-poster.jpg"><source src="assets/video/loop-side.mp4" type="video/mp4" /></video><figcaption>Cleaning the sides in seconds</figcaption></figure>
-        <figure class="result reveal"><img src="assets/img/lifestyle.jpg" alt="Man with a fresh fade haircut" loading="lazy" /><figcaption>Fresh-out-the-chair, at home</figcaption></figure>
-      </div>
-      <div class="reviews">
-        <blockquote class="review card reveal"><span class="stars">★★★★★</span><p>“First try and the back faded itself. I've genuinely stopped booking touch-ups.”</p><cite class="edit">Marcus T. · verified buyer</cite></blockquote>
-        <blockquote class="review card reveal"><span class="stars">★★★★★</span><p>“The auto-blend is unreal. I'm not skilled and it still looked like a shop fade.”</p><cite class="edit">Dani R. · verified buyer</cite></blockquote>
-        <blockquote class="review card reveal"><span class="stars">★★★★★</span><p>“Battery lasts forever and it's waterproof, so cleanup is ten seconds.”</p><cite class="edit">Jay K. · verified buyer</cite></blockquote>
+      <div class="action-grid">
+        <figure class="action-tile reveal"><video autoplay muted loop playsinline preload="none" poster="assets/img/demo-poster.jpg"><source src="assets/video/loop-fade.mp4" type="video/mp4" /></video><figcaption>Fading the back — no second mirror</figcaption></figure>
+        <figure class="action-tile reveal"><img src="assets/img/fade-closeup.jpg" alt="Close-up of a clean blended skin fade" loading="lazy" /><figcaption>The blend the auto-fade blade leaves</figcaption></figure>
+        <figure class="action-tile reveal"><video autoplay muted loop playsinline preload="none" poster="assets/img/demo-poster.jpg"><source src="assets/video/loop-side.mp4" type="video/mp4" /></video><figcaption>Cleaning the sides in seconds</figcaption></figure>
       </div>
     </div>
   </section>
 
   <!-- ░ IN THE BOX ░ -->
-  <section class="sec sec-soft" id="box">
-    <div class="wrap">
-      <div class="box-split">
-        <figure class="box-card reveal"><img src="assets/img/product-front.jpg" alt="FadeClipper clipper, front view" loading="lazy" /></figure>
+  <section class="section alt" id="box">
+    <div class="container">
+      <div class="box">
+        <figure class="box-media reveal"><img src="assets/img/product-front.jpg" alt="FadeClipper clipper, front view" loading="lazy" /></figure>
         <div class="reveal">
-          <span class="kicker">In the box</span>
+          <p class="eyebrow">In the box</p>
           <h2>Everything to start fading today.</h2>
           <ul class="box-list">
             <li>FadeClipper auto-fading clipper</li><li>3× precision fade blades</li><li>Guide comb attachment</li>
@@ -234,41 +196,41 @@
   </section>
 
   <!-- ░ OFFER ░ -->
-  <section class="sec" id="buy">
-    <div class="wrap">
-      <div class="offer card reveal">
+  <section class="section" id="buy">
+    <div class="container">
+      <div class="offer reveal">
         <div class="offer-copy">
-          <span class="kicker">The offer</span>
+          <p class="eyebrow">The offer</p>
           <h2>Skip six barber visits. Keep the clipper.</h2>
-          <ul class="check-list">
+          <ul class="offer-list">
             <li>FadeClipper + full accessory kit</li><li>Free worldwide shipping</li>
             <li>90-day money-back guarantee</li><li>1-year warranty</li>
           </ul>
         </div>
-        <div class="buybox">
-          <div class="price-row"><span class="price-now edit">$59</span><span class="price-was edit">$99</span><span class="price-save edit">Save 40%</span></div>
+        <div class="offer-card">
+          <div class="price"><span class="price-now edit">$59</span><span class="price-was edit">$99</span></div>
           <p class="price-note">One-time payment · pays for itself in ~2 haircuts</p>
           <a href="#" class="btn btn-lg btn-block" id="checkoutBtn">Get FadeClipper</a>
-          <p class="pay-row">🔒 Secure checkout · Visa · Mastercard · PayPal</p>
+          <p class="pay">Secure checkout · Visa · Mastercard · PayPal</p>
         </div>
       </div>
     </div>
   </section>
 
   <!-- ░ GUARANTEE ░ -->
-  <section class="sec sec-soft">
-    <div class="wrap">
-      <div class="guarantee card reveal">
-        <div class="seal"><b>90</b><span>day guarantee</span></div>
+  <section class="section alt">
+    <div class="container">
+      <div class="guarantee reveal">
+        <div class="seal">90<span>day guarantee</span></div>
         <div><h3>Fade with zero risk.</h3><p>Try FadeClipper for 90 days. If your fades aren't sharper, easier and cheaper than the barber, send it back for a full refund.</p></div>
       </div>
     </div>
   </section>
 
   <!-- ░ FAQ ░ -->
-  <section class="sec" id="faq">
-    <div class="wrap wrap-narrow">
-      <div class="sec-head"><span class="kicker">Questions</span><h2>Everything you're wondering.</h2></div>
+  <section class="section" id="faq">
+    <div class="container container-narrow">
+      <div class="section-head"><p class="eyebrow">Questions</p><h2>Everything you're wondering.</h2></div>
       <div class="faq">
         <details class="reveal"><summary>Can I really fade the back of my own head?</summary><p>Yes — that's exactly what FadeClipper is built for. The tapered auto-fade blade blends the gradient as you glide up, so you don't need barber-level skill or two mirrors. Most people get a clean back fade on the first or second try.</p></details>
         <details class="reveal"><summary>Is it hard to use if I've never faded before?</summary><p>No. Pick a length, glide up, flick out — the blade does the blending. Follow the four steps above and you'll have a sharp fade in minutes.</p></details>
@@ -281,28 +243,26 @@
   </section>
 
   <!-- ░ FINAL CTA ░ -->
-  <section class="sec final-sec">
-    <div class="wrap">
-      <div class="final-card reveal">
-        <h2>Your next fade is on you.</h2>
-        <p>Join the people who fired the barber's touch-up fee — and kept the fresh fade.</p>
-        <a href="#buy" class="btn btn-lg btn-invert">Get FadeClipper</a>
-        <p class="final-note">90-day money-back guarantee · Free worldwide shipping</p>
-      </div>
+  <section class="final">
+    <div class="container final-inner">
+      <h2>Your next fade is on you.</h2>
+      <p>The auto-fading clipper that turns a barber-only skill into a one-swipe move.</p>
+      <a href="#buy" class="btn btn-lg btn-invert">Get FadeClipper</a>
+      <p class="final-note">90-day money-back guarantee · Free worldwide shipping</p>
     </div>
   </section>
 </main>
 
 <!-- ░ FOOTER ░ -->
 <footer>
-  <div class="wrap footer-grid">
+  <div class="container footer-grid">
     <div>
       <a href="#top" class="brand">
         <svg class="brand-mark" viewBox="0 0 40 28" aria-hidden="true">
-          <rect x="2" y="3" width="3.6" height="22" rx="1.8"/><rect x="11" y="7" width="3.6" height="18" rx="1.8"/>
-          <rect x="20" y="11" width="3.6" height="14" rx="1.8"/><rect x="29" y="15" width="3.6" height="10" rx="1.8"/>
+          <rect x="2" y="3" width="3.4" height="22" rx="1.7"/><rect x="11" y="7" width="3.4" height="18" rx="1.7"/>
+          <rect x="20" y="11" width="3.4" height="14" rx="1.7"/><rect x="29" y="15" width="3.4" height="10" rx="1.7"/>
         </svg>
-        <span class="brand-name">FadeClipper</span>
+        <span class="brand-name">FADECLIPPER</span>
       </a>
       <p class="footer-tag">The auto-fading clipper. One swipe, fade done.</p>
     </div>
@@ -312,7 +272,6 @@
   <div class="footer-base"><span>© <span id="year"></span> FadeClipper. All rights reserved.</span><span class="edit">hello@fadeclipper.com</span></div>
 </footer>
 
-<!-- ░ STICKY MOBILE BUY BAR ░ -->
 <div class="buybar" id="buybar">
   <div class="buybar-info"><span class="buybar-price edit">$59</span><span class="buybar-strike edit">$99</span></div>
   <a href="#buy" class="btn btn-block">Get FadeClipper</a>
