@@ -1,44 +1,47 @@
-# FadeClipper — single-product landing page
+# FadeClipper
 
-A fast, honest, conversion-focused landing page for **FadeClipper**, the auto-fading cordless hair clipper.
-Static site (no build step): `index.html` + `styles.css` + `script.js` + `assets/`.
+Single-product landing page for **FadeClipper**, the auto-fading cordless hair clipper.
+
+Built as a **Next.js 14 (App Router) + Tailwind + shadcn/ui** app — the same stack the
+21st.dev Magic MCP generates into. Component-based, statically prerendered, Vercel-ready.
+
+```
+app/            # layout.tsx + page.tsx (all sections)
+components/     # SiteNav, Reveal, Logo, ui/button (cva)
+public/assets/  # product images + real demo/loop videos
+legacy/         # the original static HTML version (kept for reference)
+```
+
+## Run
+```bash
+npm install
+npm run dev     # http://localhost:3000
+npm run build   # production build
+```
 
 ## Design
-The visual system was **synthesized from the real design systems of premium DTC / grooming brands**
-(extracted from their live CSS): Beardbrand, Aesop, Bevel, Therabody, Dyson, Glossier, Native, plus
-clean-startup references (Linear, Stripe, Whop). The shared grammar those brands use:
+Visual system synthesized from the real CSS of premium grooming/DTC brands (Beardbrand,
+Aesop, Bevel, Therabody, Dyson, Glossier, Native): **warm off-white** canvas, **near-black**
+ink, **flat square black buttons**, Space Grotesk + Inter, hairline-bordered editorial cards,
+one muted-green accent. No drop shadows, no emoji, no fake social proof.
 
-- **Warm off-white** canvas (`#f4f2ec`), **near-black** text, **solid flat black buttons** (no drop shadows),
-  a clean **grotesk** typeface (Space Grotesk + Inter), hairline borders, and a single restrained accent
-  (a muted eucalyptus green) used sparingly.
-- No neon, no emoji icons, no heavy gradients — the product photography carries the visual weight.
+Theme tokens live in `tailwind.config.ts` (`paper`, `ink`, `brand`, `line`, …).
 
-## Honesty (important)
-There is **no fabricated social proof** anywhere — no invented "2,000+ customers", no fake star ratings,
-no made-up testimonials. Trust is built only from honest signals you control:
-- real product specs (240-min runtime, 70 RPM, 4 fade lengths, IPX waterproof),
-- your offer terms (free shipping, 90-day money-back, 1-year warranty),
-- and **real demonstration footage** of the clipper in use.
-
-When you have **real** reviews, add them — don't ship invented ones.
+## Honesty
+No fabricated trust signals — no invented customer counts, ratings, or testimonials. Trust
+comes from real specs, your offer terms (free shipping, 90-day money-back, warranty), and
+**real demonstration footage**. Add real reviews only when you have them.
 
 ## Imagery
-All product imagery is built from **your own clipper footage** (the supplied video):
-- Frames were cleaned with Higgsfield (Nano Banana Pro) to remove the original `iFADE`/`FADINGCULTURE`
-  branding, etch a **FADECLIPPER** wordmark near the (tilted) blade, and place the product on a seamless
-  warm off-white background that matches the site.
-- `assets/video/loop-*.mp4` are short, caption-free action clips cut from your footage.
-
-Swap any image by replacing the file in `assets/img` (keep the filename) or editing `src` in `index.html`.
+Product shots are your real clipper, cleaned via Higgsfield (competitor branding removed,
+FADECLIPPER etched near the tilted blade), placed on a background matched to the site.
 
 ## Customise before launch
-Search `index.html` for `class="edit"` — every spot needing your real data is tagged:
-- **Price** (`$59` / `$99`) — nav, savings, offer card, mobile bar.
-- **Savings math** (`~$35 every 2 weeks`, `$910/yr`, `$850+`) — set to your market's real barber prices.
-- **Footer links / email**, and the **shipping window** in the FAQ.
-
-### Checkout
-The main buy button is `#checkoutBtn`. Replace `href="#"` with your real checkout URL (Shopify / Stripe link).
+- **Price** — `$59` / `$99` appear in `app/page.tsx` and `components/SiteNav.tsx`.
+- **Savings math** — set the barber figures in the savings section to your real market prices.
+- **Checkout** — the buy button in the offer section links to `#`; point it at your real
+  checkout URL (Shopify / Stripe link).
+- **Footer links, email, shipping window** in the FAQ.
 
 ## Deploy
-Static — works on Vercel, Netlify, Cloudflare Pages, or GitHub Pages with zero config.
+Push to GitHub and import the repo in Vercel (it auto-detects Next.js). Zero config.

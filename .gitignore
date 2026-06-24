@@ -1,6 +1,9 @@
 node_modules/
-package.json
-package-lock.json
-*.mjs
+.next/
+out/
+build/
 .DS_Store
+*.log
+.vercel
+.env*.local
 /tmp/
