@@ -4,21 +4,10 @@ import { SiteNav } from "@/components/SiteNav";
 import { PressBar } from "@/components/PressBar";
 import { HowItWorks } from "@/components/HowItWorks";
 import { WatchDemo } from "@/components/WatchDemo";
-import { ProductGallery } from "@/components/ProductGallery";
-import { BuyBox } from "@/components/BuyBox";
-import { Price } from "@/components/Price";
 import { ComparisonTable } from "@/components/ComparisonTable";
-import { Logo } from "@/components/Logo";
-import { Scissors, Ruler, BatteryCharging, Gauge, Droplets, Lock, Check, Plus, Star, Play, ArrowRight, ExternalLink } from "lucide-react";
-
-const features = [
-  { icon: Scissors, title: "Auto-fade blade", text: "Static + moving blades taper the cut so the fade blends itself." },
-  { icon: Ruler, title: "Four fade lengths", text: "Switch 0.4, 0.8 and 1.2mm with one lever." },
-  { icon: BatteryCharging, title: "240-min runtime", text: "Weeks of fades per charge, with a live battery display." },
-  { icon: Gauge, title: "Adjustable power", text: "Dial RPM up for thick hair, down for detail." },
-  { icon: Droplets, title: "Fully waterproof", text: "Fade in the shower; rinse it clean under the tap." },
-  { icon: Lock, title: "Safety lock", text: "Lock your settings so nothing shifts mid-fade." },
-];
+import { Price } from "@/components/Price";
+import { SiteFooter } from "@/components/SiteFooter";
+import { Check, Plus, Star, ArrowRight, ExternalLink } from "lucide-react";
 
 // Real, independent Reddit posts of people self-fading with this clipper. Links out
 // to the public threads (no reposting of others' photos). Add/swap as you like.
@@ -26,14 +15,6 @@ const redditPosts = [
   { sub: "r/SelfBarber", label: "First self-fade attempt", img: "/assets/img/reddit-1.jpg", url: "https://www.reddit.com/r/SelfBarber/comments/1c5091o/first_attempt_with_a_fadify_20_not_the_greatest/" },
   { sub: "r/SelfBarber", label: "Second attempt — much sharper", img: "/assets/img/reddit-2.jpg", url: "https://www.reddit.com/r/SelfBarber/comments/1ds8agi/2nd_attempt_with_the_fadify_20/" },
   { sub: "r/Barber", label: "First experience, reviewed", img: "/assets/img/reddit-3.jpg", url: "https://www.reddit.com/r/Barber/comments/utvqn4/fadify_20_first_experience/" },
-];
-
-const gallery = [
-  { src: "/assets/img/packaging.jpg", alt: "FadeClipper box and clipper on the charging dock" },
-  { src: "/assets/img/product-hero-dark.jpg", alt: "FadeClipper on a desk" },
-  { src: "/assets/img/cine-1.jpg", alt: "FadeClipper in dramatic studio light" },
-  { src: "/assets/img/cine-2.jpg", alt: "FadeClipper auto-fade blade, up close" },
-  { src: "/assets/img/cine-3.jpg", alt: "FadeClipper — waterproof, on a wet surface" },
 ];
 
 const faqs: [string, string][] = [
@@ -50,18 +31,45 @@ export default function Page() {
       <SiteNav />
 
       <main id="top">
-        {/* PRODUCT */}
-        <section className="pt-3">
-          <div className="container-x grid items-start gap-8 md:grid-cols-2 md:gap-12">
-            <ProductGallery images={gallery} />
-            <div>
-              <BuyBox />
-              <div className="mt-3">
-                <WatchDemo />
-              </div>
+        {/* HERO (dark) */}
+        <header className="relative -mt-[60px] overflow-hidden bg-black pt-[60px] text-white">
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-[520px] bg-[radial-gradient(60%_50%_at_50%_0%,rgba(236,99,36,0.25),transparent_70%)]" />
+          <div className="container-x relative flex flex-col items-center pb-[clamp(3rem,6vw,5rem)] pt-[clamp(1.5rem,4vw,3rem)] text-center">
+            <div className="mb-5 flex items-center gap-2">
+              <span className="flex text-brand">
+                {Array.from({ length: 5 }).map((_, i) => <Star key={i} className="h-[18px] w-[18px] fill-current" />)}
+              </span>
+              <span className="text-sm font-medium text-white/70"><b className="text-white">1,200+</b> reviews</span>
             </div>
+            <h1 className="font-display text-[clamp(2.6rem,6.4vw,4.6rem)] font-bold leading-[1.0] tracking-[-0.02em]">
+              Fade your own hair.<br />
+              <span className="text-brand">In minutes.</span>
+            </h1>
+            <p className="mt-5 max-w-[42ch] text-[1.12rem] text-white/65">
+              The auto-fading clipper with a 45&deg; blade that blends the gradient for you &mdash;{" "}
+              <span className="underline decoration-white/30 underline-offset-2">no skill needed</span>.
+            </p>
+            <div className="mt-7 flex w-full max-w-[360px] flex-col gap-3">
+              <Button asChild size="lg"><a href="/product">Order now &mdash; <Price usd={59} /></a></Button>
+              <WatchDemo />
+            </div>
+            <Reveal className="mt-10 w-full max-w-[620px]">
+              <figure className="overflow-hidden rounded-5xl border border-white/10 shadow-soft">
+                <video
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  poster="/assets/img/product-hero-dark.jpg"
+                  aria-label="FadeClipper auto-fading cordless hair clipper"
+                  className="aspect-[4/3] w-full object-cover"
+                >
+                  <source src="/assets/video/hero-zoom.mp4" type="video/mp4" />
+                </video>
+              </figure>
+            </Reveal>
           </div>
-        </section>
+        </header>
 
         {/* AS SEEN IN */}
         <PressBar />
@@ -78,9 +86,9 @@ export default function Page() {
           <Reveal><div className="rounded-4xl bg-white p-4 shadow-card md:p-7"><ComparisonTable /></div></Reveal>
         </Section>
 
-        {/* REDDIT SOCIAL PROOF */}
+        {/* TRUSTED BY PEOPLE — real Reddit posts */}
         <Section id="reviews">
-          <Head center eyebrow="Real people, real fades" title="Self-fades people shared on Reddit." sub="Honest, unsponsored posts from people fading their own hair with this clipper." />
+          <Head center eyebrow="Real people, real fades" title="Trusted by people who fade at home now." sub="Honest, unsponsored posts from people fading their own hair with this clipper." />
           <div className="-mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 [scrollbar-width:none] md:mx-0 md:grid md:grid-cols-3 md:overflow-visible md:px-0">
             {redditPosts.map((p) => (
               <a
@@ -129,7 +137,7 @@ export default function Page() {
                     <Price usd={99} className="text-[1.3rem] text-muted line-through" />
                   </div>
                   <p className="mt-2 text-[0.84rem] text-muted">One-time payment · pays for itself in ~2 haircuts</p>
-                  <Button asChild size="lg" className="mt-5 w-full"><a href="#top">Get FadeClipper <ArrowRight className="h-4 w-4" /></a></Button>
+                  <Button asChild size="lg" className="mt-5 w-full"><a href="/product">Get FadeClipper <ArrowRight className="h-4 w-4" /></a></Button>
                   <p className="mt-3 text-[0.74rem] text-muted">Secure checkout · Visa · Mastercard · PayPal</p>
                 </div>
               </div>
@@ -158,38 +166,13 @@ export default function Page() {
           <Reveal className="container-x overflow-hidden rounded-5xl bg-ink px-6 py-[clamp(3.5rem,7vw,6rem)] text-center text-white">
             <h2 className="font-display text-[clamp(2rem,4.4vw,3.2rem)] font-bold text-white">Your next fade is on you.</h2>
             <p className="mx-auto mb-7 mt-4 max-w-[42ch] text-[1.06rem] text-white/70">The auto-fading clipper that turns a barber-only skill into a one-swipe move.</p>
-            <Button asChild size="lg" variant="invert"><a href="#top">Get FadeClipper — <Price usd={59} /></a></Button>
+            <Button asChild size="lg" variant="invert"><a href="/product">Get FadeClipper — <Price usd={59} /></a></Button>
             <p className="mt-5 text-[0.8rem] text-white/50">90-day money-back guarantee · Free worldwide shipping</p>
           </Reveal>
         </section>
       </main>
 
-      <footer className="bg-paper-alt py-14">
-        <div className="container-x grid gap-8 md:grid-cols-[1.7fr_1fr_1fr]">
-          <div>
-            <span className="text-ink"><Logo /></span>
-            <p className="mt-4 max-w-[30ch] text-[0.9rem] text-muted">The auto-fading clipper. One swipe, fade done.</p>
-          </div>
-          <nav className="flex flex-col gap-3 text-[0.9rem] text-muted">
-            <a href="#how" className="hover:text-ink">How it works</a>
-            <a href="#compare" className="hover:text-ink">Why FadeClipper</a>
-            <a href="#reviews" className="hover:text-ink">Reviews</a>
-            <a href="#faq" className="hover:text-ink">FAQ</a>
-          </nav>
-          <nav className="flex flex-col gap-3 text-[0.9rem] text-muted">
-            <a href="/about" className="hover:text-ink">About us</a>
-            <a href="/contact" className="hover:text-ink">Contact</a>
-            <a href="/shipping" className="hover:text-ink">Shipping</a>
-            <a href="/returns" className="hover:text-ink">Returns &amp; refunds</a>
-            <a href="/terms" className="hover:text-ink">Terms</a>
-            <a href="/privacy" className="hover:text-ink">Privacy</a>
-          </nav>
-        </div>
-        <div className="container-x mt-10 flex flex-wrap justify-between gap-4 border-t border-line pt-6 text-[0.8rem] text-muted">
-          <span>© {new Date().getFullYear()} FadeClipper. All rights reserved.</span>
-          <span>hello@fadeclipper.com</span>
-        </div>
-      </footer>
+      <SiteFooter />
     </>
   );
 }
