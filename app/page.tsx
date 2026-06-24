@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Reveal } from "@/components/Reveal";
 import { SiteNav } from "@/components/SiteNav";
+import { Marquee } from "@/components/Marquee";
 import { Logo } from "@/components/Logo";
 import {
   Scissors,
@@ -89,16 +90,8 @@ export default function Page() {
           </div>
         </header>
 
-        {/* VALUE BAR */}
-        <section className="border-y border-line bg-paper-alt">
-          <div className="mx-auto grid max-w-container grid-cols-2 md:grid-cols-4">
-            {["Free worldwide shipping", "90-day money-back", "1-year warranty", "Ships in 24h"].map((t, i) => (
-              <div key={t} className={`px-5 py-4 text-center text-[0.84rem] font-medium text-ink-2 ${i < 3 ? "md:border-r md:border-line" : ""} ${i % 2 === 0 ? "border-r border-line md:border-r" : ""}`}>
-                {t}
-              </div>
-            ))}
-          </div>
-        </section>
+        {/* BENEFITS MARQUEE */}
+        <Marquee />
 
         {/* SPECS */}
         <section className="py-[clamp(2.5rem,5vw,4rem)]">
@@ -182,6 +175,15 @@ export default function Page() {
           </div>
         </Section>
 
+        {/* EDITORIAL BAND */}
+        <section aria-hidden="true" className="overflow-hidden">
+          <img
+            src="/assets/img/product-linen.jpg"
+            alt=""
+            className="h-[clamp(320px,46vh,560px)] w-full object-cover"
+          />
+        </section>
+
         {/* SAVINGS */}
         <Section id="savings" alt>
           <div className="grid items-center gap-[clamp(2.5rem,6vw,5rem)] md:grid-cols-2">
@@ -258,7 +260,7 @@ export default function Page() {
           <div className="grid items-center gap-[clamp(2rem,5vw,4.5rem)] md:grid-cols-2">
             <Reveal>
               <figure className="overflow-hidden rounded-[6px] border border-line">
-                <img src="/assets/img/product-front.jpg" alt="FadeClipper clipper, front view" className="aspect-[4/5] w-full object-cover" />
+                <img src="/assets/img/product-dock.jpg" alt="FadeClipper clipper on its charging dock" className="aspect-[4/5] w-full object-cover" />
               </figure>
             </Reveal>
             <div>
