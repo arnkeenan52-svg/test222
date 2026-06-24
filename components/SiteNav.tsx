@@ -9,10 +9,10 @@ import { cn } from "@/lib/utils";
 import { Menu, X, ShoppingBag } from "lucide-react";
 
 const links: [string, string][] = [
-  ["How it works", "#how"],
-  ["Why FadeClipper", "#compare"],
-  ["Reviews", "#reviews"],
-  ["FAQ", "#faq"],
+  ["How it works", "/#how"],
+  ["Why FadeClipper", "/#compare"],
+  ["Reviews", "/#reviews"],
+  ["FAQ", "/#faq"],
 ];
 
 export function SiteNav() {
@@ -37,7 +37,7 @@ export function SiteNav() {
             <span className="uppercase tracking-wide opacity-90">Offer ends in</span>
             <Countdown />
           </span>
-          <a href="#buy" className="shrink-0 rounded-full bg-white px-3 py-1 text-[0.72rem] font-semibold text-brand">
+          <a href="/product" className="shrink-0 rounded-full bg-white px-3 py-1 text-[0.72rem] font-semibold text-brand">
             40% off &mdash; Launch Sale
           </a>
         </div>
@@ -46,7 +46,7 @@ export function SiteNav() {
       {/* nav bar — light floating pill (does not follow on scroll) */}
       <div className="px-3 pt-3">
         <nav className="mx-auto flex max-w-container items-center justify-between gap-4 rounded-full border border-line bg-white px-3 py-2.5 pl-5 text-ink shadow-soft">
-          <a href="#top" aria-label="FadeClipper home" className="text-ink">
+          <a href="/" aria-label="FadeClipper home" className="text-ink">
             <Logo />
           </a>
           <ul className="hidden items-center gap-7 md:flex">
@@ -71,8 +71,8 @@ export function SiteNav() {
                 </span>
               )}
             </button>
-            <Button size="sm" className="hidden sm:inline-flex" onClick={() => add("single")}>
-              Get yours
+            <Button asChild size="sm" className="hidden sm:inline-flex">
+              <a href="/product">Get yours</a>
             </Button>
             <button
               aria-label="Open menu"
@@ -98,14 +98,10 @@ export function SiteNav() {
                 {label}
               </a>
             ))}
-            <Button
-              className="mt-4 w-full"
-              onClick={() => {
-                add("single");
-                setOpen(false);
-              }}
-            >
-              Get yours
+            <Button asChild className="mt-4 w-full">
+              <a href="/product" onClick={() => setOpen(false)}>
+                Get yours
+              </a>
             </Button>
           </div>
         </div>
