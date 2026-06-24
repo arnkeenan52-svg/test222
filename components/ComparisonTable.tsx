@@ -28,13 +28,19 @@ export function ComparisonTable() {
         {cols.map((c, i) => (
           <div
             key={c}
-            className={`px-1 pb-3 text-center sm:px-3 ${
+            className={`px-0.5 pb-3 text-center sm:px-3 ${
               i === 0
                 ? "rounded-t-[4px] border-x border-t border-ink bg-ink pt-3 text-paper"
                 : "pt-3 text-ink-2"
             }`}
           >
-            <span className="font-display text-[0.72rem] font-semibold leading-tight sm:text-[0.98rem]">{c}</span>
+            <span
+              className={`font-display font-semibold leading-tight sm:text-[0.98rem] ${
+                i === 0 ? "text-[0.62rem] tracking-[-0.03em]" : "text-[0.72rem]"
+              }`}
+            >
+              {c}
+            </span>
             {i === 0 && (
               <span className="mt-0.5 block text-[0.54rem] font-medium uppercase tracking-[0.1em] text-paper/60 sm:text-[0.66rem]">
                 You
