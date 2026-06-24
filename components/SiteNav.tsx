@@ -39,9 +39,9 @@ export function SiteNav() {
         </div>
       </div>
 
-      {/* floating pill nav */}
-      <div className="sticky top-3 z-50 px-3">
-        <nav className="mx-auto flex max-w-container items-center justify-between gap-4 rounded-full border border-white/10 bg-ink/95 px-3 py-2.5 pl-5 text-white shadow-soft backdrop-blur-md">
+      {/* pill nav (static — does not follow on scroll) */}
+      <div className="relative z-30 px-3 pt-3">
+        <nav className="mx-auto flex max-w-container items-center justify-between gap-4 rounded-full border border-white/10 bg-black px-3 py-2.5 pl-5 text-white shadow-soft">
           <a href="#top" aria-label="FadeClipper home" className="text-white">
             <Logo />
           </a>
