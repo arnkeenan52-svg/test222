@@ -3,28 +3,22 @@
 @tailwind utilities;
 
 @layer base {
-  html {
-    scroll-behavior: smooth;
-  }
+  html { scroll-behavior: smooth; }
   body {
     @apply bg-paper text-ink font-sans antialiased;
     font-size: 16.5px;
   }
-  ::selection {
-    @apply bg-ink text-paper;
-  }
+  ::selection { @apply bg-brand text-white; }
   h1, h2, h3 {
     @apply font-display;
-    letter-spacing: -0.025em;
+    letter-spacing: -0.02em;
   }
 }
 
 @layer utilities {
-  .container-x {
-    @apply mx-auto w-full max-w-container px-7;
-  }
+  .container-x { @apply mx-auto w-full max-w-container px-6; }
   .eyebrow {
-    @apply text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-brand;
+    @apply inline-flex items-center gap-2 rounded-full bg-brand-soft px-3.5 py-1.5 text-[0.72rem] font-semibold uppercase tracking-[0.12em] text-brand-dark;
   }
 }
 
