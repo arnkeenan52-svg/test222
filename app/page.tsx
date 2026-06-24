@@ -5,7 +5,7 @@ import { PressBar } from "@/components/PressBar";
 import { HowItWorks } from "@/components/HowItWorks";
 import { ComparisonTable } from "@/components/ComparisonTable";
 import { Logo } from "@/components/Logo";
-import { Scissors, Ruler, BatteryCharging, Gauge, Droplets, Lock, Check, Plus, Star, ArrowRight } from "lucide-react";
+import { Scissors, Ruler, BatteryCharging, Gauge, Droplets, Lock, Check, Plus, Star, Play, ArrowRight } from "lucide-react";
 
 const features = [
   { icon: Scissors, title: "Auto-fade blade", text: "Static + moving blades taper the cut so the fade blends itself." },
@@ -37,51 +37,37 @@ export default function Page() {
       <SiteNav />
 
       <main id="top">
-        {/* HERO */}
-        <header className="bg-brand-tint">
-          <div className="container-x grid items-center gap-[clamp(2rem,5vw,4rem)] py-[clamp(2.5rem,5vw,4.5rem)] md:grid-cols-2">
-            <div>
-              <div className="mb-5 flex items-center gap-2">
-                <span className="flex text-brand">{Array.from({ length: 5 }).map((_, i) => <Star key={i} className="h-4 w-4 fill-current" />)}</span>
-                <span className="text-sm font-medium text-ink-2">90-day money-back guarantee</span>
-              </div>
-              <h1 className="font-display text-[clamp(2.6rem,5.6vw,4.2rem)] font-bold leading-[1.02] tracking-[-0.02em]">
-                The world&rsquo;s first <span className="text-brand">auto-fading</span> clipper.
-              </h1>
-              <p className="mt-5 max-w-[44ch] text-[1.16rem] text-muted">
-                A precision 45&deg; blade does the blending for you &mdash; so a barber-sharp fade takes a single swipe, no skill required.
-              </p>
-              <div className="mt-7 flex flex-wrap items-center gap-4">
-                <Button asChild size="lg"><a href="#buy">Get FadeClipper &mdash; $59</a></Button>
-                <Button asChild variant="link" size="lg"><a href="#how">See how it works</a></Button>
-              </div>
-              <ul className="mt-7 flex flex-wrap gap-2.5">
-                {["Cordless & waterproof", "240-min runtime", "Free worldwide shipping"].map((t) => (
-                  <li key={t} className="inline-flex items-center gap-1.5 rounded-full bg-white px-3.5 py-2 text-[0.82rem] font-medium text-ink-2 shadow-card">
-                    <Check className="h-3.5 w-3.5 text-brand" strokeWidth={3} />{t}
-                  </li>
-                ))}
-              </ul>
+        {/* HERO (dark) */}
+        <header className="relative overflow-hidden bg-ink text-white">
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-[460px] bg-[radial-gradient(60%_55%_at_50%_0%,rgba(236,99,36,0.25),transparent_70%)]" />
+          <div className="container-x relative flex flex-col items-center pb-[clamp(3rem,6vw,5rem)] pt-[clamp(1.5rem,4vw,3rem)] text-center">
+            <div className="mb-5 flex items-center gap-2">
+              <span className="flex text-brand">
+                {Array.from({ length: 5 }).map((_, i) => <Star key={i} className="h-[18px] w-[18px] fill-current" />)}
+              </span>
+              <span className="text-sm font-medium text-white/70"><b className="text-white">1,200+</b> reviews</span>
             </div>
-            <Reveal>
-              <figure className="overflow-hidden rounded-5xl shadow-soft">
-                <img src="/assets/img/product-grad.jpg" alt="FadeClipper auto-fading cordless hair clipper" className="aspect-[4/5] w-full object-cover" />
+            <h1 className="font-display text-[clamp(2.6rem,6.4vw,4.6rem)] font-bold leading-[1.0] tracking-[-0.02em]">
+              Fade your own hair.<br />
+              <span className="text-brand">In minutes.</span>
+            </h1>
+            <p className="mt-5 max-w-[42ch] text-[1.12rem] text-white/65">
+              The auto-fading clipper with a 45&deg; blade that blends the gradient for you &mdash;{" "}
+              <span className="underline decoration-white/30 underline-offset-2">no skill needed</span>.
+            </p>
+            <div className="mt-7 flex w-full max-w-[360px] flex-col gap-3">
+              <Button asChild size="lg"><a href="#buy">Order now &mdash; $59</a></Button>
+              <Button asChild size="lg" variant="outline" className="border-white/25 bg-white/5 text-white hover:bg-white hover:text-ink">
+                <a href="#how"><Play className="h-4 w-4 fill-current" /> See how it works</a>
+              </Button>
+            </div>
+            <Reveal className="mt-10 w-full max-w-[620px]">
+              <figure className="overflow-hidden rounded-5xl border border-white/10 shadow-soft">
+                <img src="/assets/img/product-hero-dark.jpg" alt="FadeClipper auto-fading cordless hair clipper" className="aspect-[4/3] w-full object-cover" />
               </figure>
             </Reveal>
           </div>
         </header>
-
-        {/* QUICK STATS */}
-        <section className="container-x -mt-2 py-8">
-          <div className="grid grid-cols-2 gap-3 rounded-4xl bg-card p-4 md:grid-cols-4 md:p-6">
-            {[["240 min", "cordless runtime"], ["45°", "auto-fade blade"], ["4", "fade lengths"], ["IPX", "fully waterproof"]].map(([b, l]) => (
-              <div key={l} className="rounded-3xl bg-white px-4 py-5 text-center shadow-card">
-                <div className="font-display text-[1.6rem] font-bold leading-none text-ink">{b}</div>
-                <div className="mt-1.5 text-[0.78rem] text-muted">{l}</div>
-              </div>
-            ))}
-          </div>
-        </section>
 
         {/* AS SEEN IN */}
         <PressBar />

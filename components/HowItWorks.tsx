@@ -4,7 +4,7 @@ import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const steps = [
-  { n: 1, title: "Charge & power on", text: "Drop it on the dock until full, tap power, then set your speed with + / –. The live display shows RPM and runtime left.", img: "/assets/img/product-dock.jpg" },
+  { n: 1, title: "Charge & power on", text: "Drop it on the dock until full, tap power, then set your speed with + / –. The live display shows RPM and runtime left.", img: "/assets/img/product-45.jpg" },
   { n: 2, title: "Pick your fade length", text: "Slide the lever to 0.4, 0.8 or 1.2mm. Start low and tight at the neckline, then step up as you move higher.", img: "/assets/img/blade.jpg" },
   { n: 3, title: "Glide up & flick out", text: "Hold it flat to the skin, glide straight up, and flick your wrist out at the top. The 45° blade blends the gradient for you.", video: "/assets/video/loop-fade.mp4" },
   { n: 4, title: "Blend & finish", text: "Bump the length up a notch and repeat a little higher to melt the lines. Rinse the blade under the tap — done.", video: "/assets/video/loop-side.mp4" },

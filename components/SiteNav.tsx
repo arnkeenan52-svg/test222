@@ -34,14 +34,14 @@ export function SiteNav() {
 
       {/* floating pill nav */}
       <div className="sticky top-3 z-50 px-3">
-        <nav className="mx-auto flex max-w-container items-center justify-between gap-4 rounded-full border border-line bg-white/90 px-3 py-2.5 pl-5 shadow-soft backdrop-blur-md">
-          <a href="#top" aria-label="FadeClipper home" className="text-ink">
+        <nav className="mx-auto flex max-w-container items-center justify-between gap-4 rounded-full border border-white/10 bg-ink/95 px-3 py-2.5 pl-5 text-white shadow-soft backdrop-blur-md">
+          <a href="#top" aria-label="FadeClipper home" className="text-white">
             <Logo />
           </a>
           <ul className="hidden items-center gap-7 md:flex">
             {links.map(([label, href]) => (
               <li key={href}>
-                <a href={href} className="text-[0.9rem] font-medium text-ink-2 transition-colors hover:text-ink">
+                <a href={href} className="text-[0.9rem] font-medium text-white/70 transition-colors hover:text-white">
                   {label}
                 </a>
               </li>
@@ -53,7 +53,7 @@ export function SiteNav() {
             </Button>
             <button
               aria-label="Open menu"
-              className="grid h-10 w-10 place-items-center rounded-full md:hidden"
+              className="grid h-10 w-10 place-items-center rounded-full text-white md:hidden"
               onClick={() => setOpen((v) => !v)}
             >
               {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
