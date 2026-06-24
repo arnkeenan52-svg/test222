@@ -7,12 +7,7 @@ export function WatchDemo() {
   const [open, setOpen] = useState(false);
   return (
     <>
-      <Button
-        size="lg"
-        variant="outline"
-        onClick={() => setOpen(true)}
-        className="border-white/25 bg-white/5 text-white hover:bg-white hover:text-ink"
-      >
+      <Button size="lg" variant="outline" onClick={() => setOpen(true)} className="w-full">
         <Play className="h-4 w-4 fill-current" /> See how it works
       </Button>
       {open && (
