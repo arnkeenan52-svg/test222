@@ -27,14 +27,14 @@ export function WatchDemo() {
           >
             <X className="h-5 w-5" />
           </button>
-          <div className="relative w-full max-w-[760px]" onClick={(e) => e.stopPropagation()}>
+          <div className="relative" onClick={(e) => e.stopPropagation()}>
             <video
               src="/assets/video/demo-cut.mp4"
               autoPlay
               loop
               muted
               playsInline
-              className="aspect-video w-full rounded-3xl bg-black object-cover"
+              className="max-h-[85vh] w-auto max-w-[92vw] rounded-3xl bg-black"
             />
           </div>
         </div>
