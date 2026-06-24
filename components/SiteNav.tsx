@@ -39,9 +39,10 @@ export function SiteNav() {
         </div>
       </div>
 
-      {/* pill nav (static — does not follow on scroll) */}
-      <div className="relative z-30 px-3 pt-3">
-        <nav className="mx-auto flex max-w-container items-center justify-between gap-4 rounded-full border border-white/10 bg-black px-3 py-2.5 pl-5 text-white shadow-soft">
+      {/* nav bar (static — matches the hero: black + orange glow, no border) */}
+      <div className="relative z-30 overflow-hidden bg-black">
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-32 bg-[radial-gradient(70%_140%_at_50%_-30%,rgba(236,99,36,0.22),transparent_70%)]" />
+        <nav className="relative mx-auto flex max-w-container items-center justify-between gap-4 px-4 py-3 text-white">
           <a href="#top" aria-label="FadeClipper home" className="text-white">
             <Logo />
           </a>
