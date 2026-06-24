@@ -32,7 +32,7 @@ export function WatchDemo() {
               src="/assets/video/demo-cut.mp4"
               autoPlay
               loop
-              controls
+              muted
               playsInline
               className="aspect-video w-full rounded-3xl bg-black object-cover"
             />
