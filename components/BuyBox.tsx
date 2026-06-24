@@ -2,16 +2,28 @@
 import { useState } from "react";
 import { Star, Check, Truck, Gift, ShieldCheck, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useCurrency } from "@/components/CurrencyProvider";
 
-const options = [
-  { id: "single", title: "1 FadeClipper", sub: "Just for me", price: "399,00 kr", tag: "" },
-  { id: "double", title: "2 FadeClippers", sub: "Save 99 kr — gift one", price: "699,00 kr", tag: "Best value" },
-];
+// Base prices in USD — converted to the visitor's currency.
+const PRICE = { single: { now: 59, was: 99 }, double: { now: 99, was: 198 } };
 
 const tags = ["Gift it", "Father's Day", "Beginners"];
 
 export function BuyBox() {
   const [sel, setSel] = useState("single");
+  const { fmt } = useCurrency();
+
+  const options = [
+    { id: "single", title: "1 FadeClipper", sub: "Just for me", now: PRICE.single.now, tag: "" },
+    {
+      id: "double",
+      title: "2 FadeClippers",
+      sub: `Save ${fmt(2 * PRICE.single.now - PRICE.double.now)} — gift one`,
+      now: PRICE.double.now,
+      tag: "Best value",
+    },
+  ];
+
   return (
     <div>
       {/* rating */}
@@ -32,10 +44,10 @@ export function BuyBox() {
       <p className="mt-1.5 text-[1.05rem] text-muted">The auto-fading cordless hair clipper.</p>
 
       <div className="mt-4 flex flex-wrap items-baseline gap-x-3 gap-y-1">
-        <span className="whitespace-nowrap font-display text-[1.9rem] font-bold text-brand">399,00 kr</span>
-        <span className="whitespace-nowrap text-[1.15rem] text-muted line-through">699,00 kr</span>
+        <span className="whitespace-nowrap font-display text-[1.9rem] font-bold text-brand">{fmt(PRICE.single.now)}</span>
+        <span className="whitespace-nowrap text-[1.15rem] text-muted line-through">{fmt(PRICE.single.was)}</span>
         <span className="whitespace-nowrap rounded-full bg-brand-soft px-2.5 py-1 text-[0.72rem] font-bold uppercase tracking-wide text-brand-dark">
-          Save 43%
+          Save 40%
         </span>
       </div>
 
@@ -63,7 +75,7 @@ export function BuyBox() {
                 {on && <Check className="h-3 w-3" strokeWidth={3} />}
               </span>
               <span className="flex-1">
-                <span className="flex items-center gap-2">
+                <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
                   <span className="font-semibold">{o.title}</span>
                   {o.tag && (
                     <span className="rounded-full bg-brand px-2 py-0.5 text-[0.62rem] font-bold uppercase tracking-wide text-white">
@@ -71,9 +83,9 @@ export function BuyBox() {
                     </span>
                   )}
                 </span>
-                <span className="text-[0.85rem] text-muted">{o.sub}</span>
+                <span className="block text-[0.85rem] text-muted">{o.sub}</span>
               </span>
-              <span className="whitespace-nowrap font-display font-bold">{o.price}</span>
+              <span className="whitespace-nowrap font-display font-bold">{fmt(o.now)}</span>
             </button>
           );
         })}

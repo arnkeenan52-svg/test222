@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/Logo";
 import { Countdown } from "@/components/Countdown";
+import { useCurrency } from "@/components/CurrencyProvider";
 import { cn } from "@/lib/utils";
 import { Menu, X } from "lucide-react";
 
@@ -16,6 +17,7 @@ const links: [string, string][] = [
 export function SiteNav() {
   const [open, setOpen] = useState(false);
   const [showBar, setShowBar] = useState(false);
+  const { fmt } = useCurrency();
 
   useEffect(() => {
     const onScroll = () => setShowBar(window.scrollY > 700);
@@ -98,8 +100,8 @@ export function SiteNav() {
         style={{ paddingBottom: "calc(0.75rem + env(safe-area-inset-bottom))" }}
       >
         <div className="flex flex-col leading-tight">
-          <span className="font-display text-[1.15rem] font-bold">399,00 kr</span>
-          <span className="text-xs text-muted line-through">699,00 kr</span>
+          <span className="font-display text-[1.2rem] font-bold">{fmt(59)}</span>
+          <span className="text-xs text-muted line-through">{fmt(99)}</span>
         </div>
         <Button asChild className="flex-1">
           <a href="#buy">Get FadeClipper</a>

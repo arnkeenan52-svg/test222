@@ -6,6 +6,7 @@ import { HowItWorks } from "@/components/HowItWorks";
 import { WatchDemo } from "@/components/WatchDemo";
 import { ProductGallery } from "@/components/ProductGallery";
 import { BuyBox } from "@/components/BuyBox";
+import { Price } from "@/components/Price";
 import { ComparisonTable } from "@/components/ComparisonTable";
 import { Logo } from "@/components/Logo";
 import { Scissors, Ruler, BatteryCharging, Gauge, Droplets, Lock, Check, Plus, Star, Play, ArrowRight } from "lucide-react";
@@ -115,8 +116,8 @@ export default function Page() {
                 </div>
                 <div className="flex flex-col justify-center rounded-4xl bg-card p-7 text-center">
                   <div className="flex items-baseline justify-center gap-2.5">
-                    <span className="font-display text-[3rem] font-bold leading-none text-brand">$59</span>
-                    <span className="text-[1.3rem] text-muted line-through">$99</span>
+                    <Price usd={59} className="font-display text-[3rem] font-bold leading-none text-brand" />
+                    <Price usd={99} className="text-[1.3rem] text-muted line-through" />
                   </div>
                   <p className="mt-2 text-[0.84rem] text-muted">One-time payment · pays for itself in ~2 haircuts</p>
                   <Button asChild size="lg" className="mt-5 w-full"><a href="#">Get FadeClipper <ArrowRight className="h-4 w-4" /></a></Button>
@@ -148,7 +149,7 @@ export default function Page() {
           <Reveal className="container-x overflow-hidden rounded-5xl bg-ink px-6 py-[clamp(3.5rem,7vw,6rem)] text-center text-white">
             <h2 className="font-display text-[clamp(2rem,4.4vw,3.2rem)] font-bold text-white">Your next fade is on you.</h2>
             <p className="mx-auto mb-7 mt-4 max-w-[42ch] text-[1.06rem] text-white/70">The auto-fading clipper that turns a barber-only skill into a one-swipe move.</p>
-            <Button asChild size="lg" variant="invert"><a href="#buy">Get FadeClipper — $59</a></Button>
+            <Button asChild size="lg" variant="invert"><a href="#buy">Get FadeClipper — <Price usd={59} /></a></Button>
             <p className="mt-5 text-[0.8rem] text-white/50">90-day money-back guarantee · Free worldwide shipping</p>
           </Reveal>
         </section>
