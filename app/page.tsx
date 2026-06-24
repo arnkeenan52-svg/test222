@@ -59,14 +59,14 @@ export default function Page() {
           <div className="mx-auto grid max-w-container items-center gap-[clamp(2rem,5vw,4rem)] px-7 md:grid-cols-2">
             <div>
               <p className="eyebrow mb-5 inline-flex items-center gap-2">
-                <span className="h-px w-5 bg-brand" />The auto-fading clipper
+                <span className="h-px w-5 bg-brand" />Engineered for the fade
               </p>
               <h1 className="font-display text-[clamp(2.7rem,5.6vw,4.3rem)] font-semibold leading-[1.02] tracking-[-0.03em]">
-                Fade your own hair in minutes.
+                The world&rsquo;s first auto-fading clipper.
               </h1>
-              <p className="mt-6 max-w-[40ch] text-[1.16rem] text-muted">
-                FadeClipper blends the gradient for you — no skill, no barber, no chair. Place it flat,
-                glide up, flick out. One swipe, fade done.
+              <p className="mt-6 max-w-[42ch] text-[1.16rem] text-muted">
+                A precision 45&deg; blade angle does the blending for you &mdash; so a barber-sharp fade takes
+                a single swipe, no skill required.
               </p>
               <div className="mt-8 flex flex-wrap items-center gap-6">
                 <Button asChild size="lg">
