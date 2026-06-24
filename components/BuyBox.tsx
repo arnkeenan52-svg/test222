@@ -3,6 +3,8 @@ import { useState } from "react";
 import { Star, Check, Truck, Gift, ShieldCheck, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCurrency } from "@/components/CurrencyProvider";
+import { useCart } from "@/components/CartProvider";
+import { type ProductId } from "@/lib/products";
 
 // Base prices in USD — converted to the visitor's currency.
 const PRICE = { single: { now: 59, was: 99 }, double: { now: 99, was: 198 } };
@@ -10,8 +12,9 @@ const PRICE = { single: { now: 59, was: 99 }, double: { now: 99, was: 198 } };
 const tags = ["Gift it", "Father's Day", "Beginners"];
 
 export function BuyBox() {
-  const [sel, setSel] = useState("single");
+  const [sel, setSel] = useState<ProductId>("single");
   const { fmt } = useCurrency();
+  const { add } = useCart();
 
   const options = [
     { id: "single", title: "1 FadeClipper", sub: "Just for me", now: PRICE.single.now, tag: "" },
@@ -99,8 +102,8 @@ export function BuyBox() {
         ))}
       </div>
 
-      <Button asChild size="lg" className="mt-5 w-full text-[1.05rem]">
-        <a href="#buy">Buy now</a>
+      <Button size="lg" className="mt-5 w-full text-[1.05rem]" onClick={() => add(sel)}>
+        Add to cart
       </Button>
 
       {/* free gifts */}

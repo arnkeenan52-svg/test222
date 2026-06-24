@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { SmoothScroll } from "@/components/SmoothScroll";
 import { CurrencyProvider } from "@/components/CurrencyProvider";
+import { CartProvider } from "@/components/CartProvider";
+import { CartDrawer } from "@/components/CartDrawer";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://fadeclipper.com"),
@@ -30,7 +32,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body>
         <CurrencyProvider>
-          <SmoothScroll>{children}</SmoothScroll>
+          <CartProvider>
+            <SmoothScroll>{children}</SmoothScroll>
+            <CartDrawer />
+          </CartProvider>
         </CurrencyProvider>
       </body>
     </html>

@@ -4,8 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/Logo";
 import { Countdown } from "@/components/Countdown";
 import { useCurrency } from "@/components/CurrencyProvider";
+import { useCart } from "@/components/CartProvider";
 import { cn } from "@/lib/utils";
-import { Menu, X } from "lucide-react";
+import { Menu, X, ShoppingBag } from "lucide-react";
 
 const links: [string, string][] = [
   ["How it works", "#how"],
@@ -18,6 +19,7 @@ export function SiteNav() {
   const [open, setOpen] = useState(false);
   const [showBar, setShowBar] = useState(false);
   const { fmt } = useCurrency();
+  const { add, count, setOpen: setCartOpen } = useCart();
 
   useEffect(() => {
     const onScroll = () => setShowBar(window.scrollY > 700);
@@ -56,9 +58,21 @@ export function SiteNav() {
               </li>
             ))}
           </ul>
-          <div className="flex items-center gap-2">
-            <Button asChild size="sm" className="hidden sm:inline-flex">
-              <a href="#buy">Get yours</a>
+          <div className="flex items-center gap-1.5">
+            <button
+              aria-label="Open cart"
+              onClick={() => setCartOpen(true)}
+              className="relative grid h-10 w-10 place-items-center rounded-full text-ink hover:bg-card"
+            >
+              <ShoppingBag className="h-5 w-5" />
+              {count > 0 && (
+                <span className="absolute right-0 top-0 grid h-4 min-w-4 place-items-center rounded-full bg-brand px-1 text-[0.6rem] font-bold text-white">
+                  {count}
+                </span>
+              )}
+            </button>
+            <Button size="sm" className="hidden sm:inline-flex" onClick={() => add("single")}>
+              Get yours
             </Button>
             <button
               aria-label="Open menu"
@@ -84,8 +98,14 @@ export function SiteNav() {
                 {label}
               </a>
             ))}
-            <Button asChild className="mt-4 w-full">
-              <a href="#buy" onClick={() => setOpen(false)}>Get yours</a>
+            <Button
+              className="mt-4 w-full"
+              onClick={() => {
+                add("single");
+                setOpen(false);
+              }}
+            >
+              Get yours
             </Button>
           </div>
         </div>
@@ -103,8 +123,8 @@ export function SiteNav() {
           <span className="font-display text-[1.2rem] font-bold">{fmt(59)}</span>
           <span className="text-xs text-muted line-through">{fmt(99)}</span>
         </div>
-        <Button asChild className="flex-1">
-          <a href="#buy">Get FadeClipper</a>
+        <Button className="flex-1" onClick={() => add("single")}>
+          Get FadeClipper
         </Button>
       </div>
     </>
