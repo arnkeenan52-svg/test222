@@ -5,17 +5,10 @@ import { PressBar } from "@/components/PressBar";
 import { HowItWorks } from "@/components/HowItWorks";
 import { WatchDemo } from "@/components/WatchDemo";
 import { ComparisonTable } from "@/components/ComparisonTable";
+import { RedditReviews } from "@/components/RedditReviews";
 import { Price } from "@/components/Price";
 import { SiteFooter } from "@/components/SiteFooter";
-import { Check, Plus, Star, ArrowRight, ExternalLink } from "lucide-react";
-
-// Real, independent Reddit posts of people self-fading with this clipper. Links out
-// to the public threads (no reposting of others' photos). Add/swap as you like.
-const redditPosts = [
-  { sub: "r/SelfBarber", label: "First self-fade attempt", img: "/assets/img/reddit-1.jpg", url: "https://www.reddit.com/r/SelfBarber/comments/1c5091o/first_attempt_with_a_fadify_20_not_the_greatest/" },
-  { sub: "r/SelfBarber", label: "Second attempt — much sharper", img: "/assets/img/reddit-2.jpg", url: "https://www.reddit.com/r/SelfBarber/comments/1ds8agi/2nd_attempt_with_the_fadify_20/" },
-  { sub: "r/Barber", label: "First experience, reviewed", img: "/assets/img/reddit-3.jpg", url: "https://www.reddit.com/r/Barber/comments/utvqn4/fadify_20_first_experience/" },
-];
+import { Check, Plus, Star, ArrowRight } from "lucide-react";
 
 const faqs: [string, string][] = [
   ["Can I really fade the back of my own head?", "Yes — that's exactly what FadeClipper is built for. The tapered 45° auto-fade blade blends the gradient as you glide up, so you don't need barber-level skill or two mirrors. Most people get a clean back fade on the first or second try."],
@@ -32,9 +25,9 @@ export default function Page() {
 
       <main id="top">
         {/* HERO (dark) */}
-        <header className="relative -mt-[60px] overflow-hidden bg-black pt-[60px] text-white">
+        <header className="relative overflow-hidden bg-black text-white">
           <div className="pointer-events-none absolute inset-x-0 top-0 h-[520px] bg-[radial-gradient(60%_50%_at_50%_0%,rgba(236,99,36,0.25),transparent_70%)]" />
-          <div className="container-x relative flex flex-col items-center pb-[clamp(3rem,6vw,5rem)] pt-[clamp(1.5rem,4vw,3rem)] text-center">
+          <div className="container-x relative flex flex-col items-center pb-[clamp(3rem,6vw,5rem)] pt-[clamp(2rem,5vw,3.5rem)] text-center">
             <div className="mb-5 flex items-center gap-2">
               <span className="flex text-brand">
                 {Array.from({ length: 5 }).map((_, i) => <Star key={i} className="h-[18px] w-[18px] fill-current" />)}
@@ -87,33 +80,7 @@ export default function Page() {
         </Section>
 
         {/* TRUSTED BY PEOPLE — real Reddit posts */}
-        <Section id="reviews">
-          <Head center eyebrow="Real people, real fades" title="Trusted by people who fade at home now." sub="Honest, unsponsored posts from people fading their own hair with this clipper." />
-          <div className="-mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 [scrollbar-width:none] md:mx-0 md:grid md:grid-cols-3 md:overflow-visible md:px-0">
-            {redditPosts.map((p) => (
-              <a
-                key={p.url}
-                href={p.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="relative block w-[78%] shrink-0 snap-center overflow-hidden rounded-4xl bg-ink sm:w-[52%] md:w-auto"
-              >
-                <img src={p.img} alt={`Self-fade shared on ${p.sub}`} className="aspect-[4/5] w-full object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
-                <div className="absolute inset-x-0 bottom-0 p-5 text-white">
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-2.5 py-1 text-[0.7rem] font-semibold backdrop-blur-sm">
-                    <span className="h-1.5 w-1.5 rounded-full bg-[#ff4500]" /> {p.sub}
-                  </span>
-                  <p className="mt-2 font-display text-[1.05rem] font-semibold leading-snug">{p.label}</p>
-                  <span className="mt-1 inline-flex items-center gap-1 text-[0.82rem] text-white/80">
-                    View on Reddit <ExternalLink className="h-3.5 w-3.5" />
-                  </span>
-                </div>
-              </a>
-            ))}
-          </div>
-          <p className="mt-6 text-center text-[0.8rem] text-muted">Independent posts on Reddit — not paid or affiliated. Links open on reddit.com.</p>
-        </Section>
+        <RedditReviews />
 
         {/* OFFER */}
         <Section alt id="buy">
