@@ -39,16 +39,16 @@ export function SiteNav() {
         </div>
       </div>
 
-      {/* nav bar (static, transparent — sits over the hero's continuous bg, no seam) */}
-      <div className="relative z-30 h-[60px]">
-        <nav className="mx-auto flex h-full max-w-container items-center justify-between gap-4 px-4 text-white">
-          <a href="#top" aria-label="FadeClipper home" className="text-white">
+      {/* nav bar — light floating pill (does not follow on scroll) */}
+      <div className="px-3 pt-3">
+        <nav className="mx-auto flex max-w-container items-center justify-between gap-4 rounded-full border border-line bg-white px-3 py-2.5 pl-5 text-ink shadow-soft">
+          <a href="#top" aria-label="FadeClipper home" className="text-ink">
             <Logo />
           </a>
           <ul className="hidden items-center gap-7 md:flex">
             {links.map(([label, href]) => (
               <li key={href}>
-                <a href={href} className="text-[0.9rem] font-medium text-white/70 transition-colors hover:text-white">
+                <a href={href} className="text-[0.9rem] font-medium text-muted transition-colors hover:text-ink">
                   {label}
                 </a>
               </li>
@@ -60,7 +60,7 @@ export function SiteNav() {
             </Button>
             <button
               aria-label="Open menu"
-              className="grid h-10 w-10 place-items-center rounded-full text-white md:hidden"
+              className="grid h-10 w-10 place-items-center rounded-full text-ink md:hidden"
               onClick={() => setOpen((v) => !v)}
             >
               {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -98,8 +98,8 @@ export function SiteNav() {
         style={{ paddingBottom: "calc(0.75rem + env(safe-area-inset-bottom))" }}
       >
         <div className="flex flex-col leading-tight">
-          <span className="font-display text-[1.25rem] font-bold">$59</span>
-          <span className="text-xs text-muted line-through">$99</span>
+          <span className="font-display text-[1.15rem] font-bold">399,00 kr</span>
+          <span className="text-xs text-muted line-through">699,00 kr</span>
         </div>
         <Button asChild className="flex-1">
           <a href="#buy">Get FadeClipper</a>
