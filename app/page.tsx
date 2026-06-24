@@ -21,49 +21,53 @@ const faqs: [string, string][] = [
 export default function Page() {
   return (
     <>
-      <SiteNav />
-
-      <main id="top">
-        {/* HERO (dark) */}
-        <header className="relative overflow-hidden bg-black text-white">
-          <div className="pointer-events-none absolute inset-x-0 top-0 h-[520px] bg-[radial-gradient(60%_50%_at_50%_0%,rgba(236,99,36,0.25),transparent_70%)]" />
-          <div className="container-x relative flex flex-col items-center pb-[clamp(3rem,6vw,5rem)] pt-[clamp(2rem,5vw,3.5rem)] text-center">
-            <div className="mb-5 flex items-center gap-2">
-              <span className="flex text-brand">
-                {Array.from({ length: 5 }).map((_, i) => <Star key={i} className="h-[18px] w-[18px] fill-current" />)}
-              </span>
-              <span className="text-sm font-medium text-white/70"><b className="text-white">1,200+</b> reviews</span>
+      {/* TOP — nav + hero live in ONE black box behind a SINGLE glow, so there is
+          no seam between the logo/menu bar and the hero. */}
+      <div id="top" className="relative overflow-hidden bg-black text-white">
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-[720px] bg-[radial-gradient(90%_60%_at_50%_15%,rgba(236,99,36,0.32),transparent_70%)]" />
+        <div className="relative">
+          <SiteNav onDark />
+          <header>
+            <div className="container-x flex flex-col items-center pb-[clamp(3rem,6vw,5rem)] pt-[clamp(1.5rem,4vw,3rem)] text-center">
+              <div className="mb-5 flex items-center gap-2">
+                <span className="flex text-brand">
+                  {Array.from({ length: 5 }).map((_, i) => <Star key={i} className="h-[18px] w-[18px] fill-current" />)}
+                </span>
+                <span className="text-sm font-medium text-white/70"><b className="text-white">1,200+</b> reviews</span>
+              </div>
+              <h1 className="font-display text-[clamp(2.6rem,6.4vw,4.6rem)] font-bold leading-[1.0] tracking-[-0.02em]">
+                Fade your own hair.<br />
+                <span className="text-brand">In minutes.</span>
+              </h1>
+              <p className="mt-5 max-w-[42ch] text-[1.12rem] text-white/65">
+                The auto-fading clipper with a 45&deg; blade that blends the gradient for you &mdash;{" "}
+                <span className="underline decoration-white/30 underline-offset-2">no skill needed</span>.
+              </p>
+              <div className="mt-7 flex w-full max-w-[360px] flex-col gap-3">
+                <Button asChild size="lg"><a href="/product">Order now &mdash; <Price usd={59} /></a></Button>
+                <WatchDemo />
+              </div>
+              <Reveal className="mt-10 w-full max-w-[620px]">
+                <figure className="overflow-hidden rounded-5xl border border-white/10 shadow-soft">
+                  <video
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    poster="/assets/img/product-hero-dark.jpg"
+                    aria-label="FadeClipper auto-fading cordless hair clipper"
+                    className="aspect-[4/3] w-full object-cover"
+                  >
+                    <source src="/assets/video/hero-zoom.mp4" type="video/mp4" />
+                  </video>
+                </figure>
+              </Reveal>
             </div>
-            <h1 className="font-display text-[clamp(2.6rem,6.4vw,4.6rem)] font-bold leading-[1.0] tracking-[-0.02em]">
-              Fade your own hair.<br />
-              <span className="text-brand">In minutes.</span>
-            </h1>
-            <p className="mt-5 max-w-[42ch] text-[1.12rem] text-white/65">
-              The auto-fading clipper with a 45&deg; blade that blends the gradient for you &mdash;{" "}
-              <span className="underline decoration-white/30 underline-offset-2">no skill needed</span>.
-            </p>
-            <div className="mt-7 flex w-full max-w-[360px] flex-col gap-3">
-              <Button asChild size="lg"><a href="/product">Order now &mdash; <Price usd={59} /></a></Button>
-              <WatchDemo />
-            </div>
-            <Reveal className="mt-10 w-full max-w-[620px]">
-              <figure className="overflow-hidden rounded-5xl border border-white/10 shadow-soft">
-                <video
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                  poster="/assets/img/product-hero-dark.jpg"
-                  aria-label="FadeClipper auto-fading cordless hair clipper"
-                  className="aspect-[4/3] w-full object-cover"
-                >
-                  <source src="/assets/video/hero-zoom.mp4" type="video/mp4" />
-                </video>
-              </figure>
-            </Reveal>
-          </div>
-        </header>
+          </header>
+        </div>
+      </div>
 
+      <main>
         {/* AS SEEN IN */}
         <PressBar />
 

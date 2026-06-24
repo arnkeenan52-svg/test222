@@ -15,7 +15,7 @@ const links: [string, string][] = [
   ["FAQ", "/#faq"],
 ];
 
-export function SiteNav() {
+export function SiteNav({ onDark = false }: { onDark?: boolean }) {
   const [open, setOpen] = useState(false);
   const [showBar, setShowBar] = useState(false);
   const { fmt } = useCurrency();
@@ -43,16 +43,17 @@ export function SiteNav() {
         </div>
       </div>
 
-      {/* nav bar — light floating pill (does not follow on scroll) */}
-      <div className="px-3 pt-3">
-        <nav className="mx-auto flex max-w-container items-center justify-between gap-4 rounded-full border border-line bg-white px-3 py-2.5 pl-5 text-ink shadow-soft">
-          <a href="/" aria-label="FadeClipper home" className="text-ink">
+      {/* nav bar — on the homepage it's transparent over a shared glow (onDark);
+          elsewhere it carries its own solid black background */}
+      <div className={onDark ? "" : "bg-black"}>
+        <nav className="mx-auto flex max-w-container items-center justify-between gap-4 px-4 py-3.5 text-white">
+          <a href="/" aria-label="FadeClipper home" className="text-white">
             <Logo />
           </a>
           <ul className="hidden items-center gap-7 md:flex">
             {links.map(([label, href]) => (
               <li key={href}>
-                <a href={href} className="text-[0.9rem] font-medium text-muted transition-colors hover:text-ink">
+                <a href={href} className="text-[0.9rem] font-medium text-white/65 transition-colors hover:text-white">
                   {label}
                 </a>
               </li>
@@ -62,7 +63,7 @@ export function SiteNav() {
             <button
               aria-label="Open cart"
               onClick={() => setCartOpen(true)}
-              className="relative grid h-10 w-10 place-items-center rounded-full text-ink hover:bg-card"
+              className="relative grid h-10 w-10 place-items-center rounded-full text-white hover:bg-white/10"
             >
               <ShoppingBag className="h-5 w-5" />
               {count > 0 && (
@@ -76,7 +77,7 @@ export function SiteNav() {
             </Button>
             <button
               aria-label="Open menu"
-              className="grid h-10 w-10 place-items-center rounded-full text-ink md:hidden"
+              className="grid h-10 w-10 place-items-center rounded-full text-white hover:bg-white/10 md:hidden"
               onClick={() => setOpen((v) => !v)}
             >
               {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -86,14 +87,14 @@ export function SiteNav() {
       </div>
 
       {open && (
-        <div className="fixed inset-x-3 top-[120px] z-40 rounded-4xl border border-line bg-white p-5 shadow-soft md:hidden">
+        <div className="fixed inset-x-3 top-[112px] z-40 rounded-4xl border border-white/10 bg-[#111] p-5 shadow-soft md:hidden">
           <div className="flex flex-col">
             {links.map(([label, href]) => (
               <a
                 key={href}
                 href={href}
                 onClick={() => setOpen(false)}
-                className="border-b border-line-2 py-3 font-semibold text-ink last:border-0"
+                className="border-b border-white/10 py-3 font-semibold text-white last:border-0"
               >
                 {label}
               </a>
