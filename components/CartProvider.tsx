@@ -12,6 +12,7 @@ type CartCtx = {
   add: (id: ProductId) => void;
   setQty: (id: ProductId, qty: number) => void;
   remove: (id: ProductId) => void;
+  clear: () => void;
   setOpen: (v: boolean) => void;
 };
 
@@ -23,6 +24,7 @@ const CartContext = createContext<CartCtx>({
   add: () => {},
   setQty: () => {},
   remove: () => {},
+  clear: () => {},
   setOpen: () => {},
 });
 
@@ -57,11 +59,13 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const remove = (id: ProductId) => setItems((prev) => prev.filter((i) => i.id !== id));
 
+  const clear = () => setItems([]);
+
   const count = items.reduce((n, i) => n + i.qty, 0);
   const subtotalUsd = items.reduce((s, i) => s + PRODUCTS[i.id].usd * i.qty, 0);
 
   return (
-    <CartContext.Provider value={{ items, count, subtotalUsd, open, add, setQty, remove, setOpen }}>
+    <CartContext.Provider value={{ items, count, subtotalUsd, open, add, setQty, remove, clear, setOpen }}>
       {children}
     </CartContext.Provider>
   );

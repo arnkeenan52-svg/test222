@@ -5,18 +5,34 @@ import { Button } from "@/components/ui/button";
 import { useCart } from "@/components/CartProvider";
 import { useCurrency } from "@/components/CurrencyProvider";
 import { PRODUCTS } from "@/lib/products";
-import { Lock, ShieldCheck } from "lucide-react";
+import { Lock, ShieldCheck, Truck } from "lucide-react";
 
 export default function CheckoutPage() {
   const { items, subtotalUsd } = useCart();
   const { fmt } = useCurrency();
   const [msg, setMsg] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const pay = () => {
-    // TODO: create a Stripe Checkout Session on your backend and redirect here.
-    // e.g. const res = await fetch("/api/checkout", { method: "POST", body: JSON.stringify(items) });
-    //      const { url } = await res.json(); window.location.href = url;
-    setMsg("Payment isn't connected yet — Stripe checkout will go live here. (No charge was made.)");
+  const pay = async () => {
+    if (items.length === 0 || loading) return;
+    setLoading(true);
+    setMsg("");
+    try {
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ items }),
+      });
+      const data = await res.json();
+      if (res.ok && data.url) {
+        window.location.href = data.url; // redirect to Stripe's secure checkout
+        return;
+      }
+      setMsg(data.error || "Could not start checkout. Please try again.");
+    } catch {
+      setMsg("Network error — please try again.");
+    }
+    setLoading(false);
   };
 
   return (
@@ -35,29 +51,32 @@ export default function CheckoutPage() {
       <main className="flex-1">
         <div className="container-x py-[clamp(2rem,5vw,3.5rem)]">
           <div className="mx-auto grid max-w-[940px] gap-10 md:grid-cols-[1.2fr_1fr]">
-            {/* form */}
+            {/* review + pay */}
             <div>
               <h1 className="font-display text-[clamp(1.8rem,4vw,2.4rem)] font-bold">Checkout</h1>
+              <p className="mt-3 max-w-[46ch] text-[0.98rem] text-muted">
+                You&rsquo;ll enter your card and shipping details on the next step — a secure payment page hosted by
+                Stripe. Nothing is charged until you confirm there.
+              </p>
 
-              <h2 className="mt-8 font-display text-[1.1rem] font-semibold">Contact</h2>
-              <input type="email" placeholder="Email" className="mt-3 w-full rounded-2xl border border-line bg-white px-4 py-3 outline-none focus:border-brand" />
+              <ul className="mt-6 grid gap-3">
+                {[
+                  ["Free worldwide shipping", "Arrives in about 7–10 business days."],
+                  ["Pay securely with Stripe", "Card, Apple Pay &amp; Google Pay — encrypted end to end."],
+                  ["90-day money-back guarantee", "Not for you? Send it back for a full refund."],
+                ].map(([t, s]) => (
+                  <li key={t} className="flex items-start gap-3 rounded-2xl border border-line bg-white p-4">
+                    <Truck className="mt-0.5 h-5 w-5 shrink-0 text-brand" />
+                    <div>
+                      <p className="font-semibold leading-tight" dangerouslySetInnerHTML={{ __html: t }} />
+                      <p className="text-[0.85rem] text-muted" dangerouslySetInnerHTML={{ __html: s }} />
+                    </div>
+                  </li>
+                ))}
+              </ul>
 
-              <h2 className="mt-7 font-display text-[1.1rem] font-semibold">Shipping address</h2>
-              <div className="mt-3 grid gap-3">
-                <div className="grid grid-cols-2 gap-3">
-                  <input placeholder="First name" className="rounded-2xl border border-line bg-white px-4 py-3 outline-none focus:border-brand" />
-                  <input placeholder="Last name" className="rounded-2xl border border-line bg-white px-4 py-3 outline-none focus:border-brand" />
-                </div>
-                <input placeholder="Address" className="rounded-2xl border border-line bg-white px-4 py-3 outline-none focus:border-brand" />
-                <div className="grid grid-cols-2 gap-3">
-                  <input placeholder="City" className="rounded-2xl border border-line bg-white px-4 py-3 outline-none focus:border-brand" />
-                  <input placeholder="Postal code" className="rounded-2xl border border-line bg-white px-4 py-3 outline-none focus:border-brand" />
-                </div>
-                <input placeholder="Country" className="rounded-2xl border border-line bg-white px-4 py-3 outline-none focus:border-brand" />
-              </div>
-
-              <Button size="lg" className="mt-7 w-full" onClick={pay} disabled={items.length === 0}>
-                {items.length === 0 ? "Your cart is empty" : `Pay ${fmt(subtotalUsd)}`}
+              <Button size="lg" className="mt-7 w-full" onClick={pay} disabled={items.length === 0 || loading}>
+                {items.length === 0 ? "Your cart is empty" : loading ? "Redirecting to payment…" : `Continue to payment — ${fmt(subtotalUsd)}`}
               </Button>
               {msg && <p className="mt-3 rounded-2xl bg-brand-tint px-4 py-3 text-[0.88rem] text-brand-dark">{msg}</p>}
               <p className="mt-3 flex items-center gap-1.5 text-[0.78rem] text-muted">
