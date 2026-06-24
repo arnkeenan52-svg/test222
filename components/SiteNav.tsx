@@ -27,9 +27,16 @@ export function SiteNav() {
   return (
     <>
       {/* offer bar */}
-      <div className="bg-brand px-4 py-2 text-center text-[0.82rem] font-medium text-white">
-        <span className="opacity-95">Launch sale &mdash; <b>40% off</b> &middot; ends in </span>
-        <Countdown />
+      <div className="bg-brand text-white">
+        <div className="mx-auto flex max-w-container items-center justify-between gap-3 px-4 py-2 text-[0.8rem]">
+          <span className="flex items-center gap-1.5 font-medium">
+            <span className="uppercase tracking-wide opacity-90">Offer ends in</span>
+            <Countdown />
+          </span>
+          <a href="#buy" className="shrink-0 rounded-full bg-white px-3 py-1 text-[0.72rem] font-semibold text-brand">
+            40% off &mdash; Launch Sale
+          </a>
+        </div>
       </div>
 
       {/* floating pill nav */}

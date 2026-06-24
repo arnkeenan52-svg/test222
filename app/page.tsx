@@ -16,11 +16,12 @@ const features = [
   { icon: Lock, title: "Safety lock", text: "Lock your settings so nothing shifts mid-fade." },
 ];
 
-// NOTE: replace these with REAL customer reviews before launch.
+// NOTE: photos are AI-generated and quotes/names are placeholders.
+// Replace with REAL customer photos + reviews before running ads.
 const reviews = [
-  { q: "First try and the back faded itself. I've stopped booking touch-ups.", a: "Marcus T." },
-  { q: "I'm not skilled and it still looked like a shop fade. Unreal.", a: "Dani R." },
-  { q: "Battery lasts forever and it's waterproof, so cleanup is ten seconds.", a: "Jay K." },
+  { q: "First try and the back faded itself. I've stopped booking touch-ups.", a: "Marcus T.", img: "/assets/img/person-1.jpg" },
+  { q: "I'm not skilled and it still looked like a shop fade. Unreal.", a: "Dani R.", img: "/assets/img/person-2.jpg" },
+  { q: "Battery lasts forever and it's waterproof, so cleanup is ten seconds.", a: "Jay K.", img: "/assets/img/person-3.jpg" },
 ];
 
 const faqs: [string, string][] = [
@@ -38,7 +39,7 @@ export default function Page() {
 
       <main id="top">
         {/* HERO (dark) */}
-        <header className="relative overflow-hidden bg-ink text-white">
+        <header className="relative overflow-hidden bg-black text-white">
           <div className="pointer-events-none absolute inset-x-0 top-0 h-[460px] bg-[radial-gradient(60%_55%_at_50%_0%,rgba(236,99,36,0.25),transparent_70%)]" />
           <div className="container-x relative flex flex-col items-center pb-[clamp(3rem,6vw,5rem)] pt-[clamp(1.5rem,4vw,3rem)] text-center">
             <div className="mb-5 flex items-center gap-2">
@@ -79,24 +80,26 @@ export default function Page() {
         </Section>
 
         {/* WHY BETTER */}
-        <Section alt>
+        <Section alt id="compare">
           <Head center eyebrow="The difference" title="Why FadeClipper beats ordinary clippers." sub="The auto-fade blade does what regular clippers can't — and what the barber charges you for, on repeat." />
           <Reveal><div className="rounded-4xl bg-white p-4 shadow-card md:p-7"><ComparisonTable /></div></Reveal>
         </Section>
 
         {/* FEATURES */}
-        <Section>
-          <Head center eyebrow="Built for the fade" title="Everything that makes the blend effortless." />
-          <div className="grid gap-4 md:grid-cols-3">
-            {features.map((f, i) => (
-              <Reveal key={f.title} delay={(i % 3) * 0.07}>
-                <div className="h-full rounded-4xl bg-card p-7">
-                  <span className="mb-4 grid h-12 w-12 place-items-center rounded-2xl bg-brand-soft">
-                    <f.icon className="h-6 w-6 text-brand-dark" strokeWidth={2} />
-                  </span>
-                  <h3 className="text-[1.12rem] font-semibold">{f.title}</h3>
-                  <p className="mt-1.5 text-[0.95rem] text-muted">{f.text}</p>
-                </div>
+        <Section id="reviews">
+          <Head center eyebrow="Real people, real fades" title="Trusted by people who fade at home now." />
+          <div className="-mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 [scrollbar-width:none] md:mx-0 md:grid md:grid-cols-3 md:overflow-visible md:px-0">
+            {reviews.map((r, i) => (
+              <Reveal key={i} delay={(i % 3) * 0.07} className="w-[78%] shrink-0 snap-center sm:w-[60%] md:w-auto">
+                <figure className="relative h-full overflow-hidden rounded-4xl bg-ink">
+                  <img src={r.img} alt={`${r.a} holding a FadeClipper`} className="aspect-[3/4] w-full object-cover" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent" />
+                  <figcaption className="absolute inset-x-0 bottom-0 p-5 text-white">
+                    <span className="flex text-brand">{Array.from({ length: 5 }).map((_, j) => <Star key={j} className="h-4 w-4 fill-current" />)}</span>
+                    <blockquote className="mt-2 text-[1rem] font-medium leading-snug">&ldquo;{r.q}&rdquo;</blockquote>
+                    <p className="mt-2 text-[0.82rem] text-white/70">{r.a} &middot; verified buyer</p>
+                  </figcaption>
+                </figure>
               </Reveal>
             ))}
           </div>
@@ -118,22 +121,6 @@ export default function Page() {
               </p>
               <Button asChild size="lg" className="mt-7"><a href="#buy">Get yours</a></Button>
             </div>
-          </div>
-        </Section>
-
-        {/* REVIEWS */}
-        <Section id="reviews">
-          <Head center eyebrow="Loved at home" title="What people say about FadeClipper." />
-          <div className="grid gap-4 md:grid-cols-3">
-            {reviews.map((r, i) => (
-              <Reveal key={i} delay={i * 0.07}>
-                <figure className="h-full rounded-4xl bg-card p-7">
-                  <span className="flex text-brand">{Array.from({ length: 5 }).map((_, j) => <Star key={j} className="h-4 w-4 fill-current" />)}</span>
-                  <blockquote className="mt-3 text-[1.02rem] font-medium text-ink-2">&ldquo;{r.q}&rdquo;</blockquote>
-                  <figcaption className="mt-4 text-[0.85rem] text-muted">{r.a} &middot; verified buyer</figcaption>
-                </figure>
-              </Reveal>
-            ))}
           </div>
         </Section>
 
