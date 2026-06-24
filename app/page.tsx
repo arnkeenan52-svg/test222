@@ -64,7 +64,17 @@ export default function Page() {
             </div>
             <Reveal className="mt-10 w-full max-w-[620px]">
               <figure className="overflow-hidden rounded-5xl border border-white/10 shadow-soft">
-                <img src="/assets/img/product-hero-dark.jpg" alt="FadeClipper auto-fading cordless hair clipper" className="aspect-[4/3] w-full object-cover" />
+                <video
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  poster="/assets/img/product-hero-dark.jpg"
+                  aria-label="FadeClipper auto-fading cordless hair clipper"
+                  className="aspect-[4/3] w-full object-cover"
+                >
+                  <source src="/assets/video/hero-zoom.mp4" type="video/mp4" />
+                </video>
               </figure>
             </Reveal>
           </div>
@@ -102,25 +112,6 @@ export default function Page() {
                 </figure>
               </Reveal>
             ))}
-          </div>
-        </Section>
-
-        {/* LIFESTYLE */}
-        <Section alt>
-          <div className="grid items-center gap-[clamp(2rem,5vw,4rem)] md:grid-cols-2">
-            <Reveal>
-              <figure className="overflow-hidden rounded-5xl shadow-soft">
-                <img src="/assets/img/lifestyle-bath.jpg" alt="FadeClipper on a bathroom shelf in morning light" className="aspect-square w-full object-cover" />
-              </figure>
-            </Reveal>
-            <div>
-              <p className="eyebrow mb-4">Lives on your shelf</p>
-              <h2 className="font-display text-[clamp(1.8rem,3.4vw,2.6rem)] font-bold leading-tight">Ready whenever you are.</h2>
-              <p className="mt-4 max-w-[44ch] text-[1.06rem] text-muted">
-                Cordless, waterproof and dock-charged, FadeClipper sits ready on the shelf — so a fresh line-up or a full fade is always a two-minute job, not a trip across town.
-              </p>
-              <Button asChild size="lg" className="mt-7"><a href="#buy">Get yours</a></Button>
-            </div>
           </div>
         </Section>
 
