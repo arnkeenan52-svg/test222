@@ -4,10 +4,10 @@ import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const steps = [
-  { n: 1, title: "Charge & power on", text: "Drop it on the dock until full, tap power, then set your speed with + / –. The live display shows RPM and runtime left.", img: "/assets/img/product-45.jpg" },
-  { n: 2, title: "Pick your fade length", text: "Slide the lever to 0.4, 0.8 or 1.2mm. Start low and tight at the neckline, then step up as you move higher.", img: "/assets/img/blade.jpg" },
-  { n: 3, title: "Glide up & flick out", text: "Hold it flat to the skin, glide straight up, and flick your wrist out at the top. The 45° blade blends the gradient for you.", video: "/assets/video/loop-fade.mp4" },
-  { n: 4, title: "Blend & finish", text: "Bump the length up a notch and repeat a little higher to melt the lines. Rinse the blade under the tap — done.", video: "/assets/video/loop-side.mp4" },
+  { n: 1, title: "Charge & power on", text: "Drop it on the dock until full, then tap the power button. The live display shows battery and runtime left.", img: "/assets/img/step-1.jpg" },
+  { n: 2, title: "Pick your fade length", text: "Slide the lever to 0.4, 0.8 or 1.2mm. Start low and tight at the neckline, then step up as you move higher.", img: "/assets/img/step-2.jpg" },
+  { n: 3, title: "Glide across the fade", text: "Hold it flat and level to the skin and glide it straight across the side. The blade blends the gradient for you.", img: "/assets/img/step-3.jpg" },
+  { n: 4, title: "Blend & finish", text: "Step the length up a notch and pass a little higher to melt the lines into a smooth, sharp fade.", img: "/assets/img/step-4.jpg" },
 ];
 
 export function HowItWorks() {
@@ -33,13 +33,7 @@ export function HowItWorks() {
               <div className="px-5 pb-5">
                 <p className="text-muted">{s.text}</p>
                 <div className="mt-4 overflow-hidden rounded-3xl bg-black">
-                  {s.video ? (
-                    <video autoPlay muted loop playsInline className="aspect-[16/10] w-full object-cover">
-                      <source src={s.video} type="video/mp4" />
-                    </video>
-                  ) : (
-                    <img src={s.img} alt={s.title} className="aspect-[16/10] w-full object-cover" />
-                  )}
+                  <img src={s.img} alt={s.title} className="aspect-[16/10] w-full object-cover" />
                 </div>
               </div>
             )}

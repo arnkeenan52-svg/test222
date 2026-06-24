@@ -89,10 +89,10 @@ export function SiteNav() {
         </div>
       )}
 
-      {/* sticky mobile buy bar */}
+      {/* sticky mobile buy bar — fades into the page (no hard white edge) */}
       <div
         className={cn(
-          "fixed inset-x-0 bottom-0 z-40 flex items-center gap-3 border-t border-line bg-white/95 px-4 py-3 backdrop-blur-md transition-transform md:hidden",
+          "fixed inset-x-0 bottom-0 z-40 flex items-center gap-3 bg-gradient-to-t from-white from-55% to-transparent px-4 pb-3 pt-9 transition-transform md:hidden",
           showBar ? "translate-y-0" : "translate-y-full"
         )}
         style={{ paddingBottom: "calc(0.75rem + env(safe-area-inset-bottom))" }}

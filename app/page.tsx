@@ -3,6 +3,7 @@ import { Reveal } from "@/components/Reveal";
 import { SiteNav } from "@/components/SiteNav";
 import { PressBar } from "@/components/PressBar";
 import { HowItWorks } from "@/components/HowItWorks";
+import { WatchDemo } from "@/components/WatchDemo";
 import { ComparisonTable } from "@/components/ComparisonTable";
 import { Logo } from "@/components/Logo";
 import { Scissors, Ruler, BatteryCharging, Gauge, Droplets, Lock, Check, Plus, Star, Play, ArrowRight } from "lucide-react";
@@ -58,9 +59,7 @@ export default function Page() {
             </p>
             <div className="mt-7 flex w-full max-w-[360px] flex-col gap-3">
               <Button asChild size="lg"><a href="#buy">Order now &mdash; $59</a></Button>
-              <Button asChild size="lg" variant="outline" className="border-white/25 bg-white/5 text-white hover:bg-white hover:text-ink">
-                <a href="#how"><Play className="h-4 w-4 fill-current" /> See how it works</a>
-              </Button>
+              <WatchDemo />
             </div>
             <Reveal className="mt-10 w-full max-w-[620px]">
               <figure className="overflow-hidden rounded-5xl border border-white/10 shadow-soft">
@@ -84,7 +83,7 @@ export default function Page() {
         <PressBar />
 
         {/* HOW DOES IT WORK */}
-        <Section>
+        <Section id="how">
           <Head center eyebrow="60-second setup" title="How does it work?" sub="No experience needed. If you can comb your hair, you can run a FadeClipper." />
           <Reveal><HowItWorks /></Reveal>
         </Section>
@@ -143,16 +142,6 @@ export default function Page() {
               </div>
             </div>
           </div>
-        </Section>
-
-        {/* GUARANTEE */}
-        <Section>
-          <Reveal className="mx-auto flex max-w-[680px] flex-col items-center gap-3 rounded-5xl bg-card p-9 text-center">
-            <div>
-              <h3 className="font-display text-[1.4rem] font-bold">Fade with zero risk.</h3>
-              <p className="mt-2 text-muted">Try FadeClipper for 90 days. If your fades aren't sharper, easier and cheaper than the barber, send it back for a full refund.</p>
-            </div>
-          </Reveal>
         </Section>
 
         {/* FAQ */}
