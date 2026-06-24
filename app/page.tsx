@@ -2,6 +2,8 @@ import { Button } from "@/components/ui/button";
 import { Reveal } from "@/components/Reveal";
 import { SiteNav } from "@/components/SiteNav";
 import { Marquee } from "@/components/Marquee";
+import { PressBar } from "@/components/PressBar";
+import { ComparisonTable } from "@/components/ComparisonTable";
 import { Logo } from "@/components/Logo";
 import {
   Scissors,
@@ -93,6 +95,9 @@ export default function Page() {
         {/* BENEFITS MARQUEE */}
         <Marquee />
 
+        {/* AS FEATURED IN */}
+        <PressBar />
+
         {/* SPECS */}
         <section className="py-[clamp(2.5rem,5vw,4rem)]">
           <div className="mx-auto grid max-w-container grid-cols-2 px-7 md:grid-cols-5">
@@ -175,6 +180,38 @@ export default function Page() {
           </div>
         </Section>
 
+        {/* BLADE DETAIL */}
+        <Section id="blade" alt>
+          <div className="grid items-center gap-[clamp(2rem,5vw,4.5rem)] md:grid-cols-2">
+            <Reveal>
+              <figure className="overflow-hidden rounded-[6px] border border-line">
+                <img src="/assets/img/blade.jpg" alt="FadeClipper auto-fade blade mounted at a 45-degree angle" className="aspect-[4/5] w-full object-cover" />
+              </figure>
+            </Reveal>
+            <div>
+              <p className="eyebrow mb-4">The blade</p>
+              <h2 className="font-display text-[clamp(1.8rem,3.4vw,2.6rem)] font-semibold leading-tight">
+                Engineered to blend — at a 45° angle.
+              </h2>
+              <p className="mt-4 max-w-[46ch] text-[1.06rem] text-muted">
+                The cutting head sits at a 45-degree angle, so the tapered fade blade meets your hair the way
+                a barber's wrist would — blending the gradient as you glide, not chopping a flat line.
+              </p>
+              <ul className="mt-6 grid gap-3">
+                {[
+                  "Triangle static blade + uniquely shaped moving blade",
+                  "Tapers the cut into an automatic gradient",
+                  "Brushed steel — rinse it clean under the tap",
+                ].map((t) => (
+                  <li key={t} className="flex items-center gap-3 text-[1rem] text-ink-2">
+                    <Check className="h-4 w-4 shrink-0 text-brand" strokeWidth={3} />{t}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </Section>
+
         {/* EDITORIAL BAND */}
         <section aria-hidden="true" className="overflow-hidden">
           <img
@@ -226,6 +263,18 @@ export default function Page() {
               </div>
             </Reveal>
           </div>
+        </Section>
+
+        {/* COMPARISON */}
+        <Section id="compare">
+          <Head
+            eyebrow="How we compare"
+            title="FadeClipper vs. the rest."
+            sub="The auto-fade blade does what ordinary clippers can't — and what the barber charges you for, on repeat."
+          />
+          <Reveal>
+            <ComparisonTable />
+          </Reveal>
         </Section>
 
         {/* IN ACTION */}
