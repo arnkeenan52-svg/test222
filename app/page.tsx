@@ -184,10 +184,12 @@ export default function Page() {
             <a href="#faq" className="hover:text-ink">FAQ</a>
           </nav>
           <nav className="flex flex-col gap-3 text-[0.9rem] text-muted">
-            <a href="#" className="hover:text-ink">Shipping &amp; returns</a>
-            <a href="#" className="hover:text-ink">Contact</a>
-            <a href="#" className="hover:text-ink">Terms</a>
-            <a href="#" className="hover:text-ink">Privacy</a>
+            <a href="/about" className="hover:text-ink">About us</a>
+            <a href="/contact" className="hover:text-ink">Contact</a>
+            <a href="/shipping" className="hover:text-ink">Shipping</a>
+            <a href="/returns" className="hover:text-ink">Returns &amp; refunds</a>
+            <a href="/terms" className="hover:text-ink">Terms</a>
+            <a href="/privacy" className="hover:text-ink">Privacy</a>
           </nav>
         </div>
         <div className="container-x mt-10 flex flex-wrap justify-between gap-4 border-t border-line pt-6 text-[0.8rem] text-muted">
