@@ -39,10 +39,9 @@ export function SiteNav() {
         </div>
       </div>
 
-      {/* nav bar (static — matches the hero: black + orange glow, no border) */}
-      <div className="relative z-30 overflow-hidden bg-black">
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-32 bg-[radial-gradient(70%_140%_at_50%_-30%,rgba(236,99,36,0.22),transparent_70%)]" />
-        <nav className="relative mx-auto flex max-w-container items-center justify-between gap-4 px-4 py-3 text-white">
+      {/* nav bar (static, transparent — sits over the hero's continuous bg, no seam) */}
+      <div className="relative z-30 h-[60px]">
+        <nav className="mx-auto flex h-full max-w-container items-center justify-between gap-4 px-4 text-white">
           <a href="#top" aria-label="FadeClipper home" className="text-white">
             <Logo />
           </a>

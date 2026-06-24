@@ -39,8 +39,8 @@ export default function Page() {
 
       <main id="top">
         {/* HERO (dark) */}
-        <header className="relative overflow-hidden bg-black text-white">
-          <div className="pointer-events-none absolute inset-x-0 top-0 h-[460px] bg-[radial-gradient(60%_55%_at_50%_0%,rgba(236,99,36,0.25),transparent_70%)]" />
+        <header className="relative -mt-[60px] overflow-hidden bg-black pt-[60px] text-white">
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-[520px] bg-[radial-gradient(60%_50%_at_50%_0%,rgba(236,99,36,0.25),transparent_70%)]" />
           <div className="container-x relative flex flex-col items-center pb-[clamp(3rem,6vw,5rem)] pt-[clamp(1.5rem,4vw,3rem)] text-center">
             <div className="mb-5 flex items-center gap-2">
               <span className="flex text-brand">
@@ -147,10 +147,7 @@ export default function Page() {
 
         {/* GUARANTEE */}
         <Section>
-          <Reveal className="mx-auto flex max-w-[820px] flex-col items-center gap-6 rounded-5xl bg-card p-9 text-center md:flex-row md:text-left">
-            <div className="grid h-[104px] w-[104px] shrink-0 place-items-center rounded-full bg-brand text-center font-display leading-none text-white">
-              <span><b className="text-[2rem] font-bold">90</b><span className="mt-1 block text-[0.55rem] font-semibold uppercase tracking-wider">day guarantee</span></span>
-            </div>
+          <Reveal className="mx-auto flex max-w-[680px] flex-col items-center gap-3 rounded-5xl bg-card p-9 text-center">
             <div>
               <h3 className="font-display text-[1.4rem] font-bold">Fade with zero risk.</h3>
               <p className="mt-2 text-muted">Try FadeClipper for 90 days. If your fades aren't sharper, easier and cheaper than the barber, send it back for a full refund.</p>
