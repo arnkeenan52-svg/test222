@@ -9,7 +9,7 @@ import { BuyBox } from "@/components/BuyBox";
 import { Price } from "@/components/Price";
 import { ComparisonTable } from "@/components/ComparisonTable";
 import { Logo } from "@/components/Logo";
-import { Scissors, Ruler, BatteryCharging, Gauge, Droplets, Lock, Check, Plus, Star, Play, ArrowRight } from "lucide-react";
+import { Scissors, Ruler, BatteryCharging, Gauge, Droplets, Lock, Check, Plus, Star, Play, ArrowRight, ExternalLink } from "lucide-react";
 
 const features = [
   { icon: Scissors, title: "Auto-fade blade", text: "Static + moving blades taper the cut so the fade blends itself." },
@@ -20,20 +20,20 @@ const features = [
   { icon: Lock, title: "Safety lock", text: "Lock your settings so nothing shifts mid-fade." },
 ];
 
-// NOTE: photos are AI-generated and quotes/names are placeholders.
-// Replace with REAL customer photos + reviews before running ads.
-const reviews = [
-  { q: "First try and the back faded itself. I've stopped booking touch-ups.", a: "Marcus T.", img: "/assets/img/person-1.jpg" },
-  { q: "I'm not skilled and it still looked like a shop fade. Unreal.", a: "Dani R.", img: "/assets/img/person-2.jpg" },
-  { q: "Battery lasts forever and it's waterproof, so cleanup is ten seconds.", a: "Jay K.", img: "/assets/img/person-3.jpg" },
+// Real, independent Reddit posts of people self-fading with this clipper. Links out
+// to the public threads (no reposting of others' photos). Add/swap as you like.
+const redditPosts = [
+  { sub: "r/SelfBarber", label: "First self-fade attempt", img: "/assets/img/reddit-1.jpg", url: "https://www.reddit.com/r/SelfBarber/comments/1c5091o/first_attempt_with_a_fadify_20_not_the_greatest/" },
+  { sub: "r/SelfBarber", label: "Second attempt — much sharper", img: "/assets/img/reddit-2.jpg", url: "https://www.reddit.com/r/SelfBarber/comments/1ds8agi/2nd_attempt_with_the_fadify_20/" },
+  { sub: "r/Barber", label: "First experience, reviewed", img: "/assets/img/reddit-3.jpg", url: "https://www.reddit.com/r/Barber/comments/utvqn4/fadify_20_first_experience/" },
 ];
 
 const gallery = [
   { src: "/assets/img/packaging.jpg", alt: "FadeClipper box and clipper on the charging dock" },
   { src: "/assets/img/product-hero-dark.jpg", alt: "FadeClipper on a desk" },
-  { src: "/assets/img/step-3.jpg", alt: "Fading the side of the head with FadeClipper" },
-  { src: "/assets/img/blade.jpg", alt: "The auto-fade blade up close" },
-  { src: "/assets/img/lifestyle-bath.jpg", alt: "FadeClipper on a bathroom shelf" },
+  { src: "/assets/img/cine-1.jpg", alt: "FadeClipper in dramatic studio light" },
+  { src: "/assets/img/cine-2.jpg", alt: "FadeClipper auto-fade blade, up close" },
+  { src: "/assets/img/cine-3.jpg", alt: "FadeClipper — waterproof, on a wet surface" },
 ];
 
 const faqs: [string, string][] = [
@@ -78,24 +78,33 @@ export default function Page() {
           <Reveal><div className="rounded-4xl bg-white p-4 shadow-card md:p-7"><ComparisonTable /></div></Reveal>
         </Section>
 
-        {/* FEATURES */}
+        {/* REDDIT SOCIAL PROOF */}
         <Section id="reviews">
-          <Head center eyebrow="Real people, real fades" title="Trusted by people who fade at home now." />
+          <Head center eyebrow="Real people, real fades" title="Self-fades people shared on Reddit." sub="Honest, unsponsored posts from people fading their own hair with this clipper." />
           <div className="-mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 [scrollbar-width:none] md:mx-0 md:grid md:grid-cols-3 md:overflow-visible md:px-0">
-            {reviews.map((r, i) => (
-              <Reveal key={i} delay={(i % 3) * 0.07} className="w-[78%] shrink-0 snap-center sm:w-[60%] md:w-auto">
-                <figure className="relative h-full overflow-hidden rounded-4xl bg-ink">
-                  <img src={r.img} alt={`${r.a} holding a FadeClipper`} className="aspect-[3/4] w-full object-cover" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent" />
-                  <figcaption className="absolute inset-x-0 bottom-0 p-5 text-white">
-                    <span className="flex text-brand">{Array.from({ length: 5 }).map((_, j) => <Star key={j} className="h-4 w-4 fill-current" />)}</span>
-                    <blockquote className="mt-2 text-[1rem] font-medium leading-snug">&ldquo;{r.q}&rdquo;</blockquote>
-                    <p className="mt-2 text-[0.82rem] text-white/70">{r.a} &middot; verified buyer</p>
-                  </figcaption>
-                </figure>
-              </Reveal>
+            {redditPosts.map((p) => (
+              <a
+                key={p.url}
+                href={p.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="relative block w-[78%] shrink-0 snap-center overflow-hidden rounded-4xl bg-ink sm:w-[52%] md:w-auto"
+              >
+                <img src={p.img} alt={`Self-fade shared on ${p.sub}`} className="aspect-[4/5] w-full object-cover" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
+                <div className="absolute inset-x-0 bottom-0 p-5 text-white">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-2.5 py-1 text-[0.7rem] font-semibold backdrop-blur-sm">
+                    <span className="h-1.5 w-1.5 rounded-full bg-[#ff4500]" /> {p.sub}
+                  </span>
+                  <p className="mt-2 font-display text-[1.05rem] font-semibold leading-snug">{p.label}</p>
+                  <span className="mt-1 inline-flex items-center gap-1 text-[0.82rem] text-white/80">
+                    View on Reddit <ExternalLink className="h-3.5 w-3.5" />
+                  </span>
+                </div>
+              </a>
             ))}
           </div>
+          <p className="mt-6 text-center text-[0.8rem] text-muted">Independent posts on Reddit — not paid or affiliated. Links open on reddit.com.</p>
         </Section>
 
         {/* OFFER */}
@@ -120,7 +129,7 @@ export default function Page() {
                     <Price usd={99} className="text-[1.3rem] text-muted line-through" />
                   </div>
                   <p className="mt-2 text-[0.84rem] text-muted">One-time payment · pays for itself in ~2 haircuts</p>
-                  <Button asChild size="lg" className="mt-5 w-full"><a href="#">Get FadeClipper <ArrowRight className="h-4 w-4" /></a></Button>
+                  <Button asChild size="lg" className="mt-5 w-full"><a href="#top">Get FadeClipper <ArrowRight className="h-4 w-4" /></a></Button>
                   <p className="mt-3 text-[0.74rem] text-muted">Secure checkout · Visa · Mastercard · PayPal</p>
                 </div>
               </div>
@@ -149,7 +158,7 @@ export default function Page() {
           <Reveal className="container-x overflow-hidden rounded-5xl bg-ink px-6 py-[clamp(3.5rem,7vw,6rem)] text-center text-white">
             <h2 className="font-display text-[clamp(2rem,4.4vw,3.2rem)] font-bold text-white">Your next fade is on you.</h2>
             <p className="mx-auto mb-7 mt-4 max-w-[42ch] text-[1.06rem] text-white/70">The auto-fading clipper that turns a barber-only skill into a one-swipe move.</p>
-            <Button asChild size="lg" variant="invert"><a href="#buy">Get FadeClipper — <Price usd={59} /></a></Button>
+            <Button asChild size="lg" variant="invert"><a href="#top">Get FadeClipper — <Price usd={59} /></a></Button>
             <p className="mt-5 text-[0.8rem] text-white/50">90-day money-back guarantee · Free worldwide shipping</p>
           </Reveal>
         </section>
