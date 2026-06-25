@@ -49,19 +49,19 @@ export function ConsentCards() {
       {showCurrency && (
         <div className="rounded-[28px] border border-white/10 bg-[#141414] p-5 text-white shadow-2xl">
           <p className="text-[0.95rem] leading-relaxed text-white/60">
-            We&rsquo;re showing prices in {localName} ({local.symbol.trim()}). Prefer US dollars?
+            We&rsquo;re showing prices in US dollars ($). Would you like your local currency ({localName})?
           </p>
           <button
             onClick={() => choose(CURRENCIES.USD)}
             className="mt-4 w-full rounded-full border border-white/20 py-3.5 text-[0.95rem] font-semibold text-white transition-colors hover:bg-white/10"
           >
-            Switch to US dollars ($)
+            Keep US dollars ($)
           </button>
           <button
             onClick={() => choose(local)}
             className="mt-2.5 w-full rounded-full bg-white py-3.5 text-[0.95rem] font-semibold text-ink transition-colors hover:bg-white/90"
           >
-            Keep {localName}
+            Show {localName} ({local.symbol.trim()})
           </button>
         </div>
       )}

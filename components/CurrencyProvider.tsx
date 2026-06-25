@@ -36,8 +36,8 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
         setCurrency(CURRENCIES[savedChoice]);
         setChosen(true);
       } else {
-        setCurrency(loc); // default to local
-        setChosen(loc.code === "USD"); // only ask when local differs from USD
+        setCurrency(CURRENCIES.USD); // default to US dollars
+        setChosen(loc.code === "USD"); // only offer local when one differs from USD
       }
     };
 
