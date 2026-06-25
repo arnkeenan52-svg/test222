@@ -15,7 +15,7 @@ const links: [string, string][] = [
   ["FAQ", "/#faq"],
 ];
 
-export function SiteNav({ onDark = false }: { onDark?: boolean }) {
+export function SiteNav({ variant = "light" }: { variant?: "hero" | "light" }) {
   const [open, setOpen] = useState(false);
   const [showBar, setShowBar] = useState(false);
   const { fmt } = useCurrency();
@@ -27,6 +27,30 @@ export function SiteNav({ onDark = false }: { onDark?: boolean }) {
     onScroll();
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  const hero = variant === "hero";
+
+  // "hero" = transparent over the homepage glow; "light" = white floating pill (Flow-style)
+  const wrap = hero ? "" : "px-3 pt-3";
+  const bar = hero
+    ? "mx-auto flex max-w-container items-center justify-between gap-4 px-4 py-3.5 text-white"
+    : "mx-auto flex max-w-container items-center justify-between gap-4 rounded-full border border-line bg-white px-3 py-2.5 pl-5 text-ink shadow-soft";
+  const logoColor = hero ? "text-white" : "text-ink";
+  const link = hero
+    ? "text-[0.9rem] font-medium text-white/65 transition-colors hover:text-white"
+    : "text-[0.9rem] font-medium text-muted transition-colors hover:text-ink";
+  const iconBtn = hero
+    ? "relative grid h-10 w-10 place-items-center rounded-full text-white hover:bg-white/10"
+    : "relative grid h-10 w-10 place-items-center rounded-full text-ink hover:bg-card";
+  const menuBtn = hero
+    ? "grid h-10 w-10 place-items-center rounded-full text-white hover:bg-white/10 md:hidden"
+    : "grid h-10 w-10 place-items-center rounded-full text-ink hover:bg-card md:hidden";
+  const panel = hero
+    ? "fixed inset-x-3 top-[112px] z-40 rounded-4xl border border-white/10 bg-[#111] p-5 shadow-soft md:hidden"
+    : "fixed inset-x-3 top-[124px] z-40 rounded-4xl border border-line bg-white p-5 shadow-soft md:hidden";
+  const panelLink = hero
+    ? "border-b border-white/10 py-3 font-semibold text-white last:border-0"
+    : "border-b border-line-2 py-3 font-semibold text-ink last:border-0";
 
   return (
     <>
@@ -43,28 +67,23 @@ export function SiteNav({ onDark = false }: { onDark?: boolean }) {
         </div>
       </div>
 
-      {/* nav bar — on the homepage it's transparent over a shared glow (onDark);
-          elsewhere it carries its own solid black background */}
-      <div className={onDark ? "" : "bg-black"}>
-        <nav className="mx-auto flex max-w-container items-center justify-between gap-4 px-4 py-3.5 text-white">
-          <a href="/" aria-label="FadeClipper home" className="text-white">
+      {/* nav bar — hero: transparent over the shared glow; light: white floating pill */}
+      <div className={wrap}>
+        <nav className={bar}>
+          <a href="/" aria-label="FadeClipper home" className={logoColor}>
             <Logo />
           </a>
           <ul className="hidden items-center gap-7 md:flex">
             {links.map(([label, href]) => (
               <li key={href}>
-                <a href={href} className="text-[0.9rem] font-medium text-white/65 transition-colors hover:text-white">
+                <a href={href} className={link}>
                   {label}
                 </a>
               </li>
             ))}
           </ul>
           <div className="flex items-center gap-1.5">
-            <button
-              aria-label="Open cart"
-              onClick={() => setCartOpen(true)}
-              className="relative grid h-10 w-10 place-items-center rounded-full text-white hover:bg-white/10"
-            >
+            <button aria-label="Open cart" onClick={() => setCartOpen(true)} className={iconBtn}>
               <ShoppingBag className="h-5 w-5" />
               {count > 0 && (
                 <span className="absolute right-0 top-0 grid h-4 min-w-4 place-items-center rounded-full bg-brand px-1 text-[0.6rem] font-bold text-white">
@@ -75,11 +94,7 @@ export function SiteNav({ onDark = false }: { onDark?: boolean }) {
             <Button asChild size="sm" className="hidden sm:inline-flex">
               <a href="/product">Get yours</a>
             </Button>
-            <button
-              aria-label="Open menu"
-              className="grid h-10 w-10 place-items-center rounded-full text-white hover:bg-white/10 md:hidden"
-              onClick={() => setOpen((v) => !v)}
-            >
+            <button aria-label="Open menu" className={menuBtn} onClick={() => setOpen((v) => !v)}>
               {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
           </div>
@@ -87,15 +102,10 @@ export function SiteNav({ onDark = false }: { onDark?: boolean }) {
       </div>
 
       {open && (
-        <div className="fixed inset-x-3 top-[112px] z-40 rounded-4xl border border-white/10 bg-[#111] p-5 shadow-soft md:hidden">
+        <div className={panel}>
           <div className="flex flex-col">
             {links.map(([label, href]) => (
-              <a
-                key={href}
-                href={href}
-                onClick={() => setOpen(false)}
-                className="border-b border-white/10 py-3 font-semibold text-white last:border-0"
-              >
+              <a key={href} href={href} onClick={() => setOpen(false)} className={panelLink}>
                 {label}
               </a>
             ))}

@@ -12,6 +12,7 @@ export function SiteFooter() {
           <a href="/#how" className="hover:text-ink">How it works</a>
           <a href="/#compare" className="hover:text-ink">Why FadeClipper</a>
           <a href="/#reviews" className="hover:text-ink">Reviews</a>
+          <a href="/how-to-fade-your-own-hair" className="hover:text-ink">How to fade your own hair</a>
           <a href="/#faq" className="hover:text-ink">FAQ</a>
         </nav>
         <nav className="flex flex-col gap-3 text-[0.9rem] text-muted">

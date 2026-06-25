@@ -21,7 +21,7 @@ const gallery = [
 export default function ProductPage() {
   return (
     <>
-      <SiteNav />
+      <SiteNav variant="light" />
 
       <main id="top">
         {/* breadcrumb */}

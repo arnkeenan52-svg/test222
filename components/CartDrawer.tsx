@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import { useCart } from "@/components/CartProvider";
 import { useCurrency } from "@/components/CurrencyProvider";
 import { PRODUCTS } from "@/lib/products";
@@ -8,6 +9,31 @@ import { X, Minus, Plus, ShoppingBag } from "lucide-react";
 export function CartDrawer() {
   const { items, open, setOpen, setQty, remove, subtotalUsd, count } = useCart();
   const { fmt } = useCurrency();
+  const [loading, setLoading] = useState(false);
+  const [err, setErr] = useState("");
+
+  // Go straight to Stripe's hosted checkout — no intermediate review page.
+  const checkout = async () => {
+    if (items.length === 0 || loading) return;
+    setLoading(true);
+    setErr("");
+    try {
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ items }),
+      });
+      const data = await res.json();
+      if (res.ok && data.url) {
+        window.location.href = data.url;
+        return;
+      }
+      setErr(data.error || "Could not start checkout. Please try again.");
+    } catch {
+      setErr("Network error — please try again.");
+    }
+    setLoading(false);
+  };
 
   return (
     <>
@@ -71,14 +97,15 @@ export function CartDrawer() {
             <span className="font-display text-[1.25rem] font-bold">{fmt(subtotalUsd)}</span>
           </div>
           {items.length > 0 ? (
-            <Button asChild size="lg" className="w-full">
-              <a href="/checkout">Checkout</a>
+            <Button size="lg" className="w-full" onClick={checkout} disabled={loading}>
+              {loading ? "Redirecting to payment…" : "Checkout"}
             </Button>
           ) : (
             <Button size="lg" className="w-full" onClick={() => setOpen(false)}>
               Continue shopping
             </Button>
           )}
+          {err && <p className="mt-2 text-center text-[0.78rem] text-brand">{err}</p>}
           <p className="mt-3 text-center text-[0.75rem] text-muted">Free shipping &middot; 90-day money-back guarantee</p>
         </div>
       </aside>
