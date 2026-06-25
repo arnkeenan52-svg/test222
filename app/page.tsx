@@ -26,7 +26,7 @@ export default function Page() {
       <div id="top" className="relative overflow-hidden bg-black text-white">
         <div className="pointer-events-none absolute inset-x-0 top-0 h-[720px] bg-[radial-gradient(90%_60%_at_50%_15%,rgba(236,99,36,0.32),transparent_70%)]" />
         <div className="relative">
-          <SiteNav onDark />
+          <SiteNav variant="hero" />
           <header>
             <div className="container-x flex flex-col items-center pb-[clamp(3rem,6vw,5rem)] pt-[clamp(1.5rem,4vw,3rem)] text-center">
               <div className="mb-5 flex items-center gap-2">
@@ -45,7 +45,7 @@ export default function Page() {
               </p>
               <div className="mt-7 flex w-full max-w-[360px] flex-col gap-3">
                 <Button asChild size="lg"><a href="/product">Order now &mdash; <Price usd={59} /></a></Button>
-                <WatchDemo />
+                <WatchDemo className="border-white/35 text-white/80 hover:border-white/60 hover:bg-white/10 hover:text-white" />
               </div>
               <Reveal className="mt-10 w-full max-w-[620px]">
                 <figure className="overflow-hidden rounded-5xl border border-white/10 shadow-soft">

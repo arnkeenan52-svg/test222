@@ -2,12 +2,13 @@
 import { useState } from "react";
 import { Play, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
-export function WatchDemo() {
+export function WatchDemo({ className }: { className?: string }) {
   const [open, setOpen] = useState(false);
   return (
     <>
-      <Button size="lg" variant="outline" onClick={() => setOpen(true)} className="w-full">
+      <Button size="lg" variant="outline" onClick={() => setOpen(true)} className={cn("w-full", className)}>
         <Play className="h-4 w-4 fill-current" /> See how it works
       </Button>
       {open && (
