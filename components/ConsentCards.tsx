@@ -44,7 +44,7 @@ export function ConsentCards() {
   const localName = NAMES[local.code] || local.code;
 
   return (
-    <div className="fixed inset-x-4 bottom-4 z-[100] flex flex-col gap-3 sm:inset-x-auto sm:left-5 sm:bottom-5 sm:w-[380px]">
+    <div className="fixed bottom-4 left-4 z-[100] flex w-[min(330px,calc(100vw-2rem))] flex-col gap-3 sm:bottom-5 sm:left-5 sm:w-[370px]">
       {/* Currency picker */}
       {showCurrency && (
         <div className="rounded-[28px] border border-white/10 bg-[#141414] p-5 text-white shadow-2xl">
