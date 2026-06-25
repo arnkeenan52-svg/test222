@@ -37,7 +37,7 @@ export default function ShippingPage() {
       <h2>Tracking</h2>
       <p>
         Your tracking link is in your shipping confirmation email. If it hasn&apos;t updated within a few business days,
-        give it a little time — then reach out at <a href="mailto:hello@fadeclipper.com">hello@fadeclipper.com</a>.
+        give it a little time — then reach out at <a href="mailto:fadeclipper@gmail.com">fadeclipper@gmail.com</a>.
       </p>
 
       <h2>Customs, duties &amp; taxes</h2>
@@ -54,7 +54,7 @@ export default function ShippingPage() {
 
       <h2>Questions</h2>
       <p>
-        Email <a href="mailto:hello@fadeclipper.com">hello@fadeclipper.com</a> with your order number and we&apos;ll
+        Email <a href="mailto:fadeclipper@gmail.com">fadeclipper@gmail.com</a> with your order number and we&apos;ll
         help.
       </p>
     </PageShell>

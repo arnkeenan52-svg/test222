@@ -29,7 +29,7 @@ export default function ReturnsPage() {
 
       <h2>How to start a return</h2>
       <ul>
-        <li>Email <a href="mailto:hello@fadeclipper.com">hello@fadeclipper.com</a> with your order number and the reason for the return.</li>
+        <li>Email <a href="mailto:fadeclipper@gmail.com">fadeclipper@gmail.com</a> with your order number and the reason for the return.</li>
         <li>We&apos;ll reply with return instructions and the return address.</li>
         <li>Pack the item securely (ideally in its original packaging) and ship it back.</li>
       </ul>
