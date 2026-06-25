@@ -26,7 +26,7 @@ export function SiteFooter() {
       </div>
       <div className="container-x mt-10 flex flex-wrap justify-between gap-4 border-t border-line pt-6 text-[0.8rem] text-muted">
         <span>© {new Date().getFullYear()} FadeClipper. All rights reserved.</span>
-        <span>hello@fadeclipper.com</span>
+        <span>fadeclipper@gmail.com</span>
       </div>
     </footer>
   );

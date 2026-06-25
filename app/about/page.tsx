@@ -39,7 +39,7 @@ export default function AboutPage() {
       <h2>Get in touch</h2>
       <p>
         Questions, feedback, or just want to show off your fade? Email us at{" "}
-        <a href="mailto:hello@fadeclipper.com">hello@fadeclipper.com</a> or head to our{" "}
+        <a href="mailto:fadeclipper@gmail.com">fadeclipper@gmail.com</a> or head to our{" "}
         <a href="/contact">contact page</a>.
       </p>
     </PageShell>

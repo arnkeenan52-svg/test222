@@ -15,9 +15,8 @@ export default function TermsPage() {
     >
       <h2>1. Who we are</h2>
       <p>
-        This website is operated by [Your Company Legal Name] (&quot;FadeClipper&quot;, &quot;we&quot;, &quot;us&quot;),
-        [Registered Address], [Country]. You can reach us at{" "}
-        <a href="mailto:hello@fadeclipper.com">hello@fadeclipper.com</a>.
+        This website is operated by FadeClipper (&quot;FadeClipper&quot;, &quot;we&quot;, &quot;us&quot;). You can reach
+        us any time at <a href="mailto:fadeclipper@gmail.com">fadeclipper@gmail.com</a>.
       </p>
 
       <h2>2. Eligibility</h2>
@@ -71,8 +70,8 @@ export default function TermsPage() {
 
       <h2>10. Governing law</h2>
       <p>
-        These terms are governed by the laws of [Denmark/EU], and disputes are subject to the courts of that
-        jurisdiction. This does not affect mandatory consumer-protection rights available to you locally.
+        These terms are governed by the laws of Denmark and the European Union, and disputes are subject to the courts
+        of that jurisdiction. This does not affect mandatory consumer-protection rights available to you locally.
       </p>
 
       <h2>11. Changes</h2>
@@ -83,7 +82,7 @@ export default function TermsPage() {
 
       <h2>12. Contact</h2>
       <p>
-        Questions about these terms? Email <a href="mailto:hello@fadeclipper.com">hello@fadeclipper.com</a>.
+        Questions about these terms? Email <a href="mailto:fadeclipper@gmail.com">fadeclipper@gmail.com</a>.
       </p>
     </PageShell>
   );

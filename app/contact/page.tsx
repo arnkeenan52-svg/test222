@@ -15,7 +15,7 @@ export default function ContactPage() {
       <h2>Email</h2>
       <p>
         For order help, product questions, returns, or anything else, email{" "}
-        <a href="mailto:hello@fadeclipper.com">hello@fadeclipper.com</a>.
+        <a href="mailto:fadeclipper@gmail.com">fadeclipper@gmail.com</a>.
       </p>
       <p>
         To help us sort it fast, please include your <strong>order number</strong> (from your confirmation email) and a
@@ -23,7 +23,7 @@ export default function ContactPage() {
       </p>
 
       <h2>Support hours</h2>
-      <p>Monday to Friday, 9:00–17:00 [CET]. Messages sent over the weekend are answered the next business day.</p>
+      <p>Monday to Friday, 9:00–17:00 CET. Messages sent over the weekend are answered the next business day.</p>
 
       <h2>Common questions</h2>
       <ul>
@@ -34,8 +34,8 @@ export default function ContactPage() {
 
       <h2>Business details</h2>
       <p>
-        FadeClipper is operated by [Your Company Legal Name], [Registered Address], [Country]. Company / VAT no.
-        [number].
+        FadeClipper is an independent online store. For business, press or legal enquiries, email{" "}
+        <a href="mailto:fadeclipper@gmail.com">fadeclipper@gmail.com</a> and we&apos;ll get back to you.
       </p>
     </PageShell>
   );
