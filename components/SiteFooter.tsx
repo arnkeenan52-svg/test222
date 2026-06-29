@@ -9,6 +9,7 @@ export function SiteFooter() {
           <p className="mt-4 max-w-[30ch] text-[0.9rem] text-muted">The auto-fading clipper. One swipe, fade done.</p>
         </div>
         <nav className="flex flex-col gap-3 text-[0.9rem] text-muted">
+          <a href="/products" className="hover:text-ink">Shop all</a>
           <a href="/#how" className="hover:text-ink">How it works</a>
           <a href="/#compare" className="hover:text-ink">Why FadeClipper</a>
           <a href="/#reviews" className="hover:text-ink">Reviews</a>

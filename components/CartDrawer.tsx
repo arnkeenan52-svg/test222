@@ -2,13 +2,15 @@
 import { useState } from "react";
 import { useCart } from "@/components/CartProvider";
 import { useCurrency } from "@/components/CurrencyProvider";
-import { PRODUCTS } from "@/lib/products";
+import { PRODUCTS, ACCESSORIES } from "@/lib/products";
 import { Button } from "@/components/ui/button";
 import { X, Minus, Plus, ShoppingBag } from "lucide-react";
 
 export function CartDrawer() {
-  const { items, open, setOpen, setQty, remove, subtotalUsd, count } = useCart();
+  const { items, open, setOpen, setQty, remove, add, subtotalUsd, count } = useCart();
   const { fmt } = useCurrency();
+  // Cross-sell: accessories that aren't already in the cart (up to 2).
+  const upsells = ACCESSORIES.filter((p) => !items.some((it) => it.id === p.id)).slice(0, 2);
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState("");
 
@@ -65,7 +67,7 @@ export function CartDrawer() {
               const p = PRODUCTS[it.id];
               return (
                 <div key={it.id} className="mb-3 flex items-center gap-3 rounded-3xl border border-line bg-white p-3">
-                  <img src="/assets/img/packaging.jpg" alt="" className="h-16 w-16 shrink-0 rounded-2xl object-cover" />
+                  <img src={p.image} alt="" className="h-16 w-16 shrink-0 rounded-2xl object-cover" />
                   <div className="flex-1">
                     <p className="font-semibold leading-tight">{p.title}</p>
                     <p className="text-[0.85rem] text-muted">{fmt(p.usd)}</p>
@@ -90,6 +92,31 @@ export function CartDrawer() {
             })
           )}
         </div>
+
+        {/* upsell — add accessories without leaving the cart */}
+        {items.length > 0 && upsells.length > 0 && (
+          <div className="border-t border-line px-5 py-4">
+            <p className="mb-3 text-[0.78rem] font-semibold uppercase tracking-[0.1em] text-muted">Add to your order</p>
+            <div className="grid gap-2">
+              {upsells.map((p) => (
+                <div key={p.id} className="flex items-center gap-3 rounded-2xl border border-line bg-white p-2.5">
+                  <img src={p.image} alt="" className="h-12 w-12 shrink-0 rounded-xl object-cover" />
+                  <div className="flex-1 leading-tight">
+                    <p className="text-[0.88rem] font-semibold">{p.title}</p>
+                    <p className="text-[0.8rem] text-muted">{fmt(p.usd)}</p>
+                  </div>
+                  <button
+                    onClick={() => add(p.id)}
+                    aria-label={`Add ${p.title} to cart`}
+                    className="inline-flex items-center gap-1 rounded-full bg-brand-soft px-3 py-1.5 text-[0.8rem] font-semibold text-brand-dark transition-colors hover:bg-brand/15"
+                  >
+                    <Plus className="h-3.5 w-3.5" strokeWidth={3} /> Add
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         <div className="border-t border-line p-5">
           <div className="mb-4 flex items-baseline justify-between">
