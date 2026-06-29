@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { Menu, X, ShoppingBag } from "lucide-react";
 
 const links: [string, string][] = [
+  ["Shop all", "/products"],
   ["How it works", "/#how"],
   ["Why FadeClipper", "/#compare"],
   ["Reviews", "/#reviews"],

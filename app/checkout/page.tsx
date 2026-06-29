@@ -98,7 +98,7 @@ export default function CheckoutPage() {
                       const p = PRODUCTS[it.id];
                       return (
                         <div key={it.id} className="flex items-center gap-3">
-                          <img src="/assets/img/packaging.jpg" alt="" className="h-14 w-14 rounded-xl object-cover" />
+                          <img src={p.image} alt="" className="h-14 w-14 rounded-xl object-cover" />
                           <div className="flex-1">
                             <p className="text-[0.95rem] font-semibold leading-tight">{p.title}</p>
                             <p className="text-[0.8rem] text-muted">Qty {it.qty}</p>
