@@ -8,6 +8,7 @@ import { ComparisonTable } from "@/components/ComparisonTable";
 import { RedditReviews } from "@/components/RedditReviews";
 import { Price } from "@/components/Price";
 import { SiteFooter } from "@/components/SiteFooter";
+import { Newsletter } from "@/components/Newsletter";
 import { Check, Plus, Star, ArrowRight } from "lucide-react";
 
 const faqs: [string, string][] = [
@@ -143,6 +144,7 @@ export default function Page() {
         </section>
       </main>
 
+      <Newsletter />
       <SiteFooter />
     </>
   );

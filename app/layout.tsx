@@ -5,6 +5,7 @@ import { CurrencyProvider } from "@/components/CurrencyProvider";
 import { CartProvider } from "@/components/CartProvider";
 import { CartDrawer } from "@/components/CartDrawer";
 import { ConsentCards } from "@/components/ConsentCards";
+import { NewsletterPopup } from "@/components/NewsletterPopup";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://fadeclipper.com"),
@@ -38,6 +39,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <SmoothScroll>{children}</SmoothScroll>
             <CartDrawer />
             <ConsentCards />
+            <NewsletterPopup />
           </CartProvider>
         </CurrencyProvider>
       </body>
