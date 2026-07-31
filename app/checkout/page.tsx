@@ -236,7 +236,8 @@ function CheckoutInner({
             <p className="mb-3 flex items-center gap-1.5 text-[0.8rem] text-muted">
               <ShieldCheck className="h-4 w-4 text-brand" /> All transactions are secure and encrypted.
             </p>
-            <PaymentElement />
+            {/* Apple Pay / Google Pay / Link appear as fast-pay buttons when available */}
+            <PaymentElement options={{ wallets: { applePay: "auto", googlePay: "auto" } }} />
           </Section>
 
           <button
