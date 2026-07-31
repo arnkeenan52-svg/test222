@@ -60,10 +60,21 @@ export async function POST(req: NextRequest) {
           shipping_rate_data: {
             type: "fixed_amount",
             fixed_amount: { amount: 0, currency: "usd" },
-            display_name: "Free shipping",
+            display_name: "Standard shipping",
             delivery_estimate: {
               minimum: { unit: "business_day", value: 7 },
               maximum: { unit: "business_day", value: 10 },
+            },
+          },
+        },
+        {
+          shipping_rate_data: {
+            type: "fixed_amount",
+            fixed_amount: { amount: 1200, currency: "usd" },
+            display_name: "Express shipping",
+            delivery_estimate: {
+              minimum: { unit: "business_day", value: 2 },
+              maximum: { unit: "business_day", value: 3 },
             },
           },
         },
