@@ -128,28 +128,39 @@ export function SiteNav({ variant = "light" }: { variant?: "hero" | "light" }) {
       <div
         className={cn(
           "fixed inset-x-3 bottom-3 z-40 transition-transform duration-300 md:hidden",
-          showBar ? "translate-y-0" : "translate-y-[135%]"
+          showBar ? "translate-y-0" : "translate-y-[140%]"
         )}
         style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
       >
-        <div className="rounded-[30px] bg-[#141416] p-4 text-white shadow-2xl ring-1 ring-white/10">
-          <div className="flex items-start gap-3">
-            <div className="flex-1">
-              <p className="font-display text-[1.45rem] font-bold leading-none">FadeClipper</p>
-              <p className="mt-1.5 text-[0.82rem] text-white/55">+ free accessory kit &amp; 90-day guarantee</p>
-              <ul className="mt-3 grid gap-1.5 text-[0.86rem] text-white/85">
-                <li className="flex items-center gap-2"><Zap className="h-4 w-4 shrink-0 text-brand" /> 45&deg; auto-fade blade</li>
-                <li className="flex items-center gap-2"><Droplets className="h-4 w-4 shrink-0 text-brand" /> Waterproof &middot; 240-min battery</li>
+        <div className="rounded-[32px] bg-[#1a1a1c] p-5 text-white shadow-2xl ring-1 ring-white/10">
+          <div className="flex items-start justify-between gap-4">
+            <div className="min-w-0 flex-1">
+              <p className="font-display text-[2rem] font-bold leading-[1.05]">FadeClipper</p>
+              <p className="mt-1.5 text-[0.92rem] text-white/55">+ free accessory kit &amp; 90-day guarantee</p>
+              <ul className="mt-4 grid gap-2.5 text-[0.95rem] text-white/90">
+                <li className="flex items-center gap-2.5"><Zap className="h-5 w-5 shrink-0" strokeWidth={2} /> 45&deg; auto-fade blade</li>
+                <li className="flex items-center gap-2.5"><Droplets className="h-5 w-5 shrink-0" strokeWidth={2} /> Waterproof, 240-min battery</li>
               </ul>
             </div>
-            <img src="/assets/img/cine-2.jpg" alt="FadeClipper" className="h-[94px] w-[94px] shrink-0 rounded-2xl object-cover" />
+            {/* brand tile */}
+            <div className="grid h-[108px] w-[108px] shrink-0 place-items-center rounded-3xl bg-[#0e0e10] ring-1 ring-white/10">
+              <span className="flex flex-col items-center gap-1.5">
+                <svg viewBox="0 0 40 28" className="h-8 w-11 fill-white" aria-hidden="true">
+                  <rect x="2" y="3" width="3.4" height="22" rx="1.7" />
+                  <rect x="11" y="7" width="3.4" height="18" rx="1.7" />
+                  <rect x="20" y="11" width="3.4" height="14" rx="1.7" />
+                  <rect x="29" y="15" width="3.4" height="10" rx="1.7" />
+                </svg>
+                <span className="font-display text-[0.66rem] font-bold tracking-wide text-white">FadeClipper</span>
+              </span>
+            </div>
           </div>
           <button
             onClick={() => add("single")}
-            className="relative mt-4 w-full rounded-full bg-brand py-4 text-center font-display text-[1.05rem] font-bold text-white transition-colors hover:bg-brand-dark"
+            className="relative mt-5 w-full rounded-full bg-brand py-[1.05rem] text-center font-display text-[1.15rem] font-bold text-white transition-colors hover:bg-brand-dark"
           >
-            {fmt(59)} &mdash; Buy now
-            <span className="absolute -right-1.5 -top-2.5 grid h-8 w-8 place-items-center rounded-full bg-white text-[0.9rem] font-bold text-ink shadow-md">
+            {fmt(59)} - Buy Now
+            <span className="absolute -right-1 -top-3 grid h-9 w-9 place-items-center rounded-full bg-white text-[1rem] font-bold text-ink shadow-md">
               {count || 1}
             </span>
           </button>
