@@ -22,9 +22,19 @@ export function SiteNav({ variant = "light" }: { variant?: "hero" | "light" }) {
   const { add, count, setOpen: setCartOpen } = useCart();
 
   useEffect(() => {
-    const onScroll = () => setShowBar(window.scrollY > 700);
+    let lastY = window.scrollY;
+    const onScroll = () => {
+      const y = window.scrollY;
+      if (y < 500) {
+        setShowBar(false); // stay hidden over the hero
+      } else if (y < lastY - 4) {
+        setShowBar(true); // scrolling up → reveal
+      } else if (y > lastY + 4) {
+        setShowBar(false); // scrolling down → tuck away
+      }
+      lastY = y;
+    };
     window.addEventListener("scroll", onScroll, { passive: true });
-    onScroll();
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
@@ -132,18 +142,15 @@ export function SiteNav({ variant = "light" }: { variant?: "hero" | "light" }) {
         )}
         style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
       >
-        <div className="rounded-[32px] bg-[#1a1a1c] p-5 text-white shadow-2xl ring-1 ring-white/10">
+        <div className="rounded-[34px] bg-gradient-to-b from-[#242426] to-[#151517] p-6 text-white shadow-2xl ring-1 ring-white/10">
+          {/* top row: title + subline beside the product tile */}
           <div className="flex items-start justify-between gap-4">
             <div className="min-w-0 flex-1">
-              <p className="font-display text-[2rem] font-bold leading-[1.05]">FadeClipper</p>
-              <p className="mt-1.5 text-[0.92rem] text-white/55">+ free accessory kit &amp; 90-day guarantee</p>
-              <ul className="mt-4 grid gap-2.5 text-[0.95rem] text-white/90">
-                <li className="flex items-center gap-2.5"><Zap className="h-5 w-5 shrink-0" strokeWidth={2} /> 45&deg; auto-fade blade</li>
-                <li className="flex items-center gap-2.5"><Droplets className="h-5 w-5 shrink-0" strokeWidth={2} /> Waterproof, 240-min battery</li>
-              </ul>
+              <p className="font-display text-[2.05rem] font-bold leading-[1] tracking-[-0.01em]">FadeClipper</p>
+              <p className="mt-2 text-[0.95rem] leading-snug text-white/50">+ free accessory kit &amp; 90-day guarantee</p>
             </div>
             {/* product tile — FadeClipper package photo */}
-            <div className="h-[112px] w-[112px] shrink-0 overflow-hidden rounded-3xl bg-[#0e0e10] ring-1 ring-white/10">
+            <div className="h-[104px] w-[104px] shrink-0 overflow-hidden rounded-[22px] bg-[#0e0e10] shadow-lg ring-1 ring-white/15">
               <img
                 src="/assets/img/packaging.jpg"
                 alt="FadeClipper package"
@@ -151,12 +158,17 @@ export function SiteNav({ variant = "light" }: { variant?: "hero" | "light" }) {
               />
             </div>
           </div>
+          {/* feature bullets — full width, single line */}
+          <ul className="mt-5 grid gap-3.5 text-[1.05rem] text-white/95">
+            <li className="flex items-center gap-3"><Zap className="h-[22px] w-[22px] shrink-0" strokeWidth={1.75} /> 45&deg; auto-fade blade</li>
+            <li className="flex items-center gap-3"><Droplets className="h-[22px] w-[22px] shrink-0" strokeWidth={1.75} /> Waterproof, 240-min battery</li>
+          </ul>
           <button
             onClick={() => add("single")}
-            className="relative mt-5 w-full rounded-full bg-brand py-[1.05rem] text-center font-display text-[1.15rem] font-bold text-white transition-colors hover:bg-brand-dark"
+            className="relative mt-6 w-full rounded-full bg-brand py-[1.15rem] text-center font-display text-[1.2rem] font-bold text-white transition-colors hover:bg-brand-dark"
           >
             {fmt(59)} - Buy Now
-            <span className="absolute -right-1 -top-3 grid h-9 w-9 place-items-center rounded-full bg-white text-[1rem] font-bold text-ink shadow-md">
+            <span className="absolute -top-4 right-4 grid h-11 w-11 place-items-center rounded-full bg-white text-[1.05rem] font-bold text-ink shadow-md">
               {count || 1}
             </span>
           </button>
