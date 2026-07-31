@@ -1,10 +1,10 @@
-import { Star, CheckCircle2, ThumbsUp } from "lucide-react";
+import { Star, CheckCircle2, ThumbsUp, ShieldCheck, ChevronDown, SquarePen } from "lucide-react";
 
 // ⚠️ PLACEHOLDER REVIEWS — original sample copy written for design preview only.
 // Replace every entry below with your own REAL, verified customer reviews before
 // going live. Publishing invented reviews (or another product's reviews) as
 // genuine is illegal (FTC) and against ad-platform policy.
-const SUMMARY = { rating: 4.8, count: 1247, dist: [84, 11, 3, 1, 1] as const }; // % for 5→1 stars
+const SUMMARY = { rating: 4.7, count: 1247, dist: [82, 11, 4, 2, 1] as const }; // % for 5→1 stars
 
 type Review = { name: string; stars: number; date: string; title: string; body: string; helpful: number };
 const REVIEWS: Review[] = [
@@ -22,11 +22,13 @@ const REVIEWS: Review[] = [
   { name: "Malik T.", stars: 5, date: "2 weeks ago", title: "Fast shipping, sharp fade", body: "Arrived in four days, well packaged. The fade-length settings are clearly labelled so there's no guessing. Really happy with it.", helpful: 19 },
 ];
 
+const GOLD = "#f5a623";
+
 function Stars({ n, className = "h-4 w-4" }: { n: number; className?: string }) {
   return (
-    <span className="inline-flex text-brand" aria-label={`${n} out of 5 stars`}>
+    <span className="inline-flex" aria-label={`${n} out of 5 stars`}>
       {Array.from({ length: 5 }).map((_, i) => (
-        <Star key={i} className={`${className} ${i < n ? "fill-current" : "fill-none text-line"}`} />
+        <Star key={i} className={className} style={{ color: GOLD, fill: i < n ? GOLD : "transparent" }} />
       ))}
     </span>
   );
@@ -36,35 +38,62 @@ export function Reviews() {
   return (
     <section id="reviews" className="scroll-mt-24 bg-paper-alt py-[clamp(3.5rem,7vw,6rem)]">
       <div className="container-x">
-        <div className="mx-auto mb-10 max-w-[640px] text-center">
-          <p className="eyebrow mb-4">Customer reviews</p>
-          <h2 className="font-display text-[clamp(1.9rem,3.8vw,2.8rem)] font-bold leading-[1.08]">
-            Rated {SUMMARY.rating} by people who fade at home.
-          </h2>
-        </div>
-
-        {/* summary */}
-        <div className="mx-auto mb-10 grid max-w-[760px] gap-8 rounded-4xl bg-white p-7 shadow-card md:grid-cols-[auto_1fr] md:gap-12 md:p-9">
-          <div className="text-center md:border-r md:border-line md:pr-12">
-            <div className="font-display text-[3.4rem] font-bold leading-none text-ink">{SUMMARY.rating}</div>
-            <div className="mt-2 flex justify-center"><Stars n={5} className="h-5 w-5" /></div>
-            <div className="mt-2 text-[0.85rem] text-muted">{SUMMARY.count.toLocaleString()} reviews</div>
+        {/* Google-style reviews widget */}
+        <div className="mx-auto max-w-[760px] overflow-hidden rounded-4xl border border-line bg-white shadow-card">
+          {/* header strip */}
+          <div className="flex items-center gap-3 border-b border-line px-6 py-4">
+            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-[#1a73e8] text-white">
+              <ShieldCheck className="h-5 w-5" />
+            </span>
+            <div>
+              <p className="font-semibold leading-tight text-ink">Reviews by our customers</p>
+              <p className="text-[0.8rem] text-muted">Updated daily</p>
+            </div>
           </div>
-          <div className="flex flex-col justify-center gap-2">
-            {SUMMARY.dist.map((pct, i) => (
-              <div key={i} className="flex items-center gap-3 text-[0.85rem]">
-                <span className="w-12 shrink-0 text-muted">{5 - i} star</span>
-                <span className="h-2.5 flex-1 overflow-hidden rounded-full bg-card">
-                  <span className="block h-full rounded-full bg-brand" style={{ width: `${pct}%` }} />
-                </span>
-                <span className="w-9 shrink-0 text-right text-muted">{pct}%</span>
-              </div>
-            ))}
+
+          {/* summary */}
+          <div className="px-6 py-6">
+            <div className="flex items-baseline gap-1">
+              <span className="font-display text-[3.6rem] font-bold leading-none text-ink">{SUMMARY.rating}</span>
+              <span className="text-[1.3rem] text-muted">/ 5</span>
+            </div>
+            <div className="mt-3"><Stars n={5} className="h-6 w-6" /></div>
+            <p className="mt-3 text-[0.95rem] text-muted">
+              Based on <span className="font-semibold text-[#1a73e8]">{SUMMARY.count.toLocaleString()} reviews</span>
+            </p>
+
+            <div className="mt-5 grid gap-2">
+              {SUMMARY.dist.map((pct, i) => (
+                <div key={i} className="flex items-center gap-3 text-[0.9rem]">
+                  <span className="w-3 shrink-0 text-muted">{5 - i}</span>
+                  <span className="h-2.5 flex-1 overflow-hidden rounded-full bg-card">
+                    <span className="block h-full rounded-full" style={{ width: `${pct}%`, background: GOLD }} />
+                  </span>
+                  <span className="w-10 shrink-0 text-right text-muted">{pct}%</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* controls */}
+          <div className="flex flex-wrap items-center gap-3 border-t border-line px-6 py-4">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-line px-4 py-2 text-[0.85rem] font-medium text-ink">
+              Most relevant <ChevronDown className="h-4 w-4 text-muted" />
+            </span>
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-line px-4 py-2 text-[0.85rem] font-medium text-ink">
+              All ratings <ChevronDown className="h-4 w-4 text-muted" />
+            </span>
+            <a
+              href="mailto:fadeclipper@gmail.com?subject=My%20FadeClipper%20review"
+              className="ml-auto inline-flex items-center gap-2 rounded-full bg-[#1a73e8] px-5 py-2.5 text-[0.9rem] font-semibold text-white transition-colors hover:bg-[#1666cc]"
+            >
+              <SquarePen className="h-4 w-4" /> Write a review
+            </a>
           </div>
         </div>
 
         {/* review cards */}
-        <div className="mx-auto grid max-w-[980px] gap-4 md:grid-cols-2">
+        <div className="mx-auto mt-6 grid max-w-[980px] gap-4 md:grid-cols-2">
           {REVIEWS.map((r) => (
             <article key={r.name + r.title} className="flex flex-col rounded-4xl bg-white p-6 shadow-card">
               <div className="flex items-center gap-3">
@@ -72,14 +101,14 @@ export function Reviews() {
                   {r.name.charAt(0)}
                 </span>
                 <div className="min-w-0">
-                  <p className="flex items-center gap-1.5 font-semibold leading-tight text-ink">{r.name}</p>
+                  <p className="font-semibold leading-tight text-ink">{r.name}</p>
                   <p className="flex items-center gap-1 text-[0.76rem] font-medium text-[#1b8a4e]">
                     <CheckCircle2 className="h-3.5 w-3.5" /> Verified buyer
                   </p>
                 </div>
                 <span className="ml-auto shrink-0 text-[0.76rem] text-muted">{r.date}</span>
               </div>
-              <div className="mt-3 flex items-center gap-2">
+              <div className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1">
                 <Stars n={r.stars} />
                 <span className="font-display text-[1rem] font-semibold leading-tight text-ink">{r.title}</span>
               </div>
