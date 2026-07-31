@@ -1,5 +1,5 @@
 "use client";
-import { Star, Check, Truck, ShieldCheck, RotateCcw, Lock, MapPin } from "lucide-react";
+import { Star, Lock, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCurrency } from "@/components/CurrencyProvider";
 import { useCart } from "@/components/CartProvider";
@@ -7,11 +7,11 @@ import { useCart } from "@/components/CartProvider";
 // Base prices in USD — converted to the visitor's currency.
 const PRICE = { now: 59, was: 99 };
 
-const features = [
-  "45° auto-fade blade blends the gradient for you",
-  "Fully waterproof — fade in the shower, rinse clean",
-  "240-minute cordless runtime with a battery display",
-  "Four fade lengths on one lever · adjustable power",
+// Included-free perks, shown as rendered product icons.
+const perks = [
+  { img: "/assets/img/fc-icon-shipping.png", label: "Free shipping" },
+  { img: "/assets/img/fc-icon-guards.png", label: "Free guard set" },
+  { img: "/assets/img/fc-icon-guide.png", label: "Digital guide" },
 ];
 
 export function BuyBox() {
@@ -49,16 +49,6 @@ export function BuyBox() {
         <span className="h-2 w-2 rounded-full bg-[#2bb673]" /> One-time payment &middot; no subscriptions
       </div>
 
-      {/* key features — scannable */}
-      <ul className="mt-5 grid gap-2.5">
-        {features.map((f) => (
-          <li key={f} className="flex items-start gap-2.5 text-[0.95rem] text-ink-2">
-            <Check className="mt-0.5 h-4 w-4 shrink-0 text-brand" strokeWidth={3} />
-            {f}
-          </li>
-        ))}
-      </ul>
-
       <Button size="lg" className="mt-6 w-full text-[1.05rem]" onClick={() => add("single")}>
         Add to cart — {fmt(PRICE.now)}
       </Button>
@@ -67,18 +57,14 @@ export function BuyBox() {
         <Lock className="h-3.5 w-3.5" /> Secure checkout · Visa · Mastercard · PayPal · Apple Pay
       </div>
 
-      {/* trust badges */}
+      {/* included-free perks — rendered product icons */}
       <div className="mt-6 grid grid-cols-3 gap-3 rounded-4xl bg-brand-tint p-5 text-center">
-        {[
-          { icon: Truck, label: "Free worldwide shipping" },
-          { icon: RotateCcw, label: "90-day money-back" },
-          { icon: ShieldCheck, label: "1-year warranty" },
-        ].map((g) => (
+        {perks.map((g) => (
           <div key={g.label} className="flex flex-col items-center gap-2">
-            <span className="grid h-11 w-11 place-items-center rounded-2xl bg-white text-brand shadow-card">
-              <g.icon className="h-5 w-5" />
+            <span className="grid h-16 w-16 place-items-center overflow-hidden rounded-2xl bg-white shadow-card">
+              <img src={g.img} alt="" className="h-full w-full object-cover" />
             </span>
-            <span className="text-[0.74rem] font-medium leading-tight text-ink-2">{g.label}</span>
+            <span className="text-[0.78rem] font-medium leading-tight text-ink-2">{g.label}</span>
           </div>
         ))}
       </div>
