@@ -1,0 +1,374 @@
+"use client";
+import { useEffect, useState } from "react";
+import { loadStripe } from "@stripe/stripe-js";
+import {
+  Elements,
+  PaymentElement,
+  AddressElement,
+  LinkAuthenticationElement,
+  useStripe,
+  useElements,
+} from "@stripe/react-stripe-js";
+import { PRODUCTS } from "@/lib/products";
+import { Lock, ShieldCheck, Truck, Zap, Check, ChevronDown } from "lucide-react";
+
+const PK = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
+const stripePromise = PK ? loadStripe(PK) : null;
+
+type ShippingId = "standard" | "express";
+const SHIP: Record<ShippingId, { label: string; cents: number; eta: string }> = {
+  standard: { label: "Standard shipping", cents: 0, eta: "7–10 business days" },
+  express: { label: "Express shipping", cents: 1200, eta: "2–3 business days" },
+};
+type Quote = { productCents: number; shippingCents: number; discountCents: number; total: number; codeOk: boolean };
+
+const money = (cents: number) => `$${(cents / 100).toFixed(2)}`;
+const PRODUCT = PRODUCTS.single;
+const PRODUCT_IMG = "/assets/img/packaging.jpg";
+
+export default function CheckoutPage() {
+  const [clientSecret, setClientSecret] = useState("");
+  const [piId, setPiId] = useState("");
+  const [quote, setQuote] = useState<Quote | null>(null);
+  const [fatal, setFatal] = useState("");
+
+  useEffect(() => {
+    if (!stripePromise) {
+      setFatal("Stripe isn’t configured yet. Add your keys to go live.");
+      return;
+    }
+    fetch("/api/payment-intent", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ shipping: "standard" }),
+    })
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.clientSecret) {
+          setClientSecret(d.clientSecret);
+          setPiId(d.paymentIntentId);
+          setQuote(d);
+        } else {
+          setFatal(d.error || "Could not start checkout.");
+        }
+      })
+      .catch(() => setFatal("Network error — please try again."));
+  }, []);
+
+  return (
+    <div className="min-h-screen bg-white text-ink">
+      {/* branded header */}
+      <header className="bg-brand">
+        <div className="mx-auto flex max-w-[1100px] items-center justify-between px-5 py-4">
+          <a href="/" aria-label="FadeClipper home">
+            <img src="/assets/img/fadeclipper-logo-white.png" alt="FadeClipper" className="h-6 w-auto" />
+          </a>
+          <span className="flex items-center gap-1.5 text-[0.82rem] font-medium text-white/90">
+            <Lock className="h-4 w-4" /> Secure checkout
+          </span>
+        </div>
+      </header>
+
+      {fatal ? (
+        <FatalFallback message={fatal} />
+      ) : !clientSecret || !quote ? (
+        <div className="mx-auto max-w-[1100px] px-5 py-24 text-center text-muted">Loading secure checkout…</div>
+      ) : (
+        <Elements
+          stripe={stripePromise}
+          options={{
+            clientSecret,
+            appearance: {
+              theme: "stripe",
+              variables: {
+                colorPrimary: "#ec6324",
+                colorText: "#191919",
+                colorDanger: "#d64545",
+                fontFamily: "Inter, system-ui, sans-serif",
+                borderRadius: "10px",
+                spacingUnit: "4px",
+              },
+            },
+          }}
+        >
+          <CheckoutInner piId={piId} quote={quote} setQuote={setQuote} />
+        </Elements>
+      )}
+    </div>
+  );
+}
+
+function CheckoutInner({
+  piId,
+  quote,
+  setQuote,
+}: {
+  piId: string;
+  quote: Quote;
+  setQuote: (q: Quote) => void;
+}) {
+  const stripe = useStripe();
+  const elements = useElements();
+  const [shipping, setShipping] = useState<ShippingId>("standard");
+  const [code, setCode] = useState("");
+  const [codeMsg, setCodeMsg] = useState("");
+  const [paying, setPaying] = useState(false);
+  const [payErr, setPayErr] = useState("");
+  const [summaryOpen, setSummaryOpen] = useState(false);
+
+  const recompute = (nextShipping: ShippingId, nextCode: string, announce = false) => {
+    fetch("/api/payment-intent", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ paymentIntentId: piId, shipping: nextShipping, code: nextCode || null }),
+    })
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.total != null) {
+          setQuote(d);
+          if (announce) setCodeMsg(d.codeOk ? "Discount applied." : "That code isn’t valid.");
+        }
+      })
+      .catch(() => {});
+  };
+
+  const chooseShipping = (id: ShippingId) => {
+    setShipping(id);
+    recompute(id, code);
+  };
+
+  const applyCode = () => {
+    recompute(shipping, code, true);
+  };
+
+  const pay = async () => {
+    if (!stripe || !elements || paying) return;
+    setPaying(true);
+    setPayErr("");
+    const { error } = await stripe.confirmPayment({
+      elements,
+      confirmParams: { return_url: `${window.location.origin}/checkout/success` },
+    });
+    // Only reached if there's an immediate validation error (otherwise redirects away).
+    if (error) setPayErr(error.message || "Payment could not be completed.");
+    setPaying(false);
+  };
+
+  return (
+    <div className="mx-auto grid max-w-[1100px] gap-0 md:grid-cols-2">
+      {/* mobile collapsible summary */}
+      <button
+        onClick={() => setSummaryOpen((v) => !v)}
+        className="flex items-center justify-between border-b border-line bg-paper-alt px-5 py-3 text-[0.9rem] md:hidden"
+        aria-expanded={summaryOpen}
+      >
+        <span className="flex items-center gap-2 font-medium text-brand">
+          Order summary <ChevronDown className={`h-4 w-4 transition-transform ${summaryOpen ? "rotate-180" : ""}`} />
+        </span>
+        <span className="font-display text-[1.1rem] font-bold">{money(quote.total)}</span>
+      </button>
+      {summaryOpen && (
+        <div className="border-b border-line bg-paper-alt px-5 py-5 md:hidden">
+          <Summary quote={quote} shipping={shipping} code={code} setCode={setCode} applyCode={applyCode} codeMsg={codeMsg} />
+        </div>
+      )}
+
+      {/* form */}
+      <main className="order-2 px-5 py-8 md:order-1 md:py-12 md:pr-12">
+        <div className="mx-auto max-w-[520px]">
+          <Section title="Contact">
+            <LinkAuthenticationElement />
+          </Section>
+
+          <Section title="Delivery">
+            <AddressElement options={{ mode: "shipping", fields: { phone: "always" } }} />
+          </Section>
+
+          <Section title="Shipping method">
+            <div className="grid gap-2.5">
+              {(Object.keys(SHIP) as ShippingId[]).map((id) => {
+                const s = SHIP[id];
+                const active = shipping === id;
+                return (
+                  <button
+                    key={id}
+                    onClick={() => chooseShipping(id)}
+                    className={`flex items-center justify-between rounded-xl border px-4 py-3 text-left transition-colors ${
+                      active ? "border-brand bg-brand-tint" : "border-line hover:border-ink/30"
+                    }`}
+                  >
+                    <span className="flex items-center gap-3">
+                      <span className={`grid h-5 w-5 place-items-center rounded-full border ${active ? "border-brand" : "border-line-2"}`}>
+                        {active && <span className="h-2.5 w-2.5 rounded-full bg-brand" />}
+                      </span>
+                      <span>
+                        <span className="flex items-center gap-1.5 font-medium">
+                          {id === "express" ? <Zap className="h-4 w-4 text-brand" /> : <Truck className="h-4 w-4 text-brand" />}
+                          {s.label}
+                        </span>
+                        <span className="text-[0.82rem] text-muted">{s.eta}</span>
+                      </span>
+                    </span>
+                    <span className="font-semibold">{s.cents === 0 ? "FREE" : money(s.cents)}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </Section>
+
+          <Section title="Payment">
+            <p className="mb-3 flex items-center gap-1.5 text-[0.8rem] text-muted">
+              <ShieldCheck className="h-4 w-4 text-brand" /> All transactions are secure and encrypted.
+            </p>
+            <PaymentElement />
+          </Section>
+
+          <button
+            onClick={pay}
+            disabled={paying || !stripe}
+            className="mt-6 w-full rounded-full bg-brand py-4 text-center font-display text-[1.1rem] font-bold text-white transition-colors hover:bg-brand-dark disabled:opacity-60"
+          >
+            {paying ? "Processing…" : `Pay ${money(quote.total)}`}
+          </button>
+          {payErr && <p className="mt-3 text-center text-[0.85rem] text-[#d64545]">{payErr}</p>}
+          <p className="mt-4 flex items-center justify-center gap-1.5 text-[0.78rem] text-muted">
+            <Lock className="h-3.5 w-3.5" /> Powered by Stripe · Backed by our 14-day money-back guarantee
+          </p>
+        </div>
+      </main>
+
+      {/* desktop summary */}
+      <aside className="order-1 hidden border-l border-line bg-paper-alt px-5 py-12 md:order-2 md:block md:pl-12">
+        <div className="sticky top-8 max-w-[420px]">
+          <Summary quote={quote} shipping={shipping} code={code} setCode={setCode} applyCode={applyCode} codeMsg={codeMsg} />
+        </div>
+      </aside>
+    </div>
+  );
+}
+
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <section className="mb-7">
+      <h2 className="mb-3 font-display text-[1.05rem] font-bold">{title}</h2>
+      {children}
+    </section>
+  );
+}
+
+function Summary({
+  quote,
+  shipping,
+  code,
+  setCode,
+  applyCode,
+  codeMsg,
+}: {
+  quote: Quote;
+  shipping: ShippingId;
+  code: string;
+  setCode: (v: string) => void;
+  applyCode: () => void;
+  codeMsg: string;
+}) {
+  return (
+    <div>
+      <div className="flex items-center gap-4">
+        <span className="relative shrink-0">
+          <img src={PRODUCT_IMG} alt={PRODUCT.title} className="h-16 w-16 rounded-xl border border-line object-cover" />
+          <span className="absolute -right-2 -top-2 grid h-6 w-6 place-items-center rounded-full bg-ink text-[0.72rem] font-bold text-white">1</span>
+        </span>
+        <div className="flex-1">
+          <p className="font-semibold leading-tight">{PRODUCT.title}</p>
+          <p className="text-[0.82rem] text-muted">{PRODUCT.sub}</p>
+        </div>
+        <span className="font-semibold">{money(quote.productCents)}</span>
+      </div>
+
+      {/* discount */}
+      <div className="mt-5 flex gap-2">
+        <input
+          value={code}
+          onChange={(e) => setCode(e.target.value)}
+          placeholder="Discount code"
+          className="min-w-0 flex-1 rounded-xl border border-line bg-white px-4 py-2.5 text-[0.9rem] outline-none focus:border-brand"
+        />
+        <button
+          onClick={applyCode}
+          className="shrink-0 rounded-xl border border-ink/15 bg-white px-4 py-2.5 text-[0.9rem] font-semibold text-ink hover:bg-card"
+        >
+          Apply
+        </button>
+      </div>
+      {codeMsg && (
+        <p className={`mt-2 flex items-center gap-1 text-[0.8rem] ${quote.codeOk ? "text-[#1b8a4e]" : "text-[#d64545]"}`}>
+          {quote.codeOk && <Check className="h-3.5 w-3.5" />} {codeMsg}
+        </p>
+      )}
+
+      {/* totals */}
+      <div className="mt-5 space-y-2 border-t border-line pt-4 text-[0.92rem]">
+        <div className="flex justify-between text-muted">
+          <span>Subtotal</span>
+          <span>{money(quote.productCents)}</span>
+        </div>
+        {quote.discountCents > 0 && (
+          <div className="flex justify-between text-[#1b8a4e]">
+            <span>Discount</span>
+            <span>−{money(quote.discountCents)}</span>
+          </div>
+        )}
+        <div className="flex justify-between text-muted">
+          <span>Shipping · {SHIP[shipping].label}</span>
+          <span className={quote.shippingCents === 0 ? "text-[#1b8a4e]" : ""}>
+            {quote.shippingCents === 0 ? "Free" : money(quote.shippingCents)}
+          </span>
+        </div>
+        <div className="mt-2 flex items-baseline justify-between border-t border-line pt-3">
+          <span className="font-display text-[1.1rem] font-bold">Total</span>
+          <span>
+            <span className="mr-1.5 text-[0.72rem] text-muted">USD</span>
+            <span className="font-display text-[1.3rem] font-bold">{money(quote.total)}</span>
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// If Stripe keys aren't set yet (or intent creation fails), keep the store working
+// by falling back to Stripe's hosted checkout.
+function FatalFallback({ message }: { message: string }) {
+  const [loading, setLoading] = useState(false);
+  const hosted = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ items: [{ id: "single", qty: 1 }] }),
+      });
+      const data = await res.json();
+      if (res.ok && data.url) {
+        window.location.href = data.url;
+        return;
+      }
+    } catch {}
+    setLoading(false);
+  };
+  return (
+    <div className="mx-auto max-w-[520px] px-5 py-20 text-center">
+      <p className="text-muted">{message}</p>
+      <button
+        onClick={hosted}
+        disabled={loading}
+        className="mt-5 rounded-full bg-brand px-6 py-3 font-display font-bold text-white hover:bg-brand-dark disabled:opacity-60"
+      >
+        {loading ? "Starting…" : "Continue to secure checkout"}
+      </button>
+      <p className="mt-4">
+        <a href="/product" className="text-[0.85rem] text-muted underline">Back to product</a>
+      </p>
+    </div>
+  );
+}
