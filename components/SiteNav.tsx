@@ -6,7 +6,7 @@ import { Countdown } from "@/components/Countdown";
 import { useCurrency } from "@/components/CurrencyProvider";
 import { useCart } from "@/components/CartProvider";
 import { cn } from "@/lib/utils";
-import { Menu, X, ShoppingBag } from "lucide-react";
+import { Menu, X, ShoppingBag, Zap, Droplets } from "lucide-react";
 
 const links: [string, string][] = [
   ["How it works", "/#how"],
@@ -124,21 +124,36 @@ export function SiteNav({ variant = "light" }: { variant?: "hero" | "light" }) {
         </div>
       )}
 
-      {/* sticky mobile buy bar — fades into the page (no hard white edge) */}
+      {/* sticky mobile buy card — appears on scroll */}
       <div
         className={cn(
-          "fixed inset-x-0 bottom-0 z-40 flex items-center gap-3 bg-gradient-to-t from-white from-55% to-transparent px-4 pb-3 pt-9 transition-transform md:hidden",
-          showBar ? "translate-y-0" : "translate-y-full"
+          "fixed inset-x-3 bottom-3 z-40 transition-transform duration-300 md:hidden",
+          showBar ? "translate-y-0" : "translate-y-[135%]"
         )}
-        style={{ paddingBottom: "calc(0.75rem + env(safe-area-inset-bottom))" }}
+        style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
       >
-        <div className="flex flex-col leading-tight">
-          <span className="font-display text-[1.2rem] font-bold">{fmt(59)}</span>
-          <span className="text-xs text-muted line-through">{fmt(99)}</span>
+        <div className="rounded-[30px] bg-[#141416] p-4 text-white shadow-2xl ring-1 ring-white/10">
+          <div className="flex items-start gap-3">
+            <div className="flex-1">
+              <p className="font-display text-[1.45rem] font-bold leading-none">FadeClipper</p>
+              <p className="mt-1.5 text-[0.82rem] text-white/55">+ free accessory kit &amp; 90-day guarantee</p>
+              <ul className="mt-3 grid gap-1.5 text-[0.86rem] text-white/85">
+                <li className="flex items-center gap-2"><Zap className="h-4 w-4 shrink-0 text-brand" /> 45&deg; auto-fade blade</li>
+                <li className="flex items-center gap-2"><Droplets className="h-4 w-4 shrink-0 text-brand" /> Waterproof &middot; 240-min battery</li>
+              </ul>
+            </div>
+            <img src="/assets/img/cine-2.jpg" alt="FadeClipper" className="h-[94px] w-[94px] shrink-0 rounded-2xl object-cover" />
+          </div>
+          <button
+            onClick={() => add("single")}
+            className="relative mt-4 w-full rounded-full bg-brand py-4 text-center font-display text-[1.05rem] font-bold text-white transition-colors hover:bg-brand-dark"
+          >
+            {fmt(59)} &mdash; Buy now
+            <span className="absolute -right-1.5 -top-2.5 grid h-8 w-8 place-items-center rounded-full bg-white text-[0.9rem] font-bold text-ink shadow-md">
+              {count || 1}
+            </span>
+          </button>
         </div>
-        <Button className="flex-1" onClick={() => add("single")}>
-          Get FadeClipper
-        </Button>
       </div>
     </>
   );
