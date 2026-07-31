@@ -78,7 +78,7 @@ const faqs: { q: string; a: string }[] = [
   { q: "How do I do a low, mid or high fade?", a: "It's all about where the fade starts. A low fade begins just above the ear, a mid fade around the temple, and a high fade higher up the side of the head. With the FadeClipper you simply start your upward glide at that height — the blade handles the blend below it." },
   { q: "Do I need two mirrors to fade my own hair?", a: "It helps for the back, but it isn't required. Many people use their phone's camera instead. Because the FadeClipper blends automatically, small imperfections in your passes still come out smooth, so you don't need a perfect view of the back of your head." },
   { q: "How do I clean the clipper?", a: "Rinse the waterproof body and blade under the tap, shake off the water and let it dry. Occasionally add a drop of clipper oil to the blade. The whole process takes about ten seconds." },
-  { q: "What is the return policy?", a: "The FadeClipper is backed by a 90-day money-back guarantee and a 1-year warranty. If it isn't for you, send it back for a full refund." },
+  { q: "What is the return policy?", a: "The FadeClipper is backed by a 14-day money-back guarantee and a 1-year warranty. If it isn't for you, send it back for a full refund." },
 ];
 
 const glossary: [string, string][] = [

@@ -3,7 +3,7 @@ import { PageShell } from "@/components/PageShell";
 
 export const metadata: Metadata = {
   title: "Returns & refunds — FadeClipper",
-  description: "Our 90-day money-back guarantee, how to start a return, and how refunds work.",
+  description: "Our 14-day money-back guarantee, how to start a return, and how refunds work.",
 };
 
 export default function ReturnsPage() {
@@ -13,18 +13,18 @@ export default function ReturnsPage() {
       updated="June 24, 2026"
       intro="Try FadeClipper risk-free. If it isn't for you, sending it back is simple."
     >
-      <h2>90-day money-back guarantee</h2>
+      <h2>14-day money-back guarantee</h2>
       <p>
-        If you&apos;re not happy with your FadeClipper, you can return it within <strong>90 days</strong> of delivery for
+        If you&apos;re not happy with your FadeClipper, you can return it within <strong>14 days</strong> of delivery for
         a refund of the purchase price. We want you keeping it because you love it — not because you&apos;re stuck with
         it.
       </p>
 
       <h2>Your statutory right to cancel (EU/UK)</h2>
       <p>
-        Separately from our guarantee, if you&apos;re in the EU/UK you have the right to withdraw from your purchase
-        within <strong>14 days</strong> of receiving it, for any reason. Our 90-day guarantee is in addition to — and
-        more generous than — this statutory right.
+        If you&apos;re in the EU/UK you also have the right to withdraw from your purchase
+        within <strong>14 days</strong> of receiving it, for any reason. Our money-back guarantee runs alongside this
+        statutory right, so you&apos;re covered either way.
       </p>
 
       <h2>How to start a return</h2>

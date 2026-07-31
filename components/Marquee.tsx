@@ -3,7 +3,7 @@ const items = [
   "240-min runtime",
   "Fully waterproof",
   "4 fade lengths",
-  "90-day guarantee",
+  "14-day guarantee",
   "Free worldwide shipping",
 ];
 

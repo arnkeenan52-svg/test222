@@ -8,7 +8,6 @@ import { ComparisonTable } from "@/components/ComparisonTable";
 import { Reviews } from "@/components/Reviews";
 import { SiteFooter } from "@/components/SiteFooter";
 import { Reveal } from "@/components/Reveal";
-import { ChevronLeft } from "lucide-react";
 
 const gallery = [
   { src: "/assets/img/packaging.jpg", alt: "FadeClipper box and clipper on the charging dock" },
@@ -21,18 +20,11 @@ const gallery = [
 export default function ProductPage() {
   return (
     <>
-      <SiteNav variant="light" />
+      <SiteNav variant="light" buyBar />
 
       <main id="top">
-        {/* breadcrumb */}
-        <div className="container-x pt-4">
-          <a href="/" className="inline-flex items-center gap-1 text-[0.85rem] font-medium text-muted hover:text-ink">
-            <ChevronLeft className="h-4 w-4" /> Back to home
-          </a>
-        </div>
-
         {/* PRODUCT */}
-        <section id="product" className="scroll-mt-24 pt-3">
+        <section id="product" className="scroll-mt-24 pt-6">
           <div className="container-x grid items-start gap-8 md:grid-cols-2 md:gap-12">
             <ProductGallery images={gallery} />
             <div>
