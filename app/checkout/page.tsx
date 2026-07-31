@@ -63,7 +63,7 @@ export default function CheckoutPage() {
                 {[
                   ["Free worldwide shipping", "Arrives in about 7–10 business days."],
                   ["Pay securely with Stripe", "Card, Apple Pay &amp; Google Pay — encrypted end to end."],
-                  ["90-day money-back guarantee", "Not for you? Send it back for a full refund."],
+                  ["14-day money-back guarantee", "Not for you? Send it back for a full refund."],
                 ].map(([t, s]) => (
                   <li key={t} className="flex items-start gap-3 rounded-2xl border border-line bg-white p-4">
                     <Truck className="mt-0.5 h-5 w-5 shrink-0 text-brand" />

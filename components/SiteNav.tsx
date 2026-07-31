@@ -15,18 +15,22 @@ const links: [string, string][] = [
   ["FAQ", "/#faq"],
 ];
 
-export function SiteNav({ variant = "light" }: { variant?: "hero" | "light" }) {
+export function SiteNav({ variant = "light", buyBar = false }: { variant?: "hero" | "light"; buyBar?: boolean }) {
   const [open, setOpen] = useState(false);
   const [showBar, setShowBar] = useState(false);
   const { fmt } = useCurrency();
   const { add, count, setOpen: setCartOpen } = useCart();
 
   useEffect(() => {
+    if (!buyBar) return;
     let lastY = window.scrollY;
     const onScroll = () => {
       const y = window.scrollY;
-      if (y < 500) {
-        setShowBar(false); // stay hidden over the hero
+      // only eligible once the "60-second setup" section comes into view, and below
+      const how = document.getElementById("how");
+      const gate = how ? how.offsetTop - window.innerHeight * 0.5 : 600;
+      if (y < gate) {
+        setShowBar(false);
       } else if (y < lastY - 4) {
         setShowBar(true); // scrolling up → reveal
       } else if (y > lastY + 4) {
@@ -35,8 +39,9 @@ export function SiteNav({ variant = "light" }: { variant?: "hero" | "light" }) {
       lastY = y;
     };
     window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
     return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+  }, [buyBar]);
 
   const hero = variant === "hero";
 
@@ -134,46 +139,48 @@ export function SiteNav({ variant = "light" }: { variant?: "hero" | "light" }) {
         </div>
       )}
 
-      {/* sticky mobile buy card — appears on scroll */}
-      <div
-        className={cn(
-          "fixed inset-x-3 bottom-3 z-40 transition-transform duration-300 md:hidden",
-          showBar ? "translate-y-0" : "translate-y-[140%]"
-        )}
-        style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
-      >
-        <div className="rounded-[34px] bg-gradient-to-b from-[#242426] to-[#151517] p-6 text-white shadow-2xl ring-1 ring-white/10">
-          {/* top row: title + subline beside the product tile */}
-          <div className="flex items-start justify-between gap-4">
-            <div className="min-w-0 flex-1">
-              <p className="font-display text-[2.05rem] font-bold leading-[1] tracking-[-0.01em]">FadeClipper</p>
-              <p className="mt-2 text-[0.95rem] leading-snug text-white/50">+ free accessory kit &amp; 90-day guarantee</p>
+      {/* sticky mobile buy card — product page only, appears from the 60-second setup section down */}
+      {buyBar && (
+        <div
+          className={cn(
+            "fixed inset-x-3 bottom-3 z-40 transition-transform duration-300 md:hidden",
+            showBar ? "translate-y-0" : "translate-y-[140%]"
+          )}
+          style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+        >
+          <div className="rounded-[26px] bg-gradient-to-b from-[#242426] to-[#151517] p-3.5 text-white shadow-2xl ring-1 ring-white/10">
+            {/* top row: title + subline beside the product tile */}
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0 flex-1">
+                <p className="font-display text-[1.5rem] font-medium leading-[1.02] tracking-[-0.01em]">FadeClipper</p>
+                <p className="mt-0.5 text-[0.8rem] leading-snug text-white/50">+ free kit &amp; 14-day guarantee</p>
+                {/* feature bullets — tight, single line */}
+                <ul className="mt-2.5 grid gap-1.5 text-[0.85rem] text-white/90">
+                  <li className="flex items-center gap-2"><Zap className="h-4 w-4 shrink-0" strokeWidth={1.75} /> 45&deg; auto-fade blade</li>
+                  <li className="flex items-center gap-2"><Droplets className="h-4 w-4 shrink-0" strokeWidth={1.75} /> Waterproof, 240-min battery</li>
+                </ul>
+              </div>
+              {/* product tile — floating clipper render */}
+              <div className="h-[92px] w-[92px] shrink-0 overflow-hidden rounded-[18px] bg-[#0e0e10] shadow-lg ring-1 ring-white/15">
+                <img
+                  src="/assets/img/fc-clipper-float.png"
+                  alt="FadeClipper clipper"
+                  className="h-full w-full object-cover"
+                />
+              </div>
             </div>
-            {/* product tile — FadeClipper package photo */}
-            <div className="h-[104px] w-[104px] shrink-0 overflow-hidden rounded-[22px] bg-[#0e0e10] shadow-lg ring-1 ring-white/15">
-              <img
-                src="/assets/img/packaging.jpg"
-                alt="FadeClipper package"
-                className="h-full w-full object-cover"
-              />
-            </div>
+            <button
+              onClick={() => add("single")}
+              className="relative mt-3 w-full rounded-full bg-brand py-[0.7rem] text-center font-display text-[0.9rem] font-medium text-white transition-colors hover:bg-brand-dark"
+            >
+              {fmt(59)} - Buy Now
+              <span className="absolute -top-2.5 right-3 grid h-7 w-7 place-items-center rounded-full bg-white text-[0.72rem] font-medium text-ink shadow-md">
+                {count || 1}
+              </span>
+            </button>
           </div>
-          {/* feature bullets — full width, single line */}
-          <ul className="mt-5 grid gap-3.5 text-[1.05rem] text-white/95">
-            <li className="flex items-center gap-3"><Zap className="h-[22px] w-[22px] shrink-0" strokeWidth={1.75} /> 45&deg; auto-fade blade</li>
-            <li className="flex items-center gap-3"><Droplets className="h-[22px] w-[22px] shrink-0" strokeWidth={1.75} /> Waterproof, 240-min battery</li>
-          </ul>
-          <button
-            onClick={() => add("single")}
-            className="relative mt-6 w-full rounded-full bg-brand py-[1.15rem] text-center font-display text-[1.2rem] font-bold text-white transition-colors hover:bg-brand-dark"
-          >
-            {fmt(59)} - Buy Now
-            <span className="absolute -top-4 right-4 grid h-11 w-11 place-items-center rounded-full bg-white text-[1.05rem] font-bold text-ink shadow-md">
-              {count || 1}
-            </span>
-          </button>
         </div>
-      </div>
+      )}
     </>
   );
 }

@@ -117,7 +117,7 @@ export function CartDrawer() {
             </Button>
           )}
           {err && <p className="mt-2 text-center text-[0.78rem] text-brand">{err}</p>}
-          <p className="mt-3 text-center text-[0.75rem] text-muted">Free shipping &middot; 90-day money-back guarantee</p>
+          <p className="mt-3 text-center text-[0.75rem] text-muted">Free shipping &middot; 14-day money-back guarantee</p>
         </div>
       </aside>
     </>

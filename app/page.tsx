@@ -16,7 +16,7 @@ const faqs: [string, string][] = [
   ["Is it hard to use if I've never faded before?", "No. Pick a length, glide up, flick out — the blade does the blending. Follow the four steps above and you'll have a sharp fade in minutes."],
   ["How long does the battery last?", "Up to 240 minutes of cordless runtime per charge — weeks of fades. The display shows exactly how many minutes remain, and it charges over USB-C on the dock."],
   ["Is it actually waterproof?", "Yes. You can fade in the shower and rinse the whole clipper under the tap. Cleanup takes about ten seconds."],
-  ["What if I don't like it?", "You're covered by a 90-day money-back guarantee. If it isn't for you, send it back for a full refund."],
+  ["What if I don't like it?", "You're covered by a 14-day money-back guarantee. If it isn't for you, send it back for a full refund."],
 ];
 
 export default function Page() {
@@ -96,7 +96,7 @@ export default function Page() {
                 <div>
                   <h2 className="font-display text-[2rem] font-bold leading-tight">Skip six barber visits. Keep the clipper.</h2>
                   <ul className="mt-5 grid gap-2.5">
-                    {["FadeClipper + full accessory kit", "Free worldwide shipping", "90-day money-back guarantee", "1-year warranty"].map((t) => (
+                    {["FadeClipper + full accessory kit", "Free worldwide shipping", "14-day money-back guarantee", "1-year warranty"].map((t) => (
                       <li key={t} className="flex items-center gap-2.5 text-[0.98rem] text-ink-2">
                         <Check className="h-4 w-4 shrink-0 text-brand" strokeWidth={3} />{t}
                       </li>
@@ -139,7 +139,7 @@ export default function Page() {
             <h2 className="font-display text-[clamp(2rem,4.4vw,3.2rem)] font-bold text-white">Your next fade is on you.</h2>
             <p className="mx-auto mb-7 mt-4 max-w-[42ch] text-[1.06rem] text-white/70">The auto-fading clipper that turns a barber-only skill into a one-swipe move.</p>
             <Button asChild size="lg" variant="invert"><a href="/product">Get FadeClipper — <Price usd={59} /></a></Button>
-            <p className="mt-5 text-[0.8rem] text-white/50">90-day money-back guarantee · Free worldwide shipping</p>
+            <p className="mt-5 text-[0.8rem] text-white/50">14-day money-back guarantee · Free worldwide shipping</p>
           </Reveal>
         </section>
       </main>
