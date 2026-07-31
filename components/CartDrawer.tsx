@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useCart } from "@/components/CartProvider";
 import { useCurrency } from "@/components/CurrencyProvider";
 import { PRODUCTS } from "@/lib/products";
@@ -11,6 +11,14 @@ export function CartDrawer() {
   const { fmt } = useCurrency();
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState("");
+
+  // Close on Escape when the drawer is open.
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [open, setOpen]);
 
   // Go straight to Stripe's hosted checkout — no intermediate review page.
   const checkout = async () => {
@@ -43,10 +51,13 @@ export function CartDrawer() {
         aria-hidden
       />
       <aside
+        role="dialog"
+        aria-modal="true"
+        aria-label="Shopping cart"
+        aria-hidden={!open}
         className={`fixed right-0 top-0 z-[120] flex h-full w-[92%] max-w-[400px] flex-col bg-paper shadow-soft transition-transform duration-300 ${
           open ? "translate-x-0" : "translate-x-full"
         }`}
-        aria-label="Cart"
       >
         <div className="flex items-center justify-between border-b border-line p-5">
           <span className="flex items-center gap-2 font-display text-[1.2rem] font-bold">
