@@ -5,7 +5,7 @@ import { WatchDemo } from "@/components/WatchDemo";
 import { PressBar } from "@/components/PressBar";
 import { HowItWorks } from "@/components/HowItWorks";
 import { ComparisonTable } from "@/components/ComparisonTable";
-import { RedditReviews } from "@/components/RedditReviews";
+import { Reviews } from "@/components/Reviews";
 import { SiteFooter } from "@/components/SiteFooter";
 import { Reveal } from "@/components/Reveal";
 import { ChevronLeft } from "lucide-react";
@@ -71,8 +71,8 @@ export default function ProductPage() {
           </div>
         </section>
 
-        {/* TRUSTED BY PEOPLE — real Reddit posts */}
-        <RedditReviews />
+        {/* CUSTOMER REVIEWS */}
+        <Reviews />
       </main>
 
       <SiteFooter />
