@@ -2,7 +2,8 @@
 import { Star, Lock, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCurrency } from "@/components/CurrencyProvider";
-import { useCart } from "@/components/CartProvider";
+import { useBuyNow } from "@/components/useBuyNow";
+import { DeliveryEstimate } from "@/components/DeliveryEstimate";
 
 // Base prices in USD — converted to the visitor's currency.
 const PRICE = { now: 59, was: 99 };
@@ -16,7 +17,7 @@ const perks = [
 
 export function BuyBox() {
   const { fmt } = useCurrency();
-  const { add } = useCart();
+  const { buy, loading, error } = useBuyNow();
 
   return (
     <div>
@@ -49,11 +50,14 @@ export function BuyBox() {
         <span className="h-2 w-2 rounded-full bg-[#2bb673]" /> One-time payment &middot; no subscriptions
       </div>
 
-      <Button size="lg" className="mt-6 w-full text-[1.05rem]" onClick={() => add("single")}>
-        Add to cart — {fmt(PRICE.now)}
+      <Button size="lg" className="mt-6 w-full text-[1.05rem]" onClick={() => buy("single")} disabled={loading}>
+        {loading ? "Starting checkout…" : `Buy now — ${fmt(PRICE.now)}`}
       </Button>
 
-      <div className="mt-3 flex items-center justify-center gap-1.5 text-[0.8rem] text-muted">
+      <DeliveryEstimate className="mt-3 text-[0.85rem] text-muted" iconClassName="text-brand" />
+      {error && <p className="mt-2 text-center text-[0.8rem] text-brand">{error}</p>}
+
+      <div className="mt-2 flex items-center justify-center gap-1.5 text-[0.8rem] text-muted">
         <Lock className="h-3.5 w-3.5" /> Secure checkout · Visa · Mastercard · PayPal · Apple Pay
       </div>
 
@@ -72,7 +76,7 @@ export function BuyBox() {
       <div className="mt-4 flex items-center gap-2 text-[0.85rem] text-muted">
         <MapPin className="h-4 w-4 shrink-0 text-brand" />
         <span>
-          In stock &middot; <span className="text-ink">order today, get it in 3–5 business days</span>
+          In stock &middot; <span className="text-ink">order today, ships within 24 hours</span>
         </span>
       </div>
     </div>

@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
     });
 
   if (line_items.length === 0) {
-    return NextResponse.json({ error: "Your cart is empty." }, { status: 400 });
+    return NextResponse.json({ error: "No item selected." }, { status: 400 });
   }
 
   const origin = req.headers.get("origin") || new URL(req.url).origin;
@@ -70,7 +70,7 @@ export async function POST(req: NextRequest) {
       phone_number_collection: { enabled: true },
       allow_promotion_codes: true,
       success_url: `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${origin}/checkout`,
+      cancel_url: `${origin}/product`,
     });
 
     return NextResponse.json({ url: session.url });
