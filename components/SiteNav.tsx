@@ -142,17 +142,13 @@ export function SiteNav({ variant = "light" }: { variant?: "hero" | "light" }) {
                 <li className="flex items-center gap-2.5"><Droplets className="h-5 w-5 shrink-0" strokeWidth={2} /> Waterproof, 240-min battery</li>
               </ul>
             </div>
-            {/* brand tile */}
-            <div className="grid h-[108px] w-[108px] shrink-0 place-items-center rounded-3xl bg-[#0e0e10] ring-1 ring-white/10">
-              <span className="flex flex-col items-center gap-1.5">
-                <svg viewBox="0 0 40 28" className="h-8 w-11 fill-white" aria-hidden="true">
-                  <rect x="2" y="3" width="3.4" height="22" rx="1.7" />
-                  <rect x="11" y="7" width="3.4" height="18" rx="1.7" />
-                  <rect x="20" y="11" width="3.4" height="14" rx="1.7" />
-                  <rect x="29" y="15" width="3.4" height="10" rx="1.7" />
-                </svg>
-                <span className="font-display text-[0.66rem] font-bold tracking-wide text-white">FadeClipper</span>
-              </span>
+            {/* product tile — FadeClipper package photo */}
+            <div className="h-[112px] w-[112px] shrink-0 overflow-hidden rounded-3xl bg-[#0e0e10] ring-1 ring-white/10">
+              <img
+                src="/assets/img/packaging.jpg"
+                alt="FadeClipper package"
+                className="h-full w-full object-cover"
+              />
             </div>
           </div>
           <button
