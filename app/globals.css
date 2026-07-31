@@ -13,6 +13,23 @@
     @apply font-display;
     letter-spacing: -0.02em;
   }
+  /* visible keyboard focus for every interactive element (a11y) */
+  :where(a, button, input, textarea, select, summary, [tabindex]):focus-visible {
+    outline: 2px solid #ec6324;
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+  /* skip-to-content link — appears only when focused */
+  .skip-link {
+    position: fixed;
+    left: 12px;
+    top: 12px;
+    z-index: 200;
+    transform: translateY(-160%);
+    transition: transform 0.2s ease;
+    @apply rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-white shadow-soft;
+  }
+  .skip-link:focus-visible { transform: translateY(0); }
 }
 
 @layer utilities {
@@ -49,5 +66,12 @@ html.lenis body { height: auto; }
 @keyframes fc-spin { to { transform: rotate(360deg); } }
 
 @media (prefers-reduced-motion: reduce) {
-  * { animation: none !important; scroll-behavior: auto !important; }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }

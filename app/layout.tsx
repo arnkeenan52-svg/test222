@@ -34,9 +34,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body>
+        <a href="#content" className="skip-link">Skip to content</a>
         <CurrencyProvider>
           <CartProvider>
-            <SmoothScroll>{children}</SmoothScroll>
+            <div id="content">
+              <SmoothScroll>{children}</SmoothScroll>
+            </div>
             <CartDrawer />
             <ConsentCards />
             <NewsletterPopup />

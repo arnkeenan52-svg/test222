@@ -25,10 +25,17 @@ export function NewsletterPopup() {
     setOpen(false);
   };
 
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && close();
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [open]);
+
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-[140] flex items-center justify-center p-4">
+    <div role="dialog" aria-modal="true" aria-label="Get 10% off — newsletter signup" className="fixed inset-0 z-[140] flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={close} aria-hidden />
       <div className="relative w-full max-w-[440px] overflow-hidden rounded-4xl bg-paper p-8 text-center shadow-soft">
         <button onClick={close} aria-label="Close" className="absolute right-4 top-4 grid h-9 w-9 place-items-center rounded-full text-muted hover:bg-card">

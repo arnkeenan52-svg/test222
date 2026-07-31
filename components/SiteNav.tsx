@@ -94,7 +94,13 @@ export function SiteNav({ variant = "light" }: { variant?: "hero" | "light" }) {
             <Button asChild size="sm" className="hidden sm:inline-flex">
               <a href="/product">Get yours</a>
             </Button>
-            <button aria-label="Open menu" className={menuBtn} onClick={() => setOpen((v) => !v)}>
+            <button
+              aria-label={open ? "Close menu" : "Open menu"}
+              aria-expanded={open}
+              aria-controls="mobile-menu"
+              className={menuBtn}
+              onClick={() => setOpen((v) => !v)}
+            >
               {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
           </div>
@@ -102,7 +108,7 @@ export function SiteNav({ variant = "light" }: { variant?: "hero" | "light" }) {
       </div>
 
       {open && (
-        <div className={panel}>
+        <div id="mobile-menu" className={panel}>
           <div className="flex flex-col">
             {links.map(([label, href]) => (
               <a key={href} href={href} onClick={() => setOpen(false)} className={panelLink}>
