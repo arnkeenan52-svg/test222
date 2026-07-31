@@ -2,8 +2,6 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { SmoothScroll } from "@/components/SmoothScroll";
 import { CurrencyProvider } from "@/components/CurrencyProvider";
-import { CartProvider } from "@/components/CartProvider";
-import { CartDrawer } from "@/components/CartDrawer";
 import { ConsentCards } from "@/components/ConsentCards";
 import { NewsletterPopup } from "@/components/NewsletterPopup";
 
@@ -36,14 +34,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <a href="#content" className="skip-link">Skip to content</a>
         <CurrencyProvider>
-          <CartProvider>
-            <div id="content">
-              <SmoothScroll>{children}</SmoothScroll>
-            </div>
-            <CartDrawer />
-            <ConsentCards />
-            <NewsletterPopup />
-          </CartProvider>
+          <div id="content">
+            <SmoothScroll>{children}</SmoothScroll>
+          </div>
+          <ConsentCards />
+          <NewsletterPopup />
         </CurrencyProvider>
       </body>
     </html>

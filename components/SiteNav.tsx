@@ -4,9 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/Logo";
 import { Countdown } from "@/components/Countdown";
 import { useCurrency } from "@/components/CurrencyProvider";
-import { useCart } from "@/components/CartProvider";
+import { useBuyNow } from "@/components/useBuyNow";
+import { DeliveryEstimate } from "@/components/DeliveryEstimate";
 import { cn } from "@/lib/utils";
-import { Menu, X, ShoppingBag, Zap, Droplets } from "lucide-react";
+import { Menu, X, Zap, Droplets } from "lucide-react";
 
 const links: [string, string][] = [
   ["How it works", "/#how"],
@@ -19,7 +20,7 @@ export function SiteNav({ variant = "light", buyBar = false }: { variant?: "hero
   const [open, setOpen] = useState(false);
   const [showBar, setShowBar] = useState(false);
   const { fmt } = useCurrency();
-  const { add, count, setOpen: setCartOpen } = useCart();
+  const { buy, loading } = useBuyNow();
 
   useEffect(() => {
     if (!buyBar) return;
@@ -54,9 +55,6 @@ export function SiteNav({ variant = "light", buyBar = false }: { variant?: "hero
   const link = hero
     ? "text-[0.9rem] font-medium text-white/65 transition-colors hover:text-white"
     : "text-[0.9rem] font-medium text-muted transition-colors hover:text-ink";
-  const iconBtn = hero
-    ? "relative grid h-10 w-10 place-items-center rounded-full text-white hover:bg-white/10"
-    : "relative grid h-10 w-10 place-items-center rounded-full text-ink hover:bg-card";
   const menuBtn = hero
     ? "grid h-10 w-10 place-items-center rounded-full text-white hover:bg-white/10 md:hidden"
     : "grid h-10 w-10 place-items-center rounded-full text-ink hover:bg-card md:hidden";
@@ -98,14 +96,6 @@ export function SiteNav({ variant = "light", buyBar = false }: { variant?: "hero
             ))}
           </ul>
           <div className="flex items-center gap-1.5">
-            <button aria-label="Open cart" onClick={() => setCartOpen(true)} className={iconBtn}>
-              <ShoppingBag className="h-5 w-5" />
-              {count > 0 && (
-                <span className="absolute right-0 top-0 grid h-4 min-w-4 place-items-center rounded-full bg-brand px-1 text-[0.6rem] font-bold text-white">
-                  {count}
-                </span>
-              )}
-            </button>
             <Button asChild size="sm" className="hidden sm:inline-flex">
               <a href="/product">Get yours</a>
             </Button>
@@ -170,14 +160,16 @@ export function SiteNav({ variant = "light", buyBar = false }: { variant?: "hero
               </div>
             </div>
             <button
-              onClick={() => add("single")}
-              className="relative mt-3 w-full rounded-full bg-brand py-[0.7rem] text-center font-display text-[0.9rem] font-medium text-white transition-colors hover:bg-brand-dark"
+              onClick={() => buy("single")}
+              disabled={loading}
+              className="relative mt-3 w-full rounded-full bg-brand py-[0.7rem] text-center font-display text-[0.9rem] font-medium text-white transition-colors hover:bg-brand-dark disabled:opacity-70"
             >
-              {fmt(59)} - Buy Now
+              {loading ? "Starting checkout…" : <>{fmt(59)} - Buy Now</>}
               <span className="absolute -top-2.5 right-3 grid h-7 w-7 place-items-center rounded-full bg-white text-[0.72rem] font-medium text-ink shadow-md">
-                {count || 1}
+                1
               </span>
             </button>
+            <DeliveryEstimate compact className="mt-2 justify-center text-[0.68rem] text-white/55" iconClassName="h-3.5 w-3.5" />
           </div>
         </div>
       )}

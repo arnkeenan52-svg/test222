@@ -1,18 +1,8 @@
-"use client";
-import { useEffect } from "react";
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
-import { useCart } from "@/components/CartProvider";
 import { CheckCircle2, Truck } from "lucide-react";
 
 export default function CheckoutSuccessPage() {
-  const { clear } = useCart();
-
-  // Payment completed on Stripe — empty the cart.
-  useEffect(() => {
-    clear();
-  }, [clear]);
-
   return (
     <div className="flex min-h-screen flex-col bg-paper">
       <header className="border-b border-line">
