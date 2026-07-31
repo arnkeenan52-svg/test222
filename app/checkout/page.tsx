@@ -83,10 +83,18 @@ export default function CheckoutPage() {
               variables: {
                 colorPrimary: "#ec6324",
                 colorText: "#191919",
+                colorTextSecondary: "#6b7280",
                 colorDanger: "#d64545",
                 fontFamily: "Inter, system-ui, sans-serif",
-                borderRadius: "10px",
+                fontSizeBase: "15px",
+                borderRadius: "8px",
                 spacingUnit: "4px",
+              },
+              rules: {
+                ".Input": { padding: "12px 14px", borderColor: "#d9dce1" },
+                ".Input:focus": { borderColor: "#ec6324", boxShadow: "0 0 0 1px #ec6324" },
+                ".Label": { fontWeight: "500", marginBottom: "6px" },
+                ".Tab, .Block": { borderColor: "#d9dce1" },
               },
             },
           }}
@@ -181,7 +189,15 @@ function CheckoutInner({
           </Section>
 
           <Section title="Delivery">
-            <AddressElement options={{ mode: "shipping", fields: { phone: "always" } }} />
+            {/* mode:shipping gives a country dropdown + Google-style address autocomplete */}
+            <AddressElement
+              options={{
+                mode: "shipping",
+                display: { name: "split" },
+                fields: { phone: "always" },
+                autocomplete: { mode: "automatic" },
+              }}
+            />
           </Section>
 
           <Section title="Shipping method">
@@ -193,8 +209,8 @@ function CheckoutInner({
                   <button
                     key={id}
                     onClick={() => chooseShipping(id)}
-                    className={`flex items-center justify-between rounded-xl border px-4 py-3 text-left transition-colors ${
-                      active ? "border-brand bg-brand-tint" : "border-line hover:border-ink/30"
+                    className={`flex items-center justify-between rounded-lg border px-4 py-3 text-left transition-colors ${
+                      active ? "border-brand bg-brand-tint ring-1 ring-brand" : "border-line hover:border-ink/30"
                     }`}
                   >
                     <span className="flex items-center gap-3">
@@ -226,9 +242,9 @@ function CheckoutInner({
           <button
             onClick={pay}
             disabled={paying || !stripe}
-            className="mt-6 w-full rounded-full bg-brand py-4 text-center font-display text-[1.1rem] font-bold text-white transition-colors hover:bg-brand-dark disabled:opacity-60"
+            className="mt-6 w-full rounded-[10px] bg-brand py-[0.95rem] text-center font-display text-[1.05rem] font-semibold text-white transition-colors hover:bg-brand-dark disabled:opacity-60"
           >
-            {paying ? "Processing…" : `Pay ${money(quote.total)}`}
+            {paying ? "Processing…" : "Pay now"}
           </button>
           {payErr && <p className="mt-3 text-center text-[0.85rem] text-[#d64545]">{payErr}</p>}
           <p className="mt-4 flex items-center justify-center gap-1.5 text-[0.78rem] text-muted">
@@ -291,11 +307,11 @@ function Summary({
           value={code}
           onChange={(e) => setCode(e.target.value)}
           placeholder="Discount code"
-          className="min-w-0 flex-1 rounded-xl border border-line bg-white px-4 py-2.5 text-[0.9rem] outline-none focus:border-brand"
+          className="min-w-0 flex-1 rounded-lg border border-[#d9dce1] bg-white px-4 py-2.5 text-[0.9rem] outline-none focus:border-brand focus:ring-1 focus:ring-brand"
         />
         <button
           onClick={applyCode}
-          className="shrink-0 rounded-xl border border-ink/15 bg-white px-4 py-2.5 text-[0.9rem] font-semibold text-ink hover:bg-card"
+          className="shrink-0 rounded-lg bg-[#e6e8eb] px-5 py-2.5 text-[0.9rem] font-semibold text-ink transition-colors hover:bg-[#dcdfe3]"
         >
           Apply
         </button>
