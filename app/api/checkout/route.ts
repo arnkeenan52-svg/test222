@@ -27,6 +27,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid request." }, { status: 400 });
   }
 
+  const origin = req.headers.get("origin") || new URL(req.url).origin;
+
   // Build line items from server-side prices (never trust amounts from the client).
   const line_items = items
     .filter((it) => it && PRODUCTS[it.id] && Number(it.qty) > 0)
@@ -37,7 +39,8 @@ export async function POST(req: NextRequest) {
         price_data: {
           currency: "usd",
           unit_amount: Math.round(p.usd * 100),
-          product_data: { name: p.title, description: p.sub },
+          // Product image shows on Stripe's hosted checkout for a branded, on-brand look.
+          product_data: { name: p.title, description: p.sub, images: [`${origin}/assets/img/packaging.jpg`] },
         },
       };
     });
@@ -45,8 +48,6 @@ export async function POST(req: NextRequest) {
   if (line_items.length === 0) {
     return NextResponse.json({ error: "No item selected." }, { status: 400 });
   }
-
-  const origin = req.headers.get("origin") || new URL(req.url).origin;
 
   try {
     const session = await stripe.checkout.sessions.create({
@@ -69,6 +70,11 @@ export async function POST(req: NextRequest) {
       ],
       phone_number_collection: { enabled: true },
       allow_promotion_codes: true,
+      submit_type: "pay",
+      custom_text: {
+        shipping_address: { message: "Free worldwide shipping — your FadeClipper arrives in about 7–10 business days." },
+        submit: { message: "Backed by our 14-day money-back guarantee." },
+      },
       success_url: `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/product`,
     });
