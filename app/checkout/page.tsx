@@ -11,7 +11,7 @@ import {
   useElements,
 } from "@stripe/react-stripe-js";
 import { PRODUCTS } from "@/lib/products";
-import { Lock, ShieldCheck, Truck, Zap, Check, ChevronDown } from "lucide-react";
+import { Lock, ShieldCheck, Truck, Zap, Check, ChevronDown, Tag } from "lucide-react";
 
 const PK = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
 const stripePromise = PK ? loadStripe(PK) : null;
@@ -61,13 +61,13 @@ export default function CheckoutPage() {
 
   return (
     <div className="min-h-screen bg-white text-ink">
-      {/* branded header */}
-      <header className="bg-brand">
+      {/* header — white, Shopify-style */}
+      <header className="border-b border-line bg-white">
         <div className="mx-auto flex max-w-[1100px] items-center justify-between px-5 py-4">
           <a href="/" aria-label="FadeClipper home">
-            <img src="/assets/img/fadeclipper-logo-white.png" alt="FadeClipper" width={140} height={24} className="h-6 w-auto" />
+            <img src="/assets/img/fadeclipper-stripe-logo.png" alt="FadeClipper" width={123} height={24} className="h-6 w-auto" />
           </a>
-          <span className="flex items-center gap-1.5 text-[0.82rem] font-medium text-white/90">
+          <span className="flex items-center gap-1.5 text-[0.82rem] font-medium text-muted">
             <Lock className="h-4 w-4" aria-hidden="true" /> Secure checkout
           </span>
         </div>
@@ -213,7 +213,7 @@ function CheckoutInner({
         aria-controls="order-summary-mobile"
       >
         <span className="flex items-center gap-2 font-medium text-brand">
-          {summaryOpen ? "Hide order summary" : "Show order summary"}
+          Order summary
           <ChevronDown aria-hidden="true" className={`h-4 w-4 transition-transform ${summaryOpen ? "rotate-180" : ""}`} />
         </span>
         <span className="font-display text-[1.1rem] font-bold tabular-nums">{money(quote.total)}</span>
@@ -229,6 +229,7 @@ function CheckoutInner({
         <div className="mx-auto max-w-[520px]">
           {/* Express checkout — Apple Pay / Google Pay / Link */}
           <div className={hasExpress ? "mb-6" : ""}>
+            {hasExpress && <p className="mb-3 text-center text-[0.9rem] font-medium text-muted">Express checkout</p>}
             <ExpressCheckoutElement
               options={{ buttonHeight: 48 }}
               onReady={(e: any) => setHasExpress(!!e?.availablePaymentMethods)}
@@ -321,6 +322,20 @@ function CheckoutInner({
           <p className="mt-1 flex items-center justify-center gap-1.5 text-[0.78rem] text-muted">
             <Lock className="h-3.5 w-3.5" aria-hidden="true" /> Powered by Stripe · Backed by our 14-day money-back guarantee
           </p>
+
+          <nav aria-label="Policies" className="mt-8 flex flex-wrap gap-x-5 gap-y-2 border-t border-line pt-5 text-[0.8rem]">
+            {[
+              ["Refund policy", "/returns"],
+              ["Shipping", "/shipping"],
+              ["Privacy policy", "/privacy"],
+              ["Terms of service", "/terms"],
+              ["Contact", "/contact"],
+            ].map(([label, href]) => (
+              <a key={href} href={href} className="text-brand hover:underline">
+                {label}
+              </a>
+            ))}
+          </nav>
         </div>
       </main>
 
@@ -358,6 +373,7 @@ function Summary({
   applyCode: () => void;
   codeMsg: string;
 }) {
+  const [discountOpen, setDiscountOpen] = useState(!!code);
   return (
     <div>
       <div className="flex items-center gap-4">
@@ -375,27 +391,36 @@ function Summary({
       </div>
 
       {/* discount */}
-      <div className="mt-5 flex gap-2">
-        <label htmlFor="discount-code" className="sr-only">Discount code</label>
-        <input
-          id="discount-code"
-          name="discount-code"
-          value={code}
-          onChange={(e) => setCode(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && applyCode()}
-          placeholder="Discount code"
-          autoComplete="off"
-          autoCapitalize="characters"
-          spellCheck={false}
-          className="min-w-0 flex-1 rounded-lg border border-[#d9dce1] bg-white px-4 py-2.5 text-[0.9rem] outline-none focus-visible:border-brand focus-visible:ring-1 focus-visible:ring-brand"
-        />
+      {!discountOpen ? (
         <button
-          onClick={applyCode}
-          className="shrink-0 touch-manipulation rounded-lg bg-[#e6e8eb] px-5 py-2.5 text-[0.9rem] font-semibold text-ink transition-colors hover:bg-[#dcdfe3]"
+          onClick={() => setDiscountOpen(true)}
+          className="mt-5 inline-flex touch-manipulation items-center gap-1.5 rounded-lg border border-line px-4 py-2.5 text-[0.88rem] font-semibold text-ink transition-colors hover:bg-card"
         >
-          Apply
+          <Tag className="h-4 w-4" aria-hidden="true" /> Add discount
         </button>
-      </div>
+      ) : (
+        <div className="mt-5 flex gap-2">
+          <label htmlFor="discount-code" className="sr-only">Discount code</label>
+          <input
+            id="discount-code"
+            name="discount-code"
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && applyCode()}
+            placeholder="Discount code"
+            autoComplete="off"
+            autoCapitalize="characters"
+            spellCheck={false}
+            className="min-w-0 flex-1 rounded-lg border border-[#d9dce1] bg-white px-4 py-2.5 text-[0.9rem] outline-none focus-visible:border-brand focus-visible:ring-1 focus-visible:ring-brand"
+          />
+          <button
+            onClick={applyCode}
+            className="shrink-0 touch-manipulation rounded-lg bg-[#e6e8eb] px-5 py-2.5 text-[0.9rem] font-semibold text-ink transition-colors hover:bg-[#dcdfe3]"
+          >
+            Apply
+          </button>
+        </div>
+      )}
       <p aria-live="polite" className={`mt-2 flex items-center gap-1 text-[0.8rem] ${quote.codeOk ? "text-[#1b8a4e]" : "text-[#d64545]"}`}>
         {codeMsg && (
           <>
