@@ -25,7 +25,7 @@ type Review = { name: string; stars: number; date: string; age: number; title: s
 const HERO: Review[] = [
   {
     name: "Marcus J.", stars: 5, date: "3 weeks ago", age: 22, title: "First self-fade came out clean", avatar: A(1), helpful: 214,
-    body: "I was nervous doing my own fade but the blade genuinely blends it — I just glide up and flick out. Second attempt looked like a shop fade. Already saved me two barber visits.",
+    body: "I was nervous doing my own fade but the blade genuinely blends it — I just glide it flat around my head and it does the rest. Second attempt looked like a shop fade. Already saved me two barber visits.",
     replies: [
       { name: "Kevin D.", date: "2 weeks ago", body: "does this actually work on thick curly hair? mine's pretty coarse", children: [
         { name: "Marcus J.", date: "2 weeks ago", avatar: A(1), body: "@Kevin yeah I've got thick hair and it powered straight through, just bump the power up a notch" },
@@ -36,11 +36,11 @@ const HERO: Review[] = [
     ],
   },
   {
-    name: "Reginald M.", stars: 5, date: "1 month ago", age: 32, title: "Stopped booking the barber", avatar: A(5), helpful: 301,
+    name: "Malik R.", stars: 5, date: "1 month ago", age: 32, title: "Stopped booking the barber", avatar: A(5), helpful: 301,
     body: "Pays for itself in about two cuts. I do my own fade every couple weeks now and it looks sharp every time. Wish I'd bought this years ago.",
     replies: [
       { name: "Andre P.", date: "3 weeks ago", body: "how long does one charge actually last?", children: [
-        { name: "Reginald M.", date: "3 weeks ago", avatar: A(5), body: "@Andre I've gotten about 6 cuts on a single charge. The display shows minutes left so you're never caught out" },
+        { name: "Malik R.", date: "3 weeks ago", avatar: A(5), body: "@Andre I've gotten about 6 cuts on a single charge. The display shows minutes left so you're never caught out" },
       ] },
     ],
   },
@@ -94,6 +94,9 @@ const TITLES = ["Sharpest fade I've done at home","Barber-level results","No mor
 const POS = ["The 45° blade does the blending for you — my fade looks even without any skill. Genuinely surprised.","Charged it once and it's still going strong two weeks later. The minutes-left display is so handy.","Waterproof means I fade in the shower and rinse it clean in seconds. Cleanup used to be the worst part.","Went from paying the barber every two weeks to doing it myself. Paid for itself almost immediately.","Thick, coarse hair here — turned the power up and it powered through with zero snagging.","Used my phone for the back and the guide made it easy. First attempt looked way better than expected.","The four fade lengths on one lever make it foolproof. No guessing which guard to grab.","Blends the gradient at the back of my head that I could never do with normal clippers.","Quieter than my old pair and doesn't get hot even after a full cut. Really well built.","Bought it skeptical, now the whole house uses it. Kids' cuts included.","Delivery was quick and it was well packaged. The fade came out sharp on the first go.","Feels premium and solid, not cheap and plasticky like the ones I've had before.","My line-up and fade finally look like the shop. Massive upgrade from my old trimmer.","Holds a charge for weeks of cuts. I only remember to charge it because the display reminds me.","Honestly idiot-proof. If you can comb your hair you can run this thing.","Saved a fortune already. Two cuts and it's basically paid for itself.","Skin-fade to a taper, it handles both cleanly. The blade glides, doesn't tug.","My son sits still for it now because it's quiet. Cuts his curls no problem.","Sharp out of the box and stayed sharp. Blends beautifully with a little practice.","The build quality is what sold me — metal blade, solid grip, proper charging dock."];
 const MIXED_T = ["Good but takes a little practice","Solid, minor learning curve","Great tool — go slow at first","Happy overall, small nitpick","Works well after a couple tries","Nearly perfect"];
 const MIXED = ["Blends well but my first fade was uneven — my technique, not the clipper. By the third cut it clicked.","Great clipper, just wish it came with a travel case for the guards.","Took a couple tries to get the back right with my phone camera, but now it's quick.","Powerful and sharp; the guards could click on a touch more firmly.","Does the job well. Battery is great; instructions could be a bit clearer for total beginners.","Solid fade once you find the angle — give yourself one practice run and you're set.","Love it overall; docking a star only because I'd like a couple more guard sizes.","Works exactly as described. Slightly louder than I pictured but honestly not bad."];
+// 1–2 star: something went wrong with the unit, but the refund/replacement was handled well.
+const LOW_T = ["Arrived faulty — refunded fast","Dead on arrival, but sorted quickly","Didn't work out, got my money back","Faulty unit — support made it right","Stopped working, they replaced it","Not my experience, but well handled"];
+const LOW = ["Mine wouldn't power on out of the box, which was really disappointing. I emailed support and had a full refund within two days, no arguing. Not the experience I hoped for, but they handled it properly.","The first one died after a single charge. Frustrating. To their credit they shipped a replacement straight away and it's worked fine since, so it did work out in the end — just a rough start.","Charging port on my unit was faulty. Annoying, but customer service refunded me the same day I reached out. Can't fault how they dealt with it, just unlucky with the clipper.","Battery wouldn't hold a charge. I asked for a refund and got it back quickly, no questions asked. Shame, because the one fade I managed actually looked good.","Turned up with a loose, rattling blade. I sent a photo and they refunded in full within 48 hours. Didn't work out for me, but the support was genuinely solid.","Stopped turning on after about a week. I expected a hassle and instead got a replacement in a few days. Rocky start, but they made it right and the new one's been fine."];
 
 function starsFor(i: number) {
   const m = i % 100;
@@ -103,12 +106,13 @@ const BULK: Review[] = Array.from({ length: 204 }, (_, k) => {
   const i = k + 7;
   const stars = starsFor(i);
   const [date, age] = DATE_AGES[(i * 5) % DATE_AGES.length];
-  const mixed = stars <= 3;
+  const low = stars <= 2; // defective-but-refunded stories
+  const mid = stars === 3; // works, minor learning curve
   return {
     name: `${FIRST[(i * 13) % FIRST.length]} ${LAST[(i * 7) % LAST.length]}.`,
     stars, date, age,
-    title: mixed ? MIXED_T[i % MIXED_T.length] : TITLES[(i * 3) % TITLES.length],
-    body: mixed ? MIXED[i % MIXED.length] : POS[(i * 5 + 2) % POS.length],
+    title: low ? LOW_T[i % LOW_T.length] : mid ? MIXED_T[i % MIXED_T.length] : TITLES[(i * 3) % TITLES.length],
+    body: low ? LOW[i % LOW.length] : mid ? MIXED[i % MIXED.length] : POS[(i * 5 + 2) % POS.length],
     helpful: ((i * 7) % 140) + (stars === 5 ? 9 : 2),
   };
 });
