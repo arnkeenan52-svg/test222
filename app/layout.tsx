@@ -8,7 +8,6 @@ export const viewport: Viewport = {
 import { SmoothScroll } from "@/components/SmoothScroll";
 import { CurrencyProvider } from "@/components/CurrencyProvider";
 import { ConsentCards } from "@/components/ConsentCards";
-import { NewsletterPopup } from "@/components/NewsletterPopup";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://fadeclipper.com"),
@@ -43,7 +42,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <SmoothScroll>{children}</SmoothScroll>
           </div>
           <ConsentCards />
-          <NewsletterPopup />
         </CurrencyProvider>
       </body>
     </html>

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { PRODUCTS } from "@/lib/products";
-import { DISCOUNT_CODE, DISCOUNT_PCT } from "@/lib/newsletter";
+import { DISCOUNT_CODE, DISCOUNT_PCT } from "@/lib/discount";
 
 // Server-only. Needs STRIPE_SECRET_KEY in the environment.
 export const runtime = "nodejs";

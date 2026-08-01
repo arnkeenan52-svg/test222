@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { PRODUCTS } from "@/lib/products";
-import { DISCOUNT_CODE, DISCOUNT_PCT } from "@/lib/newsletter";
+import { DISCOUNT_CODE, DISCOUNT_PCT } from "@/lib/discount";
 
 // Returns safe, display-only details for a completed order, looked up from the
 // PaymentIntent id that Stripe appends to the success return_url.
