@@ -11,7 +11,7 @@ import {
   useElements,
 } from "@stripe/react-stripe-js";
 import { PRODUCTS } from "@/lib/products";
-import { Lock, ShieldCheck, Truck, Zap, Check, ChevronDown, Tag } from "lucide-react";
+import { Lock, ShieldCheck, Check, ChevronDown, Tag } from "lucide-react";
 
 type ShippingId = "standard" | "express";
 const SHIP: Record<ShippingId, { label: string; cents: number; eta: string }> = {
@@ -293,10 +293,7 @@ function CheckoutInner({
                         {active && <span className="h-2.5 w-2.5 rounded-full bg-brand" />}
                       </span>
                       <span>
-                        <span className="flex items-center gap-1.5 font-medium">
-                          {id === "express" ? <Zap className="h-4 w-4 text-brand" aria-hidden="true" /> : <Truck className="h-4 w-4 text-brand" aria-hidden="true" />}
-                          {s.label}
-                        </span>
+                        <span className="block font-medium">{s.label}</span>
                         <span className="text-[0.82rem] text-muted">{s.eta}</span>
                       </span>
                     </span>
