@@ -22,7 +22,7 @@ export function PageShell({
 }) {
   return (
     <div className="flex min-h-screen flex-col bg-paper">
-      <header className="border-b border-line bg-paper" style={{ paddingTop: "env(safe-area-inset-top)" }}>
+      <header className="border-b border-line">
         <div className="container-x flex items-center justify-between py-5">
           <a href="/" aria-label="FadeClipper home" className="text-ink">
             <Logo />
