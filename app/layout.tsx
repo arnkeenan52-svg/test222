@@ -39,6 +39,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body>
+        {/* Fills the iOS status-bar strip (the notch area over the clock/battery)
+            with the brand orange so it blends into the offer bar instead of
+            showing white. Height is 0 on devices without a safe-area inset. */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none fixed inset-x-0 top-0 z-[120] bg-brand"
+          style={{ height: "env(safe-area-inset-top)" }}
+        />
         <a href="#content" className="skip-link">Skip to content</a>
         <CurrencyProvider>
           <div id="content">
