@@ -13,7 +13,7 @@ function mode(k: string) {
 }
 
 export async function GET() {
-  const pk = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || "";
+  const pk = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || process.env.STRIPE_PUBLISHABLE_KEY || "";
   const sk = process.env.STRIPE_SECRET_KEY || "";
   const pkMode = mode(pk);
   const skMode = mode(sk);

@@ -13,9 +13,6 @@ import {
 import { PRODUCTS } from "@/lib/products";
 import { Lock, ShieldCheck, Truck, Zap, Check, ChevronDown, Tag } from "lucide-react";
 
-const PK = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
-const stripePromise = PK ? loadStripe(PK) : null;
-
 type ShippingId = "standard" | "express";
 const SHIP: Record<ShippingId, { label: string; cents: number; eta: string }> = {
   standard: { label: "Standard shipping", cents: 0, eta: "7–10 business days" },
@@ -32,22 +29,30 @@ export default function CheckoutPage() {
   const [piId, setPiId] = useState("");
   const [quote, setQuote] = useState<Quote | null>(null);
   const [fatal, setFatal] = useState("");
+  const [stripePromise, setStripePromise] = useState<ReturnType<typeof loadStripe> | null>(null);
   const started = useRef(false);
 
   useEffect(() => {
-    if (started.current) return; // never create two PaymentIntents
+    if (started.current) return; // run once
     started.current = true;
-    if (!stripePromise) {
-      setFatal("Stripe isn’t configured yet. Add your keys to go live.");
-      return;
-    }
-    fetch("/api/payment-intent", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ shipping: "standard" }),
-    })
-      .then((r) => r.json())
-      .then((d) => {
+    (async () => {
+      // Publishable key is fetched at runtime, so it works the moment it's set
+      // in the environment — no rebuild required, and either env-var name works.
+      let pk = "";
+      try {
+        pk = (await fetch("/api/stripe-config").then((r) => r.json()))?.publishableKey || "";
+      } catch {}
+      if (!pk) {
+        setFatal("Stripe isn’t configured yet. Add your publishable key to go live.");
+        return;
+      }
+      setStripePromise(loadStripe(pk));
+      try {
+        const d = await fetch("/api/payment-intent", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ shipping: "standard" }),
+        }).then((r) => r.json());
         if (d.clientSecret) {
           setClientSecret(d.clientSecret);
           setPiId(d.paymentIntentId);
@@ -55,8 +60,10 @@ export default function CheckoutPage() {
         } else {
           setFatal(d.error || "Could not start checkout.");
         }
-      })
-      .catch(() => setFatal("Network error — please try again."));
+      } catch {
+        setFatal("Network error — please try again.");
+      }
+    })();
   }, []);
 
   return (
@@ -76,7 +83,7 @@ export default function CheckoutPage() {
 
       {fatal ? (
         <FatalFallback message={fatal} />
-      ) : !clientSecret || !quote ? (
+      ) : !stripePromise || !clientSecret || !quote ? (
         <div className="mx-auto max-w-[1100px] px-5 py-24 text-center text-muted" role="status" aria-live="polite">
           Loading secure checkout…
         </div>
