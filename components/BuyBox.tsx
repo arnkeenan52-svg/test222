@@ -1,9 +1,10 @@
 "use client";
-import { Star, Lock, MapPin } from "lucide-react";
+import { Star, Lock, MapPin, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCurrency } from "@/components/CurrencyProvider";
 import { useBuyNow } from "@/components/useBuyNow";
 import { DeliveryEstimate } from "@/components/DeliveryEstimate";
+import { Countdown } from "@/components/Countdown";
 
 // Base prices in USD — converted to the visitor's currency.
 const PRICE = { now: 59, was: 99 };
@@ -50,7 +51,12 @@ export function BuyBox() {
         <span className="h-2 w-2 rounded-full bg-[#2bb673]" /> One-time payment &middot; no subscriptions
       </div>
 
-      <Button size="lg" className="mt-6 w-full text-[1.05rem]" onClick={() => buy("single")} disabled={loading}>
+      {/* launch-sale urgency countdown */}
+      <div className="mt-5 flex items-center justify-center gap-2 rounded-2xl bg-brand-tint px-4 py-3 text-[0.9rem] font-semibold text-brand-dark">
+        <Clock className="h-4 w-4 shrink-0" aria-hidden="true" /> Launch sale ends in <Countdown />
+      </div>
+
+      <Button size="lg" className="mt-4 w-full text-[1.05rem]" onClick={() => buy("single")} disabled={loading}>
         {loading ? "Starting checkout…" : `Buy now — ${fmt(PRICE.now)}`}
       </Button>
 

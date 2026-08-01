@@ -23,6 +23,7 @@ export async function GET(req: NextRequest) {
   try {
     const intent = await stripe.paymentIntents.retrieve(pi, { expand: ["latest_charge"] });
     const charge = intent.latest_charge as Stripe.Charge | null;
+    const card = charge?.payment_method_details?.card;
     const shipping = intent.shipping;
     const shippingId = (intent.metadata?.shipping as string) || "standard";
     const codeOk = !!intent.metadata?.discount_code;
@@ -48,6 +49,8 @@ export async function GET(req: NextRequest) {
         : null,
       shippingMethod: SHIP_LABEL[shippingId] || "Standard shipping",
       shippingEta: SHIP_ETA[shippingId] || SHIP_ETA.standard,
+      paymentBrand: card?.brand ? card.brand.charAt(0).toUpperCase() + card.brand.slice(1) : "",
+      paymentLast4: card?.last4 || "",
       productTitle: PRODUCTS.single.title,
       productSub: PRODUCTS.single.sub,
       productCents,
