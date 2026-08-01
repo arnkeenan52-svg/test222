@@ -1,5 +1,10 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
+
+// Colours the mobile browser strip / status-bar area to match the offer bar.
+export const viewport: Viewport = {
+  themeColor: "#ec6324",
+};
 import { SmoothScroll } from "@/components/SmoothScroll";
 import { CurrencyProvider } from "@/components/CurrencyProvider";
 import { ConsentCards } from "@/components/ConsentCards";

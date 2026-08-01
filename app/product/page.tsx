@@ -5,6 +5,7 @@ import { WatchDemo } from "@/components/WatchDemo";
 import { PressBar } from "@/components/PressBar";
 import { HowItWorks } from "@/components/HowItWorks";
 import { ComparisonTable } from "@/components/ComparisonTable";
+import { TrustedByReddit } from "@/components/TrustedByReddit";
 import { Reviews } from "@/components/Reviews";
 import { SiteFooter } from "@/components/SiteFooter";
 import { Reveal } from "@/components/Reveal";
@@ -62,6 +63,9 @@ export default function ProductPage() {
             <Reveal><div className="rounded-4xl bg-white p-4 shadow-card md:p-7"><ComparisonTable /></div></Reveal>
           </div>
         </section>
+
+        {/* TRUSTED BY REDDIT */}
+        <TrustedByReddit />
 
         {/* CUSTOMER REVIEWS */}
         <Reviews />
