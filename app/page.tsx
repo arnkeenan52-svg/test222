@@ -12,7 +12,7 @@ import { Check, Plus, Star, ArrowRight } from "lucide-react";
 
 const faqs: [string, string][] = [
   ["Can I really fade the back of my own head?", "Yes — that's exactly what FadeClipper is built for. The tapered 45° auto-fade blade blends the gradient as you glide up, so you don't need barber-level skill or two mirrors. Most people get a clean back fade on the first or second try."],
-  ["Is it hard to use if I've never faded before?", "No. Pick a length, glide up, flick out — the blade does the blending. Follow the four steps above and you'll have a sharp fade in minutes."],
+  ["Is it hard to use if I've never faded before?", "No. Pick a length and glide it flat around your head — the blade does the blending. Follow the four steps above and you'll have a sharp fade in minutes."],
   ["How long does the battery last?", "Up to 240 minutes of cordless runtime per charge — weeks of fades. The display shows exactly how many minutes remain, and it charges over USB-C on the dock."],
   ["Is it actually waterproof?", "Yes. You can fade in the shower and rinse the whole clipper under the tap. Cleanup takes about ten seconds."],
   ["What if I don't like it?", "You're covered by a 14-day money-back guarantee. If it isn't for you, send it back for a full refund."],

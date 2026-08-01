@@ -1,5 +1,5 @@
 "use client";
-import { Star, Lock, MapPin, Clock } from "lucide-react";
+import { Star, MapPin, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCurrency } from "@/components/CurrencyProvider";
 import { useBuyNow } from "@/components/useBuyNow";
@@ -62,10 +62,6 @@ export function BuyBox() {
 
       <DeliveryEstimate className="mt-3 text-[0.85rem] text-muted" iconClassName="text-brand" />
       {error && <p className="mt-2 text-center text-[0.8rem] text-brand">{error}</p>}
-
-      <div className="mt-2 flex items-center justify-center gap-1.5 text-[0.8rem] text-muted">
-        <Lock className="h-3.5 w-3.5" /> Secure checkout · Visa · Mastercard · PayPal · Apple Pay
-      </div>
 
       {/* included-free perks — rendered product icons */}
       <div className="mt-6 grid grid-cols-3 gap-3 rounded-4xl bg-brand-tint p-5 text-center">
