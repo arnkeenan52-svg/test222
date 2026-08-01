@@ -11,6 +11,8 @@ type Order = {
   address: { line1: string; line2: string; city: string; state: string; postal: string; country: string } | null;
   shippingMethod: string;
   shippingEta: string;
+  paymentBrand: string;
+  paymentLast4: string;
   productTitle: string;
   productSub: string;
   productCents: number;
@@ -58,7 +60,7 @@ export default function CheckoutSuccessPage() {
   return (
     <div className="min-h-screen bg-white text-ink">
       <header className="border-b border-line bg-white">
-        <div className="mx-auto max-w-[1100px] px-5 py-4">
+        <div className="mx-auto max-w-[1000px] px-5 py-4">
           <a href="/" aria-label="FadeClipper home">
             <img src="/assets/img/fadeclipper-stripe-logo.png" alt="FadeClipper" width={123} height={24} className="h-6 w-auto" />
           </a>
@@ -66,79 +68,90 @@ export default function CheckoutSuccessPage() {
       </header>
 
       {!loaded ? (
-        <div className="mx-auto max-w-[1100px] px-5 py-24 text-center text-muted" role="status" aria-live="polite">
+        <div className="mx-auto max-w-[1000px] px-5 py-24 text-center text-muted" role="status" aria-live="polite">
           Loading your order…
         </div>
       ) : (
-        <div className="mx-auto grid max-w-[1100px] md:grid-cols-2">
-          {/* confirmation + details */}
-          <main className="order-2 px-5 py-8 md:order-1 md:py-12 md:pr-12">
-            <div className="mx-auto max-w-[540px]">
-              <div className="flex items-start gap-4">
-                <span aria-hidden="true" className="mt-0.5 grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[#1b8a4e] text-white">
-                  <Check className="h-6 w-6" strokeWidth={3} />
+        <div className="mx-auto grid max-w-[1000px] md:grid-cols-[1.05fr_0.95fr]">
+          {/* details */}
+          <main className="order-2 px-5 py-10 md:order-1 md:py-14 md:pr-14">
+            <div className="mx-auto max-w-[520px]">
+              {order?.orderNo && (
+                <p className="text-[0.78rem] font-semibold uppercase tracking-[0.08em] text-muted">Order #{order.orderNo}</p>
+              )}
+              <div className="mt-2 flex items-center gap-2.5">
+                <span aria-hidden="true" className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-[#1b8a4e] text-white">
+                  <Check className="h-4 w-4" strokeWidth={3} />
                 </span>
-                <div className="min-w-0">
-                  {order?.orderNo && <p className="text-[0.85rem] text-muted">Confirmation #{order.orderNo}</p>}
-                  <h1 className="font-display text-[clamp(1.5rem,4vw,2rem)] font-bold leading-tight">
-                    Thank you{firstName ? `, ${firstName}` : ""}!
-                  </h1>
-                </div>
+                <h1 className="font-display text-[clamp(1.5rem,3.4vw,2rem)] font-bold tracking-[-0.01em]">
+                  Thank you{firstName ? `, ${firstName}` : ""}!
+                </h1>
               </div>
 
-              <p className="mt-4 text-[1rem] text-ink-2">
-                Your order is confirmed.{" "}
+              <p className="mt-3 text-[1rem] leading-relaxed text-ink-2">
+                Your order is confirmed
                 {order?.email ? (
-                  <>A confirmation email is on its way to <span className="font-medium text-ink">{order.email}</span>.</>
-                ) : (
-                  <>A confirmation email is on the way.</>
-                )}
+                  <> — a confirmation email is on its way to <span className="font-medium text-ink">{order.email}</span></>
+                ) : null}
+                . We&rsquo;ll email your tracking number as soon as it ships.
               </p>
 
-              {/* order updates */}
-              <section className="mt-8 rounded-xl border border-line p-5">
-                <h2 className="font-display text-[1rem] font-bold">Shipping</h2>
-                <p className="mt-1.5 text-[0.95rem] text-ink-2">
-                  <span className="font-medium text-ink">Free {order?.shippingMethod ?? "Standard shipping"}</span> — arrives in about{" "}
-                  {order?.shippingEta ?? "7–10 business days"}. We&rsquo;ll email tracking as soon as it ships.
-                </p>
-              </section>
-
-              {/* customer information */}
               {order && (
-                <section className="mt-6">
-                  <h2 className="mb-3 font-display text-[1.05rem] font-bold">Customer information</h2>
-                  <dl className="grid gap-5 rounded-xl border border-line p-5 sm:grid-cols-2">
-                    {order.email && <Info label="Contact">{order.email}</Info>}
+                <div className="mt-8 overflow-hidden rounded-2xl border border-line">
+                  <div className="border-b border-line bg-[#fafafa] px-6 py-3.5">
+                    <h2 className="font-display text-[0.98rem] font-bold">Order details</h2>
+                  </div>
+                  <dl className="divide-y divide-line">
+                    <div className="grid gap-6 px-6 py-5 sm:grid-cols-2">
+                      {order.email && <Field label="Contact">{order.email}</Field>}
+                      <Field label="Payment">
+                        {order.paymentBrand && order.paymentLast4
+                          ? `${order.paymentBrand} ···· ${order.paymentLast4}`
+                          : "Paid securely via Stripe"}
+                        <span className="mt-0.5 block text-muted">{money(order.totalCents)} {order.currency}</span>
+                      </Field>
+                    </div>
                     {order.address && (
-                      <Info label="Shipping address">
-                        {order.name && <>{order.name}<br /></>}
-                        {order.address.line1}
-                        {order.address.line2 ? <>, {order.address.line2}</> : null}
-                        <br />
-                        {[order.address.postal, order.address.city].filter(Boolean).join(" ")}
-                        {order.address.state ? `, ${order.address.state}` : ""}
-                        <br />
-                        {order.address.country}
-                      </Info>
+                      <div className="grid gap-6 px-6 py-5 sm:grid-cols-2">
+                        <Field label="Shipping address">
+                          {order.name && (
+                            <>
+                              {order.name}
+                              <br />
+                            </>
+                          )}
+                          {order.address.line1}
+                          {order.address.line2 ? `, ${order.address.line2}` : ""}
+                          <br />
+                          {[order.address.postal, order.address.city].filter(Boolean).join(" ")}
+                          {order.address.state ? `, ${order.address.state}` : ""}
+                          <br />
+                          {order.address.country}
+                        </Field>
+                        <Field label="Billing address">Same as shipping address</Field>
+                      </div>
                     )}
-                    <Info label="Shipping method">{order.shippingMethod}</Info>
-                    <Info label="Payment">Paid securely via Stripe · {money(order.totalCents)} {order.currency}</Info>
+                    <div className="px-6 py-5">
+                      <Field label="Shipping method">
+                        {order.shippingMethod} — arrives in about {order.shippingEta}
+                      </Field>
+                    </div>
                   </dl>
-                </section>
+                </div>
               )}
 
-              <Button asChild size="lg" className="mt-8 w-full touch-manipulation sm:w-auto sm:px-10">
-                <a href="/">Continue shopping</a>
-              </Button>
+              <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
+                <Button asChild size="lg" className="touch-manipulation">
+                  <a href="/">Continue shopping</a>
+                </Button>
+                <a href="/contact" className="text-[0.9rem] font-medium text-brand hover:underline">
+                  Need help with your order?
+                </a>
+              </div>
 
-              <p className="mt-5 text-[0.9rem] text-muted">
-                Need help with your order? <a href="/contact" className="text-brand hover:underline">Contact us</a>.
-              </p>
-
-              <nav aria-label="Policies" className="mt-8 flex flex-wrap gap-x-5 gap-y-2 border-t border-line pt-5 text-[0.8rem]">
+              <nav aria-label="Policies" className="mt-10 flex flex-wrap gap-x-5 gap-y-2 border-t border-line pt-5 text-[0.8rem]">
                 {LINKS.map(([label, href]) => (
-                  <a key={href} href={href} className="text-brand hover:underline">
+                  <a key={href} href={href} className="text-muted transition-colors hover:text-ink">
                     {label}
                   </a>
                 ))}
@@ -146,9 +159,9 @@ export default function CheckoutSuccessPage() {
             </div>
           </main>
 
-          {/* order summary */}
-          <aside className="order-1 border-b border-line bg-paper-alt px-5 py-8 md:order-2 md:border-b-0 md:border-l md:py-12 md:pl-12">
-            <div className="sticky top-8 mx-auto max-w-[420px]">
+          {/* summary */}
+          <aside className="order-1 border-b border-line bg-[#fafafa] px-5 py-8 md:order-2 md:border-b-0 md:border-l md:py-14 md:pl-12">
+            <div className="sticky top-8 mx-auto max-w-[400px]">
               <h2 className="sr-only">Order summary</h2>
               <div className="flex items-center gap-4">
                 <span className="relative shrink-0">
@@ -163,7 +176,10 @@ export default function CheckoutSuccessPage() {
               </div>
 
               <div className="mt-5 space-y-2 border-t border-line pt-4 text-[0.92rem]">
-                <Row label="Subtotal">{money(order?.productCents ?? 5900)}</Row>
+                <div className="flex justify-between text-muted">
+                  <span>Subtotal</span>
+                  <span className="tabular-nums">{money(order?.productCents ?? 5900)}</span>
+                </div>
                 {order && order.discountCents > 0 && (
                   <div className="flex justify-between text-[#1b8a4e]">
                     <span>Discount{order.discountCode ? ` · ${order.discountCode}` : ""}</span>
@@ -177,10 +193,10 @@ export default function CheckoutSuccessPage() {
                   </span>
                 </div>
                 <div className="mt-2 flex items-baseline justify-between border-t border-line pt-3">
-                  <span className="font-display text-[1.1rem] font-bold">Total</span>
+                  <span className="font-display text-[1.05rem] font-bold">Total</span>
                   <span>
                     <span className="mr-1.5 text-[0.72rem] text-muted">{order?.currency ?? "USD"}</span>
-                    <span className="font-display text-[1.3rem] font-bold tabular-nums">{money(order?.totalCents ?? 5900)}</span>
+                    <span className="font-display text-[1.25rem] font-bold tabular-nums">{money(order?.totalCents ?? 5900)}</span>
                   </span>
                 </div>
               </div>
@@ -192,20 +208,11 @@ export default function CheckoutSuccessPage() {
   );
 }
 
-function Info({ label, children }: { label: string; children: React.ReactNode }) {
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <dt className="text-[0.78rem] font-semibold uppercase tracking-wide text-muted">{label}</dt>
-      <dd className="mt-1 text-[0.92rem] leading-relaxed text-ink-2">{children}</dd>
-    </div>
-  );
-}
-
-function Row({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div className="flex justify-between text-muted">
-      <span>{label}</span>
-      <span className="tabular-nums">{children}</span>
+      <dt className="text-[0.72rem] font-semibold uppercase tracking-[0.06em] text-muted">{label}</dt>
+      <dd className="mt-1 text-[0.92rem] leading-relaxed text-ink">{children}</dd>
     </div>
   );
 }
