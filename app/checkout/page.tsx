@@ -4,6 +4,7 @@ import { loadStripe } from "@stripe/stripe-js";
 import {
   Elements,
   PaymentElement,
+  ExpressCheckoutElement,
   AddressElement,
   LinkAuthenticationElement,
   useStripe,
@@ -99,7 +100,7 @@ export default function CheckoutPage() {
             },
           }}
         >
-          <CheckoutInner piId={piId} quote={quote} setQuote={setQuote} />
+          <CheckoutInner clientSecret={clientSecret} piId={piId} quote={quote} setQuote={setQuote} />
         </Elements>
       )}
     </div>
@@ -107,10 +108,12 @@ export default function CheckoutPage() {
 }
 
 function CheckoutInner({
+  clientSecret,
   piId,
   quote,
   setQuote,
 }: {
+  clientSecret: string;
   piId: string;
   quote: Quote;
   setQuote: (q: Quote) => void;
@@ -123,21 +126,53 @@ function CheckoutInner({
   const [paying, setPaying] = useState(false);
   const [payErr, setPayErr] = useState("");
   const [summaryOpen, setSummaryOpen] = useState(false);
+  const [hasExpress, setHasExpress] = useState(false);
 
+  const recomputeAsync = async (nextShipping: ShippingId, nextCode: string, announce = false) => {
+    try {
+      const res = await fetch("/api/payment-intent", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ paymentIntentId: piId, shipping: nextShipping, code: nextCode || null }),
+      });
+      const d = await res.json();
+      if (d.total != null) {
+        setQuote(d);
+        if (announce) setCodeMsg(d.codeOk ? "Discount applied." : "That code isn’t valid.");
+      }
+    } catch {}
+  };
   const recompute = (nextShipping: ShippingId, nextCode: string, announce = false) => {
-    fetch("/api/payment-intent", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ paymentIntentId: piId, shipping: nextShipping, code: nextCode || null }),
-    })
-      .then((r) => r.json())
-      .then((d) => {
-        if (d.total != null) {
-          setQuote(d);
-          if (announce) setCodeMsg(d.codeOk ? "Discount applied." : "That code isn’t valid.");
-        }
-      })
-      .catch(() => {});
+    void recomputeAsync(nextShipping, nextCode, announce);
+  };
+
+  const confirm = async () => {
+    if (!stripe || !elements) return;
+    const { error } = await stripe.confirmPayment({
+      elements,
+      confirmParams: { return_url: `${window.location.origin}/checkout/success` },
+    });
+    if (error) setPayErr(error.message || "Payment could not be completed.");
+  };
+
+  // Express Checkout (Apple Pay / Google Pay / Link) — collects contact + shipping
+  // in the wallet sheet, keeps the PaymentIntent amount in sync with the choice.
+  const onExpressClick = ({ resolve }: any) =>
+    resolve({
+      emailRequired: true,
+      phoneNumberRequired: true,
+      shippingAddressRequired: true,
+      lineItems: [{ name: PRODUCT.title, amount: Math.max(0, quote.productCents - quote.discountCents) }],
+      shippingRates: [
+        { id: "standard", displayName: "Standard shipping (7–10 business days)", amount: SHIP.standard.cents },
+        { id: "express", displayName: "Express shipping (2–3 business days)", amount: SHIP.express.cents },
+      ],
+    });
+  const onExpressShippingRateChange = async ({ shippingRate, resolve }: any) => {
+    const next: ShippingId = shippingRate?.id === "express" ? "express" : "standard";
+    setShipping(next);
+    await recomputeAsync(next, code);
+    resolve();
   };
 
   const chooseShipping = (id: ShippingId) => {
@@ -184,6 +219,23 @@ function CheckoutInner({
       {/* form */}
       <main className="order-2 px-5 py-8 md:order-1 md:py-12 md:pr-12">
         <div className="mx-auto max-w-[520px]">
+          {/* Express checkout — Apple Pay / Google Pay / Link */}
+          <div className={hasExpress ? "mb-6" : ""}>
+            <ExpressCheckoutElement
+              options={{ buttonHeight: 48 }}
+              onReady={(e: any) => setHasExpress(!!e?.availablePaymentMethods)}
+              onClick={onExpressClick}
+              onShippingAddressChange={({ resolve }: any) => resolve()}
+              onShippingRateChange={onExpressShippingRateChange}
+              onConfirm={confirm}
+            />
+            {hasExpress && (
+              <div className="mt-5 flex items-center gap-3 text-[0.8rem] text-muted">
+                <span className="h-px flex-1 bg-line" /> OR <span className="h-px flex-1 bg-line" />
+              </div>
+            )}
+          </div>
+
           <Section title="Contact">
             <LinkAuthenticationElement />
           </Section>
