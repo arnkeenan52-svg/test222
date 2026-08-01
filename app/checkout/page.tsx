@@ -69,7 +69,7 @@ export default function CheckoutPage() {
   return (
     <div className="min-h-screen bg-white text-ink">
       {/* header — white, Shopify-style */}
-      <header className="border-b border-line bg-white" style={{ paddingTop: "env(safe-area-inset-top)" }}>
+      <header className="border-b border-line bg-white">
         <div className="mx-auto flex max-w-[1100px] items-center justify-between px-5 py-4">
           <a href="/" aria-label="FadeClipper home">
             <img src="/assets/img/fadeclipper-stripe-logo.png" alt="FadeClipper" width={123} height={24} className="h-6 w-auto" />

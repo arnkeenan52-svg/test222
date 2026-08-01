@@ -59,7 +59,7 @@ export default function CheckoutSuccessPage() {
 
   return (
     <div className="min-h-screen bg-white text-ink">
-      <header className="border-b border-line bg-white" style={{ paddingTop: "env(safe-area-inset-top)" }}>
+      <header className="border-b border-line bg-white">
         <div className="mx-auto max-w-[1000px] px-5 py-4">
           <a href="/" aria-label="FadeClipper home">
             <img src="/assets/img/fadeclipper-stripe-logo.png" alt="FadeClipper" width={123} height={24} className="h-6 w-auto" />
