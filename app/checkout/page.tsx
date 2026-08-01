@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import {
   Elements,
@@ -32,8 +32,11 @@ export default function CheckoutPage() {
   const [piId, setPiId] = useState("");
   const [quote, setQuote] = useState<Quote | null>(null);
   const [fatal, setFatal] = useState("");
+  const started = useRef(false);
 
   useEffect(() => {
+    if (started.current) return; // never create two PaymentIntents
+    started.current = true;
     if (!stripePromise) {
       setFatal("Stripe isn’t configured yet. Add your keys to go live.");
       return;
@@ -62,18 +65,21 @@ export default function CheckoutPage() {
       <header className="bg-brand">
         <div className="mx-auto flex max-w-[1100px] items-center justify-between px-5 py-4">
           <a href="/" aria-label="FadeClipper home">
-            <img src="/assets/img/fadeclipper-logo-white.png" alt="FadeClipper" className="h-6 w-auto" />
+            <img src="/assets/img/fadeclipper-logo-white.png" alt="FadeClipper" width={140} height={24} className="h-6 w-auto" />
           </a>
           <span className="flex items-center gap-1.5 text-[0.82rem] font-medium text-white/90">
-            <Lock className="h-4 w-4" /> Secure checkout
+            <Lock className="h-4 w-4" aria-hidden="true" /> Secure checkout
           </span>
         </div>
       </header>
+      <h1 className="sr-only">Checkout</h1>
 
       {fatal ? (
         <FatalFallback message={fatal} />
       ) : !clientSecret || !quote ? (
-        <div className="mx-auto max-w-[1100px] px-5 py-24 text-center text-muted">Loading secure checkout…</div>
+        <div className="mx-auto max-w-[1100px] px-5 py-24 text-center text-muted" role="status" aria-live="polite">
+          Loading secure checkout…
+        </div>
       ) : (
         <Elements
           stripe={stripePromise}
@@ -202,16 +208,18 @@ function CheckoutInner({
       {/* mobile collapsible summary */}
       <button
         onClick={() => setSummaryOpen((v) => !v)}
-        className="flex items-center justify-between border-b border-line bg-paper-alt px-5 py-3 text-[0.9rem] md:hidden"
+        className="flex touch-manipulation items-center justify-between border-b border-line bg-paper-alt px-5 py-3 text-[0.9rem] md:hidden"
         aria-expanded={summaryOpen}
+        aria-controls="order-summary-mobile"
       >
         <span className="flex items-center gap-2 font-medium text-brand">
-          Order summary <ChevronDown className={`h-4 w-4 transition-transform ${summaryOpen ? "rotate-180" : ""}`} />
+          {summaryOpen ? "Hide order summary" : "Show order summary"}
+          <ChevronDown aria-hidden="true" className={`h-4 w-4 transition-transform ${summaryOpen ? "rotate-180" : ""}`} />
         </span>
-        <span className="font-display text-[1.1rem] font-bold">{money(quote.total)}</span>
+        <span className="font-display text-[1.1rem] font-bold tabular-nums">{money(quote.total)}</span>
       </button>
       {summaryOpen && (
-        <div className="border-b border-line bg-paper-alt px-5 py-5 md:hidden">
+        <div id="order-summary-mobile" className="border-b border-line bg-paper-alt px-5 py-5 md:hidden">
           <Summary quote={quote} shipping={shipping} code={code} setCode={setCode} applyCode={applyCode} codeMsg={codeMsg} />
         </div>
       )}
@@ -253,32 +261,39 @@ function CheckoutInner({
           </Section>
 
           <Section title="Shipping method">
-            <div className="grid gap-2.5">
+            <div className="grid gap-2.5" role="radiogroup" aria-label="Shipping method">
               {(Object.keys(SHIP) as ShippingId[]).map((id) => {
                 const s = SHIP[id];
                 const active = shipping === id;
                 return (
-                  <button
+                  <label
                     key={id}
-                    onClick={() => chooseShipping(id)}
-                    className={`flex items-center justify-between rounded-lg border px-4 py-3 text-left transition-colors ${
-                      active ? "border-brand bg-brand-tint ring-1 ring-brand" : "border-line hover:border-ink/30"
+                    className={`flex cursor-pointer touch-manipulation items-center justify-between rounded-lg border px-4 py-3 text-left transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-brand has-[:focus-visible]:ring-offset-1 ${
+                      active ? "border-brand bg-brand-tint" : "border-line hover:border-ink/30"
                     }`}
                   >
+                    <input
+                      type="radio"
+                      name="shipping-method"
+                      value={id}
+                      checked={active}
+                      onChange={() => chooseShipping(id)}
+                      className="sr-only"
+                    />
                     <span className="flex items-center gap-3">
-                      <span className={`grid h-5 w-5 place-items-center rounded-full border ${active ? "border-brand" : "border-line-2"}`}>
+                      <span aria-hidden="true" className={`grid h-5 w-5 place-items-center rounded-full border ${active ? "border-brand" : "border-line-2"}`}>
                         {active && <span className="h-2.5 w-2.5 rounded-full bg-brand" />}
                       </span>
                       <span>
                         <span className="flex items-center gap-1.5 font-medium">
-                          {id === "express" ? <Zap className="h-4 w-4 text-brand" /> : <Truck className="h-4 w-4 text-brand" />}
+                          {id === "express" ? <Zap className="h-4 w-4 text-brand" aria-hidden="true" /> : <Truck className="h-4 w-4 text-brand" aria-hidden="true" />}
                           {s.label}
                         </span>
                         <span className="text-[0.82rem] text-muted">{s.eta}</span>
                       </span>
                     </span>
-                    <span className="font-semibold">{s.cents === 0 ? "FREE" : money(s.cents)}</span>
-                  </button>
+                    <span className="font-semibold tabular-nums">{s.cents === 0 ? "FREE" : money(s.cents)}</span>
+                  </label>
                 );
               })}
             </div>
@@ -286,7 +301,7 @@ function CheckoutInner({
 
           <Section title="Payment">
             <p className="mb-3 flex items-center gap-1.5 text-[0.8rem] text-muted">
-              <ShieldCheck className="h-4 w-4 text-brand" /> All transactions are secure and encrypted.
+              <ShieldCheck className="h-4 w-4 text-brand" aria-hidden="true" /> All transactions are secure and encrypted.
             </p>
             {/* Apple Pay / Google Pay / Link appear as fast-pay buttons when available */}
             <PaymentElement options={{ wallets: { applePay: "auto", googlePay: "auto" } }} />
@@ -295,13 +310,16 @@ function CheckoutInner({
           <button
             onClick={pay}
             disabled={paying || !stripe}
-            className="mt-6 w-full rounded-[10px] bg-brand py-[0.95rem] text-center font-display text-[1.05rem] font-semibold text-white transition-colors hover:bg-brand-dark disabled:opacity-60"
+            aria-busy={paying}
+            className="mt-6 w-full touch-manipulation rounded-[10px] bg-brand py-[0.95rem] text-center font-display text-[1.05rem] font-semibold text-white transition-colors hover:bg-brand-dark disabled:opacity-60"
           >
             {paying ? "Processing…" : "Pay now"}
           </button>
-          {payErr && <p className="mt-3 text-center text-[0.85rem] text-[#d64545]">{payErr}</p>}
-          <p className="mt-4 flex items-center justify-center gap-1.5 text-[0.78rem] text-muted">
-            <Lock className="h-3.5 w-3.5" /> Powered by Stripe · Backed by our 14-day money-back guarantee
+          <p role="alert" aria-live="assertive" className="mt-3 text-center text-[0.85rem] text-[#d64545]">
+            {payErr}
+          </p>
+          <p className="mt-1 flex items-center justify-center gap-1.5 text-[0.78rem] text-muted">
+            <Lock className="h-3.5 w-3.5" aria-hidden="true" /> Powered by Stripe · Backed by our 14-day money-back guarantee
           </p>
         </div>
       </main>
@@ -344,52 +362,63 @@ function Summary({
     <div>
       <div className="flex items-center gap-4">
         <span className="relative shrink-0">
-          <img src={PRODUCT_IMG} alt={PRODUCT.title} className="h-16 w-16 rounded-xl border border-line object-cover" />
-          <span className="absolute -right-2 -top-2 grid h-6 w-6 place-items-center rounded-full bg-ink text-[0.72rem] font-bold text-white">1</span>
+          <img src={PRODUCT_IMG} alt={PRODUCT.title} width={64} height={64} className="h-16 w-16 rounded-xl border border-line object-cover" />
+          <span aria-hidden="true" className="absolute -right-2 -top-2 grid h-6 w-6 place-items-center rounded-full bg-ink text-[0.72rem] font-bold text-white">1</span>
         </span>
-        <div className="flex-1">
-          <p className="font-semibold leading-tight">{PRODUCT.title}</p>
-          <p className="text-[0.82rem] text-muted">{PRODUCT.sub}</p>
+        <div className="min-w-0 flex-1">
+          <p className="font-semibold leading-tight">
+            {PRODUCT.title} <span className="sr-only">, quantity 1</span>
+          </p>
+          <p className="truncate text-[0.82rem] text-muted">{PRODUCT.sub}</p>
         </div>
-        <span className="font-semibold">{money(quote.productCents)}</span>
+        <span className="font-semibold tabular-nums">{money(quote.productCents)}</span>
       </div>
 
       {/* discount */}
       <div className="mt-5 flex gap-2">
+        <label htmlFor="discount-code" className="sr-only">Discount code</label>
         <input
+          id="discount-code"
+          name="discount-code"
           value={code}
           onChange={(e) => setCode(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && applyCode()}
           placeholder="Discount code"
-          className="min-w-0 flex-1 rounded-lg border border-[#d9dce1] bg-white px-4 py-2.5 text-[0.9rem] outline-none focus:border-brand focus:ring-1 focus:ring-brand"
+          autoComplete="off"
+          autoCapitalize="characters"
+          spellCheck={false}
+          className="min-w-0 flex-1 rounded-lg border border-[#d9dce1] bg-white px-4 py-2.5 text-[0.9rem] outline-none focus-visible:border-brand focus-visible:ring-1 focus-visible:ring-brand"
         />
         <button
           onClick={applyCode}
-          className="shrink-0 rounded-lg bg-[#e6e8eb] px-5 py-2.5 text-[0.9rem] font-semibold text-ink transition-colors hover:bg-[#dcdfe3]"
+          className="shrink-0 touch-manipulation rounded-lg bg-[#e6e8eb] px-5 py-2.5 text-[0.9rem] font-semibold text-ink transition-colors hover:bg-[#dcdfe3]"
         >
           Apply
         </button>
       </div>
-      {codeMsg && (
-        <p className={`mt-2 flex items-center gap-1 text-[0.8rem] ${quote.codeOk ? "text-[#1b8a4e]" : "text-[#d64545]"}`}>
-          {quote.codeOk && <Check className="h-3.5 w-3.5" />} {codeMsg}
-        </p>
-      )}
+      <p aria-live="polite" className={`mt-2 flex items-center gap-1 text-[0.8rem] ${quote.codeOk ? "text-[#1b8a4e]" : "text-[#d64545]"}`}>
+        {codeMsg && (
+          <>
+            {quote.codeOk && <Check className="h-3.5 w-3.5" aria-hidden="true" />} {codeMsg}
+          </>
+        )}
+      </p>
 
       {/* totals */}
       <div className="mt-5 space-y-2 border-t border-line pt-4 text-[0.92rem]">
         <div className="flex justify-between text-muted">
           <span>Subtotal</span>
-          <span>{money(quote.productCents)}</span>
+          <span className="tabular-nums">{money(quote.productCents)}</span>
         </div>
         {quote.discountCents > 0 && (
           <div className="flex justify-between text-[#1b8a4e]">
             <span>Discount</span>
-            <span>−{money(quote.discountCents)}</span>
+            <span className="tabular-nums">&minus;{money(quote.discountCents)}</span>
           </div>
         )}
         <div className="flex justify-between text-muted">
-          <span>Shipping · {SHIP[shipping].label}</span>
-          <span className={quote.shippingCents === 0 ? "text-[#1b8a4e]" : ""}>
+          <span>Shipping &middot; {SHIP[shipping].label}</span>
+          <span className={`tabular-nums ${quote.shippingCents === 0 ? "text-[#1b8a4e]" : ""}`}>
             {quote.shippingCents === 0 ? "Free" : money(quote.shippingCents)}
           </span>
         </div>
@@ -397,7 +426,7 @@ function Summary({
           <span className="font-display text-[1.1rem] font-bold">Total</span>
           <span>
             <span className="mr-1.5 text-[0.72rem] text-muted">USD</span>
-            <span className="font-display text-[1.3rem] font-bold">{money(quote.total)}</span>
+            <span className="font-display text-[1.3rem] font-bold tabular-nums">{money(quote.total)}</span>
           </span>
         </div>
       </div>
@@ -427,11 +456,12 @@ function FatalFallback({ message }: { message: string }) {
   };
   return (
     <div className="mx-auto max-w-[520px] px-5 py-20 text-center">
-      <p className="text-muted">{message}</p>
+      <p className="text-muted" role="status">{message}</p>
       <button
         onClick={hosted}
         disabled={loading}
-        className="mt-5 rounded-full bg-brand px-6 py-3 font-display font-bold text-white hover:bg-brand-dark disabled:opacity-60"
+        aria-busy={loading}
+        className="mt-5 touch-manipulation rounded-full bg-brand px-6 py-3 font-display font-bold text-white hover:bg-brand-dark disabled:opacity-60"
       >
         {loading ? "Starting…" : "Continue to secure checkout"}
       </button>
