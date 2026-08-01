@@ -20,7 +20,7 @@ const gallery = [
 export default function ProductPage() {
   return (
     <>
-      <SiteNav variant="light" buyBar />
+      <SiteNav variant="light" />
 
       <main id="top">
         {/* PRODUCT */}
