@@ -2,8 +2,11 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 // Colours the mobile browser strip / status-bar area to match the offer bar.
+// `viewportFit: "cover"` lets the page render under the iOS status bar so the
+// orange offer bar can paint that notch strip instead of leaving it white.
 export const viewport: Viewport = {
   themeColor: "#ec6324",
+  viewportFit: "cover",
 };
 import { SmoothScroll } from "@/components/SmoothScroll";
 import { CurrencyProvider } from "@/components/CurrencyProvider";
