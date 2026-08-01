@@ -59,16 +59,20 @@ export function SiteNav({ variant = "light", buyBar = false }: { variant?: "hero
     ? "grid h-10 w-10 place-items-center rounded-full text-white hover:bg-white/10 md:hidden"
     : "grid h-10 w-10 place-items-center rounded-full text-ink hover:bg-card md:hidden";
   const panel = hero
-    ? "fixed inset-x-3 top-[112px] z-40 rounded-4xl border border-white/10 bg-[#111] p-5 shadow-soft md:hidden"
-    : "fixed inset-x-3 top-[124px] z-40 rounded-4xl border border-line bg-white p-5 shadow-soft md:hidden";
+    ? "fixed inset-x-3 z-40 rounded-4xl border border-white/10 bg-[#111] p-5 shadow-soft md:hidden"
+    : "fixed inset-x-3 z-40 rounded-4xl border border-line bg-white p-5 shadow-soft md:hidden";
+  // keep the dropdown under the nav now that the offer bar reserves the safe area
+  const panelTop = hero
+    ? "calc(112px + env(safe-area-inset-top))"
+    : "calc(124px + env(safe-area-inset-top))";
   const panelLink = hero
     ? "border-b border-white/10 py-3 font-semibold text-white last:border-0"
     : "border-b border-line-2 py-3 font-semibold text-ink last:border-0";
 
   return (
     <>
-      {/* offer bar */}
-      <div className="bg-brand text-white">
+      {/* offer bar — pads into the iOS safe area so the orange fills the status-bar strip */}
+      <div className="bg-brand text-white" style={{ paddingTop: "env(safe-area-inset-top)" }}>
         <div className="mx-auto flex max-w-container items-center justify-between gap-3 px-4 py-2 text-[0.8rem]">
           <span className="flex items-center gap-1.5 font-medium">
             <span className="uppercase tracking-wide opacity-90">Offer ends in</span>
@@ -113,7 +117,7 @@ export function SiteNav({ variant = "light", buyBar = false }: { variant?: "hero
       </div>
 
       {open && (
-        <div id="mobile-menu" className={panel}>
+        <div id="mobile-menu" className={panel} style={{ top: panelTop }}>
           <div className="flex flex-col">
             {links.map(([label, href]) => (
               <a key={href} href={href} onClick={() => setOpen(false)} className={panelLink}>
