@@ -17,11 +17,16 @@ export async function GET() {
   const sk = process.env.STRIPE_SECRET_KEY || "";
   const pkMode = mode(pk);
   const skMode = mode(sk);
+  // Names only (never values) of the Stripe-related vars this deployment sees.
+  const configuredVarNames = Object.keys(process.env)
+    .filter((k) => /stripe|publish|^pk_/i.test(k))
+    .sort();
   return NextResponse.json(
     {
       publishableKey: pkMode,
       secretKey: skMode,
       keysMatchMode: pk && sk ? pkMode === skMode : false,
+      configuredVarNames,
       // The client only sees the publishable key if the site was rebuilt AFTER
       // it was added — this endpoint reflects the runtime env, not the bundle.
       note: "If publishableKey shows 'missing' here it isn't set at all; if it's set here but /checkout still says 'not configured', the site needs a redeploy so the client bundle picks it up.",
