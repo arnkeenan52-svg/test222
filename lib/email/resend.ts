@@ -5,29 +5,30 @@
 //   RESEND_FROM      (optional)  e.g. "FadeClipper <orders@fadeclipper.com>"
 //   RESEND_REPLY_TO  (optional)  e.g. "support@fadeclipper.com"
 
-type SendArgs = { to: string; subject: string; html: string; text?: string };
+type SendArgs = { to: string; subject: string; html: string; text?: string; from?: string; replyTo?: string };
 
 // Falls back to Resend's shared test sender so it works before a domain is
 // verified. Switch RESEND_FROM to your own verified domain for production.
 const FROM = process.env.RESEND_FROM || "FadeClipper <onboarding@resend.dev>";
 const REPLY_TO = process.env.RESEND_REPLY_TO || "";
 
-export async function sendMail({ to, subject, html, text }: SendArgs): Promise<{ ok: boolean; id?: string; error?: string }> {
+export async function sendMail({ to, subject, html, text, from, replyTo }: SendArgs): Promise<{ ok: boolean; id?: string; error?: string }> {
   const key = process.env.RESEND_API_KEY;
   if (!key) return { ok: false, error: "RESEND_API_KEY is not set" };
   if (!to) return { ok: false, error: "missing recipient" };
 
+  const replyAddr = replyTo || REPLY_TO;
   try {
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
       body: JSON.stringify({
-        from: FROM,
+        from: from || FROM,
         to: [to],
         subject,
         html,
         ...(text ? { text } : {}),
-        ...(REPLY_TO ? { reply_to: REPLY_TO } : {}),
+        ...(replyAddr ? { reply_to: replyAddr } : {}),
       }),
     });
     const data = await res.json().catch(() => ({}));

@@ -16,7 +16,7 @@ export default function PrivacyPage() {
       <h2>Who is responsible for your data</h2>
       <p>
         FadeClipper is the data controller for the information you share with this store. For any privacy question or
-        request, contact us at <a href="mailto:fadeclipper@gmail.com">fadeclipper@gmail.com</a>.
+        request, contact us at <a href="mailto:contact@fadeclipper.com">contact@fadeclipper.com</a>.
       </p>
 
       <h2>What we collect</h2>
@@ -74,7 +74,7 @@ export default function PrivacyPage() {
         <li>Withdraw consent and unsubscribe from marketing at any time</li>
       </ul>
       <p>
-        To exercise any of these, email <a href="mailto:fadeclipper@gmail.com">fadeclipper@gmail.com</a>. You also have
+        To exercise any of these, email <a href="mailto:contact@fadeclipper.com">contact@fadeclipper.com</a>. You also have
         the right to complain to your local data-protection authority.
       </p>
 

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { PageShell } from "@/components/PageShell";
+import { ContactForm } from "@/components/ContactForm";
 
 export const metadata: Metadata = {
   title: "Contact us — FadeClipper",
@@ -12,14 +13,17 @@ export default function ContactPage() {
       title="Contact us"
       intro="A real person reads every message. We usually reply within one business day (Mon–Fri)."
     >
-      <h2>Email</h2>
+      <h2>Send us a message</h2>
       <p>
-        For order help, product questions, returns, or anything else, email{" "}
-        <a href="mailto:fadeclipper@gmail.com">fadeclipper@gmail.com</a>.
+        Fill in the form below and it lands straight in our inbox — include your <strong>order number</strong> (from your
+        confirmation email) if it&apos;s about an existing order, so we can sort it fast.
       </p>
+
+      <ContactForm />
+
+      <h2>Prefer email?</h2>
       <p>
-        To help us sort it fast, please include your <strong>order number</strong> (from your confirmation email) and a
-        short description of what you need.
+        You can also reach us directly at <a href="mailto:contact@fadeclipper.com">contact@fadeclipper.com</a>.
       </p>
 
       <h2>Support hours</h2>
@@ -35,7 +39,7 @@ export default function ContactPage() {
       <h2>Business details</h2>
       <p>
         FadeClipper is an independent online store. For business, press or legal enquiries, email{" "}
-        <a href="mailto:fadeclipper@gmail.com">fadeclipper@gmail.com</a> and we&apos;ll get back to you.
+        <a href="mailto:contact@fadeclipper.com">contact@fadeclipper.com</a> and we&apos;ll get back to you.
       </p>
     </PageShell>
   );
