@@ -1,5 +1,6 @@
 "use client";
-import { Star, MapPin, Clock } from "lucide-react";
+import { useState } from "react";
+import { Star, MapPin, Clock, Minus, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCurrency } from "@/components/CurrencyProvider";
 import { useBuyNow } from "@/components/useBuyNow";
@@ -19,6 +20,8 @@ const perks = [
 export function BuyBox() {
   const { fmt } = useCurrency();
   const { buy, loading, error } = useBuyNow();
+  const [qty, setQty] = useState(1);
+  const setQ = (n: number) => setQty(Math.min(10, Math.max(1, n)));
 
   return (
     <div>
@@ -47,13 +50,24 @@ export function BuyBox() {
         </span>
       </div>
 
-      {/* launch-sale urgency countdown */}
-      <div className="mt-5 flex items-center justify-center gap-2 rounded-2xl bg-brand-tint px-4 py-3 text-[0.9rem] font-semibold text-brand-dark">
-        <Clock className="h-4 w-4 shrink-0" aria-hidden="true" /> Launch sale ends in <Countdown />
+      {/* launch-sale urgency countdown + compact quantity stepper */}
+      <div className="mt-5 flex items-stretch gap-2.5">
+        <div className="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-brand-tint px-3.5 py-3 text-[0.9rem] font-semibold text-brand-dark">
+          <Clock className="h-4 w-4 shrink-0" aria-hidden="true" /> Launch sale ends in <Countdown />
+        </div>
+        <div className="flex shrink-0 items-center rounded-2xl bg-brand-tint text-brand-dark" aria-label="Quantity">
+          <button type="button" aria-label="Decrease quantity" onClick={() => setQ(qty - 1)} disabled={qty <= 1} className="grid h-full w-9 place-items-center rounded-l-2xl transition-colors hover:bg-brand-soft disabled:opacity-30">
+            <Minus className="h-3.5 w-3.5" strokeWidth={2.5} />
+          </button>
+          <span aria-live="polite" className="w-6 select-none text-center text-[0.95rem] font-bold tabular-nums">{qty}</span>
+          <button type="button" aria-label="Increase quantity" onClick={() => setQ(qty + 1)} disabled={qty >= 10} className="grid h-full w-9 place-items-center rounded-r-2xl transition-colors hover:bg-brand-soft disabled:opacity-30">
+            <Plus className="h-3.5 w-3.5" strokeWidth={2.5} />
+          </button>
+        </div>
       </div>
 
-      <Button size="lg" className="mt-4 w-full rounded-2xl text-[1.05rem]" onClick={() => buy("single")} disabled={loading}>
-        {loading ? "Starting checkout…" : `Buy now — ${fmt(PRICE.now)}`}
+      <Button size="lg" className="mt-4 w-full rounded-2xl text-[1.05rem]" onClick={() => buy("single", qty)} disabled={loading}>
+        {loading ? "Starting checkout…" : `Buy now — ${fmt(PRICE.now * qty)}`}
       </Button>
 
       <DeliveryEstimate className="mt-3 text-[0.85rem] text-muted" iconClassName="text-brand" />
