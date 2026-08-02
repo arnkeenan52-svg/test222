@@ -49,10 +49,17 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "No item selected." }, { status: 400 });
   }
 
+  // Carry quantity onto the PaymentIntent so the confirmation email is accurate
+  // for this fallback path too (the webhook reads PaymentIntent metadata).
+  const totalQty = line_items.reduce((n, li) => n + (li.quantity || 1), 0);
+
   try {
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
       line_items,
+      payment_intent_data: {
+        metadata: { product: PRODUCTS.single.title, quantity: String(totalQty) },
+      },
       // Standard free shipping, estimated 10 days.
       shipping_address_collection: { allowed_countries: ["US", "CA", "GB", "DK", "SE", "NO", "DE", "FR", "NL", "IE", "AU"] },
       shipping_options: [
