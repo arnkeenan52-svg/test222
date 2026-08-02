@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import {
   ShoppingCart, DollarSign, TrendingUp, MapPin, Search, X, LogOut,
-  RefreshCw, Star, Check, PackageCheck,
+  RefreshCw, Check, PackageCheck,
 } from "lucide-react";
 import { Logo } from "@/components/Logo";
 
@@ -81,15 +81,18 @@ export default function AdminPage() {
   return <Dashboard onLogout={logout} />;
 }
 
-function StatCard({ icon, label, value, delta, live }: { icon: React.ReactNode; label: string; value: string; delta?: string; live?: boolean }) {
+function StatCard({ icon, label, value, delta, live, tone = "brand" }: { icon: React.ReactNode; label: string; value: string; delta?: string; live?: boolean; tone?: "brand" | "green" }) {
+  const chip = tone === "green" ? "bg-[#e6f1ea] text-[#1b8a4e]" : "bg-brand-tint text-brand";
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-line bg-white p-[18px] shadow-card">
-      <div className="absolute right-3.5 top-3.5 grid h-9 w-9 place-items-center rounded-xl bg-brand-tint text-brand">{icon}</div>
+    <div className="group relative overflow-hidden rounded-2xl border border-line bg-white p-5 shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:shadow-soft">
+      <span className={`absolute inset-x-0 top-0 h-[3px] ${tone === "green" ? "bg-[#1b8a4e]" : "bg-brand"} opacity-0 transition-opacity group-hover:opacity-100`} />
+      <div className={`absolute right-4 top-4 grid h-9 w-9 place-items-center rounded-xl ${chip}`}>{icon}</div>
       <div className="flex items-center gap-1.5 text-[0.75rem] font-semibold text-muted">
-        {live && <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-[#1b8a4e]" />}{label}
+        {live && <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-[#1b8a4e]" />}
+        <span className="truncate">{label}</span>
       </div>
-      <div className="mt-1.5 font-display text-[1.75rem] font-extrabold leading-tight tracking-tight text-ink tabular-nums">{value}</div>
-      {delta && <div className="mt-1 text-[0.78rem] font-medium text-muted">{delta}</div>}
+      <div className="mt-2 font-display text-[1.85rem] font-extrabold leading-none tracking-tight text-ink tabular-nums">{value}</div>
+      {delta && <div className="mt-1.5 text-[0.78rem] font-medium text-muted">{delta}</div>}
     </div>
   );
 }
@@ -178,11 +181,10 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
   return (
     <div className="min-h-[100dvh] bg-paper-alt text-ink">
       {/* topbar */}
-      <div className="sticky top-0 z-30 flex items-center gap-3 bg-ink px-4 py-3.5 text-white" style={{ paddingTop: "calc(0.875rem + env(safe-area-inset-top))" }}>
+      <div className="sticky top-0 z-30 flex items-center gap-3 border-b border-white/10 bg-ink px-4 py-3.5 text-white shadow-sm" style={{ paddingTop: "calc(0.875rem + env(safe-area-inset-top))" }}>
         <span className="text-white"><Logo /></span>
-        <div className="leading-tight">
-          <div className="text-[0.7rem] font-medium text-white/60">Admin dashboard</div>
-        </div>
+        <span className="hidden h-5 w-px bg-white/20 sm:block" />
+        <span className="hidden text-[0.82rem] font-semibold tracking-wide text-white/70 sm:block">Admin</span>
         <div className="flex-1" />
         {lastUpd && <span className="hidden text-[0.72rem] text-white/60 sm:inline">Updated {lastUpd}</span>}
         <button onClick={() => load(query)} aria-label="Refresh" className="grid h-9 w-9 place-items-center rounded-xl bg-white/10 hover:bg-white/20"><RefreshCw className="h-4 w-4" /></button>
@@ -196,7 +198,7 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
           <StatCard icon={<DollarSign className="h-[18px] w-[18px]" />} label="Revenue today" value={stats ? kmoney(stats.revenueToday) : "–"} />
           <StatCard icon={<ShoppingCart className="h-[18px] w-[18px]" />} label={`Orders · ${stats?.rangeLabel || ""}`} value={String(stats?.totalOrders ?? "–")} />
           <StatCard icon={<TrendingUp className="h-[18px] w-[18px]" />} label={`Revenue · ${stats?.rangeLabel || ""}`} value={stats ? kmoney(stats.totalRevenue) : "–"} />
-          <StatCard icon={<DollarSign className="h-[18px] w-[18px]" />} label="Avg. order value" value={stats ? money(stats.avgOrder) : "–"} />
+          <StatCard tone="green" icon={<DollarSign className="h-[18px] w-[18px]" />} label="Avg. order value" value={stats ? money(stats.avgOrder) : "–"} />
         </div>
 
         {/* range filter */}
@@ -279,27 +281,24 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
           )}
         </div>
 
-        {/* two-col: top product + locations */}
-        <div className="mt-4 grid gap-4 md:grid-cols-2">
-          <div className="rounded-2xl border border-line bg-white p-5 shadow-card">
-            <h2 className="mb-3 flex items-center gap-2 border-b border-line pb-3 font-display text-[0.95rem] font-bold"><Star className="h-4 w-4 text-brand" /> Best sellers</h2>
-            {stats?.topProducts?.length ? stats.topProducts.map((p, i) => (
-              <div key={i} className="flex items-center gap-3 border-b border-line py-2.5 last:border-0">
-                <span className="grid h-6 w-6 place-items-center rounded-md bg-brand-tint text-[0.72rem] font-bold text-brand">{i + 1}</span>
-                {p.image ? <img src={p.image} alt="" className="h-10 w-10 rounded-lg object-cover" /> : <span className="h-10 w-10 rounded-lg bg-card" />}
-                <span className="flex-1 text-[0.9rem] font-medium">{p.name}</span>
-                <span className="font-bold tabular-nums text-brand">{p.qty}×</span>
-              </div>
-            )) : <div className="py-4 text-center text-[0.85rem] text-muted">No data.</div>}
-          </div>
-          <div className="rounded-2xl border border-line bg-white p-5 shadow-card">
-            <h2 className="mb-3 flex items-center gap-2 border-b border-line pb-3 font-display text-[0.95rem] font-bold"><MapPin className="h-4 w-4 text-brand" /> Customer locations</h2>
-            {stats?.locations?.length ? stats.locations.map((l, i) => (
-              <div key={i} className="grid grid-cols-[1fr_auto] items-center border-b border-line py-2.5 text-[0.9rem] last:border-0">
-                <span>{l.location}</span><span className="font-bold tabular-nums text-brand">{l.count}</span>
-              </div>
-            )) : <div className="py-4 text-center text-[0.85rem] text-muted">No data.</div>}
-          </div>
+        {/* customer locations — full width, with proportional bars */}
+        <div className="mt-4 rounded-2xl border border-line bg-white p-5 shadow-card">
+          <h2 className="mb-4 flex items-center gap-2 border-b border-line pb-3 font-display text-[0.95rem] font-bold"><MapPin className="h-4 w-4 text-brand" /> Customer locations</h2>
+          {stats?.locations?.length ? (
+            <div className="grid gap-x-8 gap-y-1 sm:grid-cols-2">
+              {stats.locations.map((l, i) => {
+                const max = stats.locations[0]?.count || 1;
+                const pct = Math.max(8, Math.round((l.count / max) * 100));
+                return (
+                  <div key={i} className="relative flex items-center justify-between overflow-hidden rounded-lg px-3 py-2.5">
+                    <span className="absolute inset-y-1 left-0 rounded-lg bg-brand-tint" style={{ width: pct + "%" }} aria-hidden="true" />
+                    <span className="relative z-10 truncate pr-3 text-[0.9rem] font-medium text-ink">{l.location}</span>
+                    <span className="relative z-10 font-bold tabular-nums text-brand">{l.count}</span>
+                  </div>
+                );
+              })}
+            </div>
+          ) : <div className="py-4 text-center text-[0.85rem] text-muted">No data.</div>}
         </div>
       </div>
 
