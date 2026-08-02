@@ -6,6 +6,7 @@ import { HowItWorks } from "@/components/HowItWorks";
 import { WatchDemo } from "@/components/WatchDemo";
 import { ComparisonTable } from "@/components/ComparisonTable";
 import { RedditReviews } from "@/components/RedditReviews";
+import { Reviews } from "@/components/Reviews";
 import { Price } from "@/components/Price";
 import { SiteFooter } from "@/components/SiteFooter";
 import { Check, Plus, Star, ArrowRight, Lock, CircleDollarSign } from "lucide-react";
@@ -135,6 +136,9 @@ export default function Page() {
             ))}
           </div>
         </Section>
+
+        {/* CUSTOMER REVIEWS — full widget near the bottom */}
+        <Reviews id="customer-reviews" />
 
         {/* FINAL CTA */}
         <section className="px-3 pb-10">
