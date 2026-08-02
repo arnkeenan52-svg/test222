@@ -167,7 +167,7 @@ function ReplyThread({ reply, nested = false }: { reply: Reply; nested?: boolean
 
 const PAGE = 6;
 
-export function Reviews() {
+export function Reviews({ id = "reviews" }: { id?: string } = {}) {
   const [sort, setSort] = useState<"relevant" | "recent" | "high" | "low">("relevant");
   const [filter, setFilter] = useState(0);
   const [visible, setVisible] = useState(PAGE);
@@ -183,7 +183,7 @@ export function Reviews() {
   const setFilterReset = (n: number) => { setFilter(n); setVisible(PAGE); };
 
   return (
-    <section id="reviews" className="scroll-mt-24 bg-paper-alt py-[clamp(3.5rem,7vw,6rem)]">
+    <section id={id} className="scroll-mt-24 bg-paper-alt py-[clamp(3.5rem,7vw,6rem)]">
       <div className="container-x">
         {/* summary + controls */}
         <div className="mx-auto max-w-[720px] overflow-hidden rounded-4xl border border-line bg-white shadow-card">
