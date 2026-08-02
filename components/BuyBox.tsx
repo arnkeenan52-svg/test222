@@ -2,7 +2,8 @@
 import { useState } from "react";
 import { Star, MapPin, Clock, Minus, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useCurrency } from "@/components/CurrencyProvider";
+import { useCurrency, useCountry } from "@/components/CurrencyProvider";
+import { warehouseForCountry } from "@/lib/currency";
 import { useBuyNow } from "@/components/useBuyNow";
 import { DeliveryEstimate } from "@/components/DeliveryEstimate";
 import { Countdown } from "@/components/Countdown";
@@ -19,6 +20,7 @@ const perks = [
 
 export function BuyBox() {
   const { fmt } = useCurrency();
+  const warehouse = warehouseForCountry(useCountry());
   const { buy, loading, error } = useBuyNow();
   const [qty, setQty] = useState(1);
   const setQ = (n: number) => setQty(Math.min(10, Math.max(1, n)));
@@ -88,7 +90,16 @@ export function BuyBox() {
       <div className="mt-4 flex items-center gap-2 text-[0.85rem] text-muted">
         <MapPin className="h-4 w-4 shrink-0 text-brand" />
         <span>
-          In stock &middot; <span className="text-ink">order today, ships within 24 hours</span>
+          {warehouse ? (
+            <>
+              In stock at our <span className="text-ink">{warehouse} warehouse</span> &middot;{" "}
+              <span className="text-ink">ships within 24 hours</span>
+            </>
+          ) : (
+            <>
+              In stock &middot; <span className="text-ink">order today, ships within 24 hours</span>
+            </>
+          )}
         </span>
       </div>
     </div>

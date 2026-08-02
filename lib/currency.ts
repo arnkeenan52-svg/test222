@@ -38,6 +38,26 @@ export function currencyForCountry(cc: string): Currency {
   return CURRENCIES.USD;
 }
 
+// Which fulfilment warehouse serves a country. The store stocks a European and
+// a US warehouse and ships each order from whichever is closest, so the product
+// page can reassure the visitor it's in stock near them.
+export type Warehouse = "Europe" | "US";
+
+const EUROPE_COUNTRIES = [
+  "GB", "IE", "FR", "DE", "NL", "BE", "LU", "AT", "CH", "LI", "IT", "ES", "PT",
+  "DK", "SE", "NO", "FI", "IS", "PL", "CZ", "SK", "SI", "HU", "RO", "BG", "HR",
+  "GR", "EE", "LV", "LT", "MT", "CY",
+];
+const US_COUNTRIES = ["US", "CA", "MX"];
+
+export function warehouseForCountry(cc: string | null | undefined): Warehouse | null {
+  const c = (cc || "").toUpperCase();
+  if (!c) return null;
+  if (EUROPE_COUNTRIES.includes(c)) return "Europe";
+  if (US_COUNTRIES.includes(c)) return "US";
+  return null;
+}
+
 export function formatPrice(usd: number, c: Currency): string {
   const raw = usd * c.rate;
   // USD shows the authored cents (e.g. 89.99); converted currencies round to whole units.
