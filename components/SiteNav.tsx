@@ -50,7 +50,7 @@ export function SiteNav({ variant = "light", buyBar = false }: { variant?: "hero
   // homepage glow; "light" = a white pill on light pages (Flow-style).
   const wrap = "px-3 pt-3";
   const bar = hero
-    ? "mx-auto flex max-w-container items-center justify-between gap-4 rounded-full border border-white/10 bg-white/[0.16] px-3 py-2 pl-5 text-white shadow-soft backdrop-blur-md"
+    ? "mx-auto flex max-w-container items-center justify-between gap-4 rounded-full border border-white/10 bg-[#524d48]/90 px-3 py-2 pl-5 text-white shadow-soft backdrop-blur-md"
     : "mx-auto flex max-w-container items-center justify-between gap-4 rounded-full border border-line bg-white px-3 py-2.5 pl-5 text-ink shadow-soft";
   const logoColor = hero ? "text-white" : "text-ink";
   const link = hero
