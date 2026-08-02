@@ -28,6 +28,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <head>
+        {/* Empty theme-color, exactly like flowalarmclock — lets iOS Safari colour
+            the status bar from the page content (the orange offer bar) instead of
+            defaulting it. */}
+        <meta name="theme-color" content="" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
