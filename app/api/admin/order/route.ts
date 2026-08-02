@@ -46,6 +46,7 @@ export async function GET(req: NextRequest) {
         card: o.paymentBrand ? { brand: o.paymentBrand, last4: o.paymentLast4 } : null,
         refunded: !!charge?.refunded || refundedAmt >= intent.amount,
         amountRefunded: refundedAmt / 100,
+        fulfilled: intent.metadata?.fulfilled === "true",
         currency: (intent.currency || "usd").toUpperCase(),
       });
     }
@@ -75,6 +76,7 @@ export async function GET(req: NextRequest) {
             itemCount: Math.max(1, parseInt(pi.metadata?.quantity || "1", 10) || 1),
             delivery: (pi.metadata?.shipping as string) || "standard",
             refunded: !!charge?.refunded, paymentStatus: "paid",
+            fulfilled: pi.metadata?.fulfilled === "true",
           });
         }
         if (res.has_more && res.data.length) { starting_after = res.data[res.data.length - 1].id; if (page === 2) truncated = true; }
@@ -96,14 +98,27 @@ export async function POST(req: NextRequest) {
   const stripe = stripeClient();
   if (!stripe) return NextResponse.json({ ok: false, error: "Stripe not configured" }, { status: 500 });
 
-  let body: { id?: string; code?: string; amount?: number } = {};
+  let body: { id?: string; action?: string; code?: string; amount?: number; fulfilled?: boolean } = {};
   try {
     body = await req.json();
   } catch {
     return NextResponse.json({ ok: false, error: "Invalid request" }, { status: 400 });
   }
-  if (!codeMatches(body.code || "")) return NextResponse.json({ ok: false, error: "Wrong code" }, { status: 403 });
   if (!body.id || !/^pi_/.test(body.id)) return NextResponse.json({ ok: false, error: "Invalid order" }, { status: 400 });
+
+  // Fulfillment toggle — just needs a valid admin session (no refund code).
+  // Stripe merges individual metadata keys, so this preserves product/quantity/etc.
+  if (body.action === "fulfill") {
+    try {
+      await stripe.paymentIntents.update(body.id, { metadata: { fulfilled: body.fulfilled ? "true" : "" } });
+      return NextResponse.json({ ok: true, fulfilled: !!body.fulfilled });
+    } catch (err: any) {
+      return NextResponse.json({ ok: false, error: err?.message || "Could not update" }, { status: 500 });
+    }
+  }
+
+  // Refunds require the access code, re-verified here.
+  if (!codeMatches(body.code || "")) return NextResponse.json({ ok: false, error: "Wrong code" }, { status: 403 });
 
   try {
     const refundParams: Stripe.RefundCreateParams = { payment_intent: body.id };

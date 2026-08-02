@@ -23,6 +23,7 @@ type Row = {
   delivery: string; // standard | express
   refunded: boolean;
   paymentStatus: string;
+  fulfilled: boolean;
 };
 
 function rangeFromQuery(sp: URLSearchParams): { gte: number; lte: number; label: string } {
@@ -76,6 +77,7 @@ export async function GET(req: NextRequest) {
           delivery: (pi.metadata?.shipping as string) || "standard",
           refunded: !!charge?.refunded || refundedAmt >= pi.amount,
           paymentStatus: "paid",
+          fulfilled: pi.metadata?.fulfilled === "true",
         });
       }
       if (res.has_more && res.data.length) {

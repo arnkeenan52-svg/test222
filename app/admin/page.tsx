@@ -1,8 +1,8 @@
 "use client";
 import { useEffect, useRef, useState, useCallback } from "react";
 import {
-  ShoppingCart, DollarSign, TrendingUp, Package, MapPin, Search, X, LogOut,
-  RefreshCw, Star, Lock, ChevronDown,
+  ShoppingCart, DollarSign, TrendingUp, MapPin, Search, X, LogOut,
+  RefreshCw, Star, Check, PackageCheck,
 } from "lucide-react";
 import { Logo } from "@/components/Logo";
 
@@ -10,6 +10,7 @@ import { Logo } from "@/components/Logo";
 type Row = {
   id: string; ref: string; customerName: string; email: string; city: string; country: string;
   amount: number; date: string; itemCount: number; delivery: string; refunded: boolean; paymentStatus: string;
+  fulfilled: boolean;
 };
 type Stats = {
   currency: string; rangeLabel: string; totalOrders: number; totalRevenue: number; avgOrder: number;
@@ -103,9 +104,27 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
   const [globalResults, setGlobalResults] = useState<Row[] | null>(null);
   const [searchNote, setSearchNote] = useState("");
   const [deliveryFilter, setDeliveryFilter] = useState("all");
+  const [fulfilFilter, setFulfilFilter] = useState("all"); // all | open | done
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
   const [openId, setOpenId] = useState<string | null>(null);
+
+  // Patch one order in place (used for optimistic fulfilled toggles).
+  const patchOrder = useCallback((id: string, patch: Partial<Row>) => {
+    setStats((s) => (s ? { ...s, orders: s.orders.map((o) => (o.id === id ? { ...o, ...patch } : o)) } : s));
+    setGlobalResults((g) => (g ? g.map((o) => (o.id === id ? { ...o, ...patch } : o)) : g));
+  }, []);
+
+  const toggleFulfilled = useCallback(async (o: Row) => {
+    const next = !o.fulfilled;
+    patchOrder(o.id, { fulfilled: next }); // optimistic
+    try {
+      const r = await fetch("/api/admin/order", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: o.id, action: "fulfill", fulfilled: next }) });
+      if (!r.ok) throw new Error();
+    } catch {
+      patchOrder(o.id, { fulfilled: !next }); // revert on failure
+    }
+  }, [patchOrder]);
 
   const load = useCallback(async (q: string) => {
     setLoading(true); setErr(""); setGlobalResults(null); setSearchNote("");
@@ -152,6 +171,9 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
       ? base.filter((o) => `${o.ref} ${o.customerName} ${o.email} ${o.city}`.toLowerCase().includes(q))
       : base;
   if (deliveryFilter !== "all") list = list.filter((o) => (o.delivery || "standard") === deliveryFilter);
+  const openCount = list.filter((o) => !o.fulfilled).length; // still to fulfil (before the fulfil filter)
+  if (fulfilFilter === "open") list = list.filter((o) => !o.fulfilled);
+  else if (fulfilFilter === "done") list = list.filter((o) => o.fulfilled);
 
   return (
     <div className="min-h-[100dvh] bg-paper-alt text-ink">
@@ -205,9 +227,15 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
               className="w-full rounded-xl border border-line bg-white py-3 pl-11 pr-10 text-[0.9rem] outline-none focus-visible:border-brand" />
             {search && <button onClick={() => { setSearch(""); setGlobalResults(null); setSearchNote(""); }} aria-label="Clear" className="absolute right-2.5 top-1/2 grid h-6 w-6 -translate-y-1/2 place-items-center rounded-full bg-card text-muted"><X className="h-3.5 w-3.5" /></button>}
           </div>
-          <div className="mb-3 flex flex-wrap gap-2">
+          <div className="mb-3 flex flex-wrap items-center gap-2">
             {[["all", "All"], ["standard", "Standard"], ["express", "Express"]].map(([v, label]) => (
               <button key={v} onClick={() => setDeliveryFilter(v)} className={`rounded-full border px-3.5 py-1.5 text-[0.78rem] font-semibold ${deliveryFilter === v ? "border-brand bg-brand text-white" : "border-line bg-white text-muted"}`}>{label}</button>
+            ))}
+            <span className="mx-1 h-5 w-px bg-line" />
+            {([["all", "All"], ["open", `To fulfil${openCount ? ` · ${openCount}` : ""}`], ["done", "Fulfilled"]] as [string, string][]).map(([v, label]) => (
+              <button key={v} onClick={() => setFulfilFilter(v)} className={`flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-[0.78rem] font-semibold ${fulfilFilter === v ? "border-[#1b8a4e] bg-[#1b8a4e] text-white" : "border-line bg-white text-muted"}`}>
+                {v === "done" && <PackageCheck className="h-3.5 w-3.5" />}{label}
+              </button>
             ))}
           </div>
           {searchNote && <div className="mb-2 text-[0.8rem] font-semibold text-muted" dangerouslySetInnerHTML={{ __html: searchNote.replace(/“([^”]*)”/, "“<b class='text-brand'>$1</b>”") }} />}
@@ -223,11 +251,21 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
           ) : (
             <div>
               {list.map((o) => (
-                <button key={o.id} onClick={() => setOpenId(o.id)} className="grid w-full grid-cols-[auto_1fr_auto] items-center gap-3 border-b border-line py-3 text-left last:border-0 hover:bg-brand-tint/40 sm:grid-cols-[92px_1fr_70px_90px_84px]">
+                <div key={o.id} role="button" tabIndex={0} onClick={() => setOpenId(o.id)} onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && (e.preventDefault(), setOpenId(o.id))}
+                  className="grid cursor-pointer grid-cols-[auto_auto_1fr_auto] items-center gap-3 border-b border-line py-3 text-left last:border-0 hover:bg-brand-tint/40 sm:grid-cols-[32px_84px_1fr_60px_90px_84px]">
+                  <button
+                    onClick={(e) => { e.stopPropagation(); toggleFulfilled(o); }}
+                    aria-label={o.fulfilled ? "Mark as not fulfilled" : "Mark as fulfilled"}
+                    title={o.fulfilled ? "Fulfilled — click to undo" : "Mark as fulfilled"}
+                    className={`grid h-6 w-6 shrink-0 place-items-center rounded-full border-2 transition-colors ${o.fulfilled ? "border-[#1b8a4e] bg-[#1b8a4e] text-white" : "border-line bg-white text-transparent hover:border-[#1b8a4e]"}`}
+                  >
+                    {o.fulfilled && <Check className="h-3.5 w-3.5" strokeWidth={3.5} />}
+                  </button>
                   <span className="text-[0.72rem] font-bold tracking-wide text-brand">#{o.ref}</span>
                   <span className="min-w-0">
                     <span className="block truncate font-semibold text-ink">
                       {o.customerName}
+                      {o.fulfilled && <span className="ml-2 rounded-full bg-[#e6f1ea] px-2 py-0.5 text-[0.62rem] font-bold uppercase text-[#1b8a4e]">Fulfilled</span>}
                       {o.refunded && <span className="ml-2 rounded-full bg-card px-2 py-0.5 text-[0.62rem] font-bold uppercase text-muted">Refunded</span>}
                     </span>
                     <span className="block truncate text-[0.8rem] text-muted">{[o.city, o.country].filter(Boolean).join(", ")}</span>
@@ -235,7 +273,7 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
                   <span className="hidden text-[0.8rem] text-muted sm:block">{o.itemCount} pc.</span>
                   <span className="text-right font-bold tabular-nums text-ink">{money(o.amount)}</span>
                   <span className="hidden text-right text-[0.72rem] text-muted sm:block">{fdate(o.date)}</span>
-                </button>
+                </div>
               ))}
             </div>
           )}
@@ -265,19 +303,36 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
         </div>
       </div>
 
-      {openId && <OrderModal id={openId} onClose={() => setOpenId(null)} onRefunded={() => load(query)} onAuth={onLogout} />}
+      {openId && <OrderModal id={openId} onClose={() => setOpenId(null)} onRefunded={() => load(query)} onPatch={patchOrder} onAuth={onLogout} />}
     </div>
   );
 }
 
-function OrderModal({ id, onClose, onRefunded, onAuth }: { id: string; onClose: () => void; onRefunded: () => void; onAuth: () => void }) {
+function OrderModal({ id, onClose, onRefunded, onPatch, onAuth }: { id: string; onClose: () => void; onRefunded: () => void; onPatch: (id: string, patch: Partial<Row>) => void; onAuth: () => void }) {
   const [d, setD] = useState<Detail | null>(null);
   const [err, setErr] = useState("");
   const [amount, setAmount] = useState("");
   const [rcode, setRcode] = useState("");
   const [refunding, setRefunding] = useState(false);
   const [refundMsg, setRefundMsg] = useState("");
+  const [fulfilling, setFulfilling] = useState(false);
   const startedRef = useRef(false);
+
+  const toggleFulfill = async () => {
+    if (!d || fulfilling) return;
+    const next = !d.fulfilled;
+    setFulfilling(true);
+    setD({ ...d, fulfilled: next }); // optimistic
+    onPatch(id, { fulfilled: next });
+    try {
+      const r = await fetch("/api/admin/order", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id, action: "fulfill", fulfilled: next }) });
+      if (!r.ok) throw new Error();
+    } catch {
+      setD((cur: Detail) => (cur ? { ...cur, fulfilled: !next } : cur));
+      onPatch(id, { fulfilled: !next });
+    }
+    setFulfilling(false);
+  };
 
   const fetchDetail = useCallback(() => {
     fetch("/api/admin/order?id=" + encodeURIComponent(id)).then((r) => {
@@ -325,6 +380,12 @@ function OrderModal({ id, onClose, onRefunded, onAuth }: { id: string; onClose: 
           {err ? <div className="py-8 text-center text-muted">Could not load order.<br />{err}</div> : !d ? <div className="py-10 text-center text-muted">Loading order…</div> : (
             <>
               <span className={`inline-block rounded-full px-2.5 py-1 text-[0.72rem] font-bold ${d.refunded ? "bg-card text-muted" : "bg-[#e6f1ea] text-[#1b8a4e]"}`}>{d.refunded ? "Refunded" : "Paid"}</span>
+
+              {/* fulfillment toggle */}
+              <button onClick={toggleFulfill} disabled={fulfilling}
+                className={`mt-3 flex w-full items-center justify-center gap-2 rounded-xl py-3 text-[0.92rem] font-bold transition-colors disabled:opacity-70 ${d.fulfilled ? "bg-[#e6f1ea] text-[#1b8a4e] hover:bg-[#d8ebe0]" : "bg-[#1b8a4e] text-white hover:bg-[#177544]"}`}>
+                {d.fulfilled ? <><Check className="h-4 w-4" strokeWidth={3} /> Fulfilled · tap to undo</> : <><PackageCheck className="h-4 w-4" /> Mark as fulfilled</>}
+              </button>
 
               <SectionLabel>Items</SectionLabel>
               {(d.items || []).map((it: any, i: number) => (
