@@ -165,7 +165,7 @@ export function SiteNav({ variant = "light", buyBar = false }: { variant?: "hero
               disabled={loading}
               className="relative mt-3 w-full rounded-full bg-brand py-[0.7rem] text-center font-display text-[0.9rem] font-medium text-white transition-colors hover:bg-brand-dark disabled:opacity-70"
             >
-              {loading ? "Starting checkout…" : <>{fmt(69.99)} - Buy Now</>}
+              {loading ? "Starting checkout…" : <>{fmt(89.99)} - Buy Now</>}
               <span className="absolute -top-2.5 right-3 grid h-7 w-7 place-items-center rounded-full bg-white text-[0.72rem] font-medium text-ink shadow-md">
                 1
               </span>

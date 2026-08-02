@@ -47,7 +47,7 @@ export default function Page() {
                 <span className="underline decoration-white/30 underline-offset-2">no skill needed</span>.
               </p>
               <div className="mt-6 flex w-full max-w-[280px] flex-col gap-2.5">
-                <Button asChild size="sm" className="h-11 text-[0.95rem]"><a href="/product">Order now &mdash; <Price usd={69.99} /></a></Button>
+                <Button asChild size="sm" className="h-11 text-[0.95rem]"><a href="/product">Order now &mdash; <Price usd={89.99} /></a></Button>
                 <WatchDemo size="sm" className="h-11 text-[0.95rem] border border-white/10 bg-[#524d48]/80 text-white/85 backdrop-blur-md hover:bg-[#585350]/80 hover:text-white" />
               </div>
               <Reveal className="mt-10 w-full max-w-[860px]">
@@ -111,8 +111,8 @@ export default function Page() {
                 </div>
                 <div className="flex flex-col justify-center rounded-4xl bg-card p-7 text-center">
                   <div className="flex items-baseline justify-center gap-2.5">
-                    <Price usd={69.99} className="font-display text-[3rem] font-bold leading-none text-brand" />
-                    <Price usd={115} className="text-[1.3rem] text-muted line-through" />
+                    <Price usd={89.99} className="font-display text-[3rem] font-bold leading-none text-brand" />
+                    <Price usd={149} className="text-[1.3rem] text-muted line-through" />
                   </div>
                   <p className="mt-2 text-[0.84rem] text-muted">One-time payment · pays for itself in ~2 haircuts</p>
                   <Button asChild size="lg" className="mt-5 w-full"><a href="/product">Get FadeClipper <ArrowRight className="h-4 w-4" /></a></Button>
@@ -147,7 +147,7 @@ export default function Page() {
           <Reveal className="container-x overflow-hidden rounded-5xl bg-ink px-6 py-[clamp(3.5rem,7vw,6rem)] text-center text-white">
             <h2 className="font-display text-[clamp(2rem,4.4vw,3.2rem)] font-bold text-white">Your next fade is on you.</h2>
             <p className="mx-auto mb-7 mt-4 max-w-[42ch] text-[1.06rem] text-white/70">The auto-fading clipper that turns a barber-only skill into a one-swipe move.</p>
-            <Button asChild size="lg" variant="invert"><a href="/product">Get FadeClipper — <Price usd={69.99} /></a></Button>
+            <Button asChild size="lg" variant="invert"><a href="/product">Get FadeClipper — <Price usd={89.99} /></a></Button>
             <p className="mt-5 text-[0.8rem] text-white/50">14-day money-back guarantee · Free worldwide shipping</p>
           </Reveal>
         </section>
