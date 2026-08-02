@@ -258,11 +258,11 @@ function CheckoutInner({
       {/* form */}
       <main className="order-2 px-5 py-8 md:order-1 md:py-12 md:pr-12">
         <div className="mx-auto max-w-[520px]">
-          {/* Express checkout — Apple Pay / Google Pay / Link */}
+          {/* Express checkout — Apple Pay / Google Pay / Amazon Pay (Link hidden) */}
           <div className={hasExpress ? "mb-6" : ""}>
             {hasExpress && <p className="mb-3 text-center text-[0.9rem] font-medium text-muted">Express checkout</p>}
             <ExpressCheckoutElement
-              options={{ buttonHeight: 48 }}
+              options={{ buttonHeight: 48, layout: { maxRows: 2 }, paymentMethods: { link: "never" } }}
               onReady={(e: any) => setHasExpress(!!e?.availablePaymentMethods)}
               onClick={onExpressClick}
               onShippingAddressChange={({ resolve }: any) => resolve()}
@@ -344,8 +344,9 @@ function CheckoutInner({
             <p className="mb-3 flex items-center gap-1.5 text-[0.8rem] text-muted">
               <ShieldCheck className="h-4 w-4 text-brand" aria-hidden="true" /> All transactions are secure and encrypted.
             </p>
-            {/* Apple Pay / Google Pay show here (in the payment section) as wallet tabs
-                alongside card, when the device supports them. Link is disabled. */}
+            {/* Card form. Apple Pay / Google Pay also appear as wallet tabs when
+                supported; the fast wallet buttons are at the top of the page.
+                Link visibility is managed in the Stripe Dashboard. */}
             <PaymentElement options={{ wallets: { applePay: "auto", googlePay: "auto" } }} />
           </Section>
 
