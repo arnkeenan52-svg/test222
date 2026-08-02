@@ -2,12 +2,15 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { CURRENCIES, currencyForCountry, formatPrice, type Currency } from "@/lib/currency";
 
+export type Lang = "en" | "da";
+
 type Ctx = {
   currency: Currency; // the currency actually used for display
   local: Currency; // the visitor's IP-detected local currency
   chosen: boolean; // has the visitor explicitly picked (or is none needed)?
   choose: (c: Currency) => void;
   fmt: (usd: number) => string;
+  lang: Lang; // site language — Danish when the visitor picks DKK
 };
 
 const CurrencyContext = createContext<Ctx>({
@@ -16,6 +19,7 @@ const CurrencyContext = createContext<Ctx>({
   chosen: true,
   choose: () => {},
   fmt: (usd) => formatPrice(usd, CURRENCIES.USD),
+  lang: "en",
 });
 
 export function CurrencyProvider({ children }: { children: React.ReactNode }) {
@@ -72,11 +76,14 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
     } catch {}
   };
 
+  const lang: Lang = currency.code === "DKK" ? "da" : "en";
+
   return (
-    <CurrencyContext.Provider value={{ currency, local, chosen, choose, fmt: (usd) => formatPrice(usd, currency) }}>
+    <CurrencyContext.Provider value={{ currency, local, chosen, choose, fmt: (usd) => formatPrice(usd, currency), lang }}>
       {children}
     </CurrencyContext.Provider>
   );
 }
 
 export const useCurrency = () => useContext(CurrencyContext);
+export const useLang = (): Lang => useContext(CurrencyContext).lang;

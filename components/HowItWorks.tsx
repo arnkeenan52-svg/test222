@@ -2,15 +2,12 @@
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useContent } from "@/components/useContent";
 
-const steps = [
-  { n: 1, title: "Charge & power on", text: "Drop it on the dock until full, then tap the power button. The live display shows battery and runtime left.", img: "/assets/img/step-1.jpg" },
-  { n: 2, title: "Pick your fade length", text: "Slide the lever to 0.4, 0.8 or 1.2mm. Start low and tight at the neckline, then step up as you move higher.", img: "/assets/img/step-2.jpg" },
-  { n: 3, title: "Glide across the fade", text: "Hold it flat and level to the skin and glide it straight across the side. The blade blends the gradient for you.", img: "/assets/img/step-3.jpg" },
-  { n: 4, title: "Blend & finish", text: "Step the length up a notch and pass a little higher to melt the lines into a smooth, sharp fade.", img: "/assets/img/step-4.jpg" },
-];
+const IMAGES = ["/assets/img/step-1.jpg", "/assets/img/step-2.jpg", "/assets/img/step-3.jpg", "/assets/img/step-4.jpg"];
 
 export function HowItWorks({ openAll = false }: { openAll?: boolean }) {
+  const steps = useContent().how.steps.map((s, i) => ({ n: i + 1, title: s.title, text: s.text, img: IMAGES[i] }));
   // Set of open step indices. On the home page (openAll) every step starts open;
   // elsewhere only the first is open. Clicking still toggles each step.
   const [open, setOpen] = useState<Set<number>>(() => new Set(openAll ? steps.map((_, i) => i) : [0]));
