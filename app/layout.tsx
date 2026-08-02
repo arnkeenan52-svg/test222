@@ -1,12 +1,10 @@
-import type { Metadata, Viewport } from "next";
+import type { Metadata } from "next";
 import "./globals.css";
 
-// Orange iOS status-bar strip (behind the clock/battery). iOS Safari colours it
-// from the document background-color, so the real work is html/body being orange
-// (see globals.css). theme-color is kept as a second signal for Android Chrome.
-export const viewport: Viewport = {
-  themeColor: "#ec6324",
-};
+// No theme-color meta on purpose — that lets iOS Safari adapt each browser bar to
+// the page content at that edge (like flowalarmclock): the orange offer bar at the
+// very top makes the status bar orange, while the dark footer keeps the bottom bar
+// neutral. Painting the body itself orange would force BOTH bars orange instead.
 import { SmoothScroll } from "@/components/SmoothScroll";
 import { CurrencyProvider } from "@/components/CurrencyProvider";
 import { ConsentCards } from "@/components/ConsentCards";
