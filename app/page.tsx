@@ -35,7 +35,7 @@ export default function Page() {
                 </span>
                 <span className="text-sm font-medium text-white/70"><b className="text-white">1,200+</b> reviews</span>
               </div>
-              <h1 className="font-display text-[clamp(2.6rem,6.4vw,4.6rem)] font-bold leading-[1.0] tracking-[-0.02em]">
+              <h1 className="font-display text-[clamp(2.6rem,6.4vw,4.6rem)] font-bold leading-[1.1] tracking-[-0.02em]">
                 Fade your own hair.<br />
                 <span className="text-brand">In minutes.</span>
               </h1>
