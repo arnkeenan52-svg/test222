@@ -15,13 +15,15 @@ export const SHIPPING: Record<ShippingId, { label: string; cents: number; eta: s
 };
 
 // Amount breakdown in USD cents, computed server-side (never trust the client).
-function quote(shipping: ShippingId, code: string | null) {
-  const productCents = Math.round(PRODUCTS.single.usd * 100);
+function quote(shipping: ShippingId, code: string | null, qty: number) {
+  const quantity = Math.min(10, Math.max(1, Math.floor(qty) || 1));
+  const unitCents = Math.round(PRODUCTS.single.usd * 100);
+  const productCents = unitCents * quantity;
   const ship = SHIPPING[shipping] ?? SHIPPING.standard;
   const codeOk = !!code && code.trim().toUpperCase() === DISCOUNT_CODE.toUpperCase();
   const discountCents = codeOk ? Math.round((productCents * DISCOUNT_PCT) / 100) : 0;
   const total = Math.max(0, productCents - discountCents) + ship.cents;
-  return { productCents, shippingCents: ship.cents, discountCents, total, codeOk };
+  return { productCents, unitCents, quantity, shippingCents: ship.cents, discountCents, total, codeOk };
 }
 
 export async function POST(req: NextRequest) {
@@ -34,7 +36,7 @@ export async function POST(req: NextRequest) {
   }
   const stripe = new Stripe(secret);
 
-  let body: { paymentIntentId?: string; shipping?: ShippingId; code?: string | null } = {};
+  let body: { paymentIntentId?: string; shipping?: ShippingId; code?: string | null; qty?: number } = {};
   try {
     body = await req.json();
   } catch {
@@ -43,10 +45,11 @@ export async function POST(req: NextRequest) {
 
   const shipping: ShippingId = body.shipping === "express" ? "express" : "standard";
   const code = body.code ?? null;
-  const q = quote(shipping, code);
+  const q = quote(shipping, code, body.qty ?? 1);
 
   const metadata = {
     product: PRODUCTS.single.title,
+    quantity: String(q.quantity),
     shipping,
     discount_code: q.codeOk ? DISCOUNT_CODE : "",
   };

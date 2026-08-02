@@ -1,5 +1,6 @@
 "use client";
-import { Star, MapPin, Clock } from "lucide-react";
+import { useState } from "react";
+import { Star, MapPin, Clock, Minus, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCurrency } from "@/components/CurrencyProvider";
 import { useBuyNow } from "@/components/useBuyNow";
@@ -19,6 +20,8 @@ const perks = [
 export function BuyBox() {
   const { fmt } = useCurrency();
   const { buy, loading, error } = useBuyNow();
+  const [qty, setQty] = useState(1);
+  const setQ = (n: number) => setQty(Math.min(10, Math.max(1, n)));
 
   return (
     <div>
@@ -52,8 +55,36 @@ export function BuyBox() {
         <Clock className="h-4 w-4 shrink-0" aria-hidden="true" /> Launch sale ends in <Countdown />
       </div>
 
-      <Button size="lg" className="mt-4 w-full rounded-2xl text-[1.05rem]" onClick={() => buy("single")} disabled={loading}>
-        {loading ? "Starting checkout…" : `Buy now — ${fmt(PRICE.now)}`}
+      {/* quantity selector */}
+      <div className="mt-5 flex items-center justify-between gap-4">
+        <span className="text-[0.95rem] font-semibold text-ink">Quantity</span>
+        <div className="flex items-center rounded-full border border-line bg-white">
+          <button
+            type="button"
+            aria-label="Decrease quantity"
+            onClick={() => setQ(qty - 1)}
+            disabled={qty <= 1}
+            className="grid h-11 w-11 place-items-center rounded-l-full text-ink transition-colors hover:bg-card disabled:opacity-30"
+          >
+            <Minus className="h-4 w-4" strokeWidth={2.5} />
+          </button>
+          <span aria-live="polite" className="w-10 select-none text-center font-display text-[1.1rem] font-bold tabular-nums">
+            {qty}
+          </span>
+          <button
+            type="button"
+            aria-label="Increase quantity"
+            onClick={() => setQ(qty + 1)}
+            disabled={qty >= 10}
+            className="grid h-11 w-11 place-items-center rounded-r-full text-ink transition-colors hover:bg-card disabled:opacity-30"
+          >
+            <Plus className="h-4 w-4" strokeWidth={2.5} />
+          </button>
+        </div>
+      </div>
+
+      <Button size="lg" className="mt-4 w-full rounded-2xl text-[1.05rem]" onClick={() => buy("single", qty)} disabled={loading}>
+        {loading ? "Starting checkout…" : `Buy now — ${fmt(PRICE.now * qty)}`}
       </Button>
 
       <DeliveryEstimate className="mt-3 text-[0.85rem] text-muted" iconClassName="text-brand" />

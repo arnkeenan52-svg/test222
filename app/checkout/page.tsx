@@ -18,11 +18,18 @@ const SHIP: Record<ShippingId, { label: string; cents: number; eta: string }> = 
   standard: { label: "Standard shipping", cents: 0, eta: "7–10 business days" },
   express: { label: "Express shipping", cents: 1200, eta: "2–3 business days" },
 };
-type Quote = { productCents: number; shippingCents: number; discountCents: number; total: number; codeOk: boolean };
+type Quote = { productCents: number; unitCents: number; quantity: number; shippingCents: number; discountCents: number; total: number; codeOk: boolean };
 
 const money = (cents: number) => `$${(cents / 100).toFixed(2)}`;
 const PRODUCT = PRODUCTS.single;
 const PRODUCT_IMG = "/assets/img/packaging.jpg";
+
+// Order quantity comes in from the product page as ?qty=N — clamp it 1–10.
+function readQty(): number {
+  if (typeof window === "undefined") return 1;
+  const raw = parseInt(new URLSearchParams(window.location.search).get("qty") || "1", 10);
+  return Math.min(10, Math.max(1, Number.isFinite(raw) ? raw : 1));
+}
 
 export default function CheckoutPage() {
   const [clientSecret, setClientSecret] = useState("");
@@ -31,10 +38,12 @@ export default function CheckoutPage() {
   const [fatal, setFatal] = useState("");
   const [stripePromise, setStripePromise] = useState<ReturnType<typeof loadStripe> | null>(null);
   const started = useRef(false);
+  const qtyRef = useRef(1);
 
   useEffect(() => {
     if (started.current) return; // run once
     started.current = true;
+    qtyRef.current = readQty();
     (async () => {
       // Publishable key is fetched at runtime, so it works the moment it's set
       // in the environment — no rebuild required, and either env-var name works.
@@ -51,7 +60,7 @@ export default function CheckoutPage() {
         const d = await fetch("/api/payment-intent", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ shipping: "standard" }),
+          body: JSON.stringify({ shipping: "standard", qty: qtyRef.current }),
         }).then((r) => r.json());
         if (d.clientSecret) {
           setClientSecret(d.clientSecret);
@@ -113,7 +122,7 @@ export default function CheckoutPage() {
             },
           }}
         >
-          <CheckoutInner clientSecret={clientSecret} piId={piId} quote={quote} setQuote={setQuote} />
+          <CheckoutInner clientSecret={clientSecret} piId={piId} quote={quote} setQuote={setQuote} qty={qtyRef.current} />
         </Elements>
       )}
     </div>
@@ -125,11 +134,13 @@ function CheckoutInner({
   piId,
   quote,
   setQuote,
+  qty,
 }: {
   clientSecret: string;
   piId: string;
   quote: Quote;
   setQuote: (q: Quote) => void;
+  qty: number;
 }) {
   const stripe = useStripe();
   const elements = useElements();
@@ -146,7 +157,7 @@ function CheckoutInner({
       const res = await fetch("/api/payment-intent", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ paymentIntentId: piId, shipping: nextShipping, code: nextCode || null }),
+        body: JSON.stringify({ paymentIntentId: piId, shipping: nextShipping, code: nextCode || null, qty }),
       });
       const d = await res.json();
       if (d.total != null) {
@@ -175,7 +186,7 @@ function CheckoutInner({
       emailRequired: true,
       phoneNumberRequired: true,
       shippingAddressRequired: true,
-      lineItems: [{ name: PRODUCT.title, amount: Math.max(0, quote.productCents - quote.discountCents) }],
+      lineItems: [{ name: quote.quantity > 1 ? `${PRODUCT.title} × ${quote.quantity}` : PRODUCT.title, amount: Math.max(0, quote.productCents - quote.discountCents) }],
       shippingRates: [
         { id: "standard", displayName: "Standard shipping (7–10 business days)", amount: SHIP.standard.cents },
         { id: "express", displayName: "Express shipping (2–3 business days)", amount: SHIP.express.cents },
@@ -383,13 +394,15 @@ function Summary({
       <div className="flex items-center gap-4">
         <span className="relative shrink-0">
           <img src={PRODUCT_IMG} alt={PRODUCT.title} width={64} height={64} className="h-16 w-16 rounded-xl border border-line object-cover" />
-          <span aria-hidden="true" className="absolute -right-2 -top-2 grid h-6 w-6 place-items-center rounded-full bg-ink text-[0.72rem] font-bold text-white">1</span>
+          <span aria-hidden="true" className="absolute -right-2 -top-2 grid h-6 w-6 place-items-center rounded-full bg-ink text-[0.72rem] font-bold text-white tabular-nums">{quote.quantity}</span>
         </span>
         <div className="min-w-0 flex-1">
           <p className="font-semibold leading-tight">
-            {PRODUCT.title} <span className="sr-only">, quantity 1</span>
+            {PRODUCT.title} <span className="sr-only">, quantity {quote.quantity}</span>
           </p>
-          <p className="truncate text-[0.82rem] text-muted">{PRODUCT.sub}</p>
+          <p className="truncate text-[0.82rem] text-muted">
+            {quote.quantity > 1 ? `${quote.quantity} × ${money(quote.unitCents)}` : PRODUCT.sub}
+          </p>
         </div>
         <span className="font-semibold tabular-nums">{money(quote.productCents)}</span>
       </div>
@@ -473,7 +486,7 @@ function FatalFallback({ message }: { message: string }) {
       const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ items: [{ id: "single", qty: 1 }] }),
+        body: JSON.stringify({ items: [{ id: "single", qty: readQty() }] }),
       });
       const data = await res.json();
       if (res.ok && data.url) {
