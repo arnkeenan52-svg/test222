@@ -26,6 +26,8 @@ export default function Page() {
           no seam between the logo/menu bar and the hero. */}
       <div id="top" className="relative overflow-hidden bg-black text-white">
         <div className="pointer-events-none absolute inset-x-0 top-0 h-[720px] bg-[radial-gradient(90%_60%_at_50%_15%,rgba(236,99,36,0.32),transparent_70%)]" />
+        {/* subtle orange↔black blend at the bottom of the hero, mirroring the top */}
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[440px] bg-[radial-gradient(85%_62%_at_50%_100%,rgba(236,99,36,0.20),transparent_72%)]" />
         <div className="relative">
           <SiteNav variant="hero" />
           <header>
@@ -46,7 +48,7 @@ export default function Page() {
               </p>
               <div className="mt-6 flex w-full max-w-[280px] flex-col gap-2.5">
                 <Button asChild size="sm" className="h-11 text-[0.95rem]"><a href="/product">Order now &mdash; <Price usd={69.99} /></a></Button>
-                <WatchDemo size="sm" className="h-11 text-[0.95rem] border border-white/10 bg-[#524d48]/90 text-white/85 backdrop-blur-md hover:bg-[#585350]/90 hover:text-white" />
+                <WatchDemo size="sm" className="h-11 text-[0.95rem] border border-white/10 bg-[#524d48]/80 text-white/85 backdrop-blur-md hover:bg-[#585350]/80 hover:text-white" />
               </div>
               <Reveal className="mt-10 w-full max-w-[860px]">
                 <figure className="overflow-hidden rounded-5xl border border-white/10 shadow-soft">
