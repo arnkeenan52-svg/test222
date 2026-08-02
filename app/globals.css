@@ -13,26 +13,22 @@
      iOS renders that strip slightly darker/muted than the page paints the same
      hex, so this source is nudged a touch brighter than the brand #ec6324 so the
      rendered strip matches the offer bar exactly. */
-  /* Orange only at the very top of the page (behind the iOS status bar); it fades
-     to white below, so the iOS bottom bar / home-indicator strip and bottom
-     overscroll are NOT tinted orange. Applied to both html (the canvas iOS may
-     sample for the bottom bar) and body, page-relative (not fixed) so it never
-     bleeds over the #content surface while scrolling. */
+  /* iOS Safari paints the status-bar strip from the document background-color (it
+     ignores theme-color and any background-image/gradient), so html + body are a
+     solid brand orange. The visible page surface is #content (white) on top, so
+     only the iOS bars / overscroll read orange. NOTE: iOS uses this one colour for
+     BOTH the top status bar and the bottom bar — they can't be split, so an orange
+     top means an orange bottom too. */
   html {
     scroll-behavior: smooth;
-    background-color: #ffffff;
-    background-image: linear-gradient(to bottom, #fa6a24 0, #fa6a24 130px, #ffffff 300px, #ffffff 100%);
-    background-repeat: no-repeat;
+    background-color: #fa6a24;
     /* Stop the page over-scrolling past the top — kills iOS pull-to-refresh (the
-       reload you get by dragging up at the very top). Any tiny residual bounce
-       shows the orange top above, so it matches the offer bar. */
+       reload you get by dragging up at the very top). */
     overscroll-behavior-y: none;
   }
   body {
     @apply text-ink font-sans antialiased;
-    background-color: #ffffff;
-    background-image: linear-gradient(to bottom, #fa6a24 0, #fa6a24 130px, #ffffff 300px, #ffffff 100%);
-    background-repeat: no-repeat;
+    background-color: #fa6a24;
     overscroll-behavior-y: none;
     font-size: 16.5px;
   }
