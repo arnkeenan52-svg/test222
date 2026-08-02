@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import {
   ShoppingCart, DollarSign, TrendingUp, MapPin, Search, X, LogOut,
-  RefreshCw, Check, PackageCheck,
+  RefreshCw, Check, PackageCheck, Activity, Users, Lock,
 } from "lucide-react";
 import { Logo } from "@/components/Logo";
 
@@ -59,21 +59,44 @@ export default function AdminPage() {
   }
   if (!authed) {
     return (
-      <div className="grid min-h-[100dvh] place-items-center bg-paper-alt px-6">
-        <div className="w-full max-w-[380px] rounded-3xl border border-line bg-white p-9 text-center shadow-soft">
-          <img src="/icon.png" alt="FadeClipper" className="mx-auto mb-4 h-16 w-16 rounded-2xl" />
-          <h1 className="font-display text-[1.3rem] font-bold text-ink">FadeClipper Admin</h1>
-          <p className="mt-1 text-[0.9rem] text-muted">Enter access code</p>
+      <div className="relative grid min-h-[100dvh] place-items-center overflow-hidden bg-[#0a0a0c] px-6">
+        {/* living brand glow (same drift as the storefront hero) */}
+        <div className="hero-glow pointer-events-none absolute inset-x-0 top-0 h-[560px] bg-[radial-gradient(80%_60%_at_50%_0%,rgba(236,99,36,0.30),transparent_70%)]" />
+        <div className="hero-glow-2 pointer-events-none absolute inset-x-0 bottom-0 h-[380px] bg-[radial-gradient(70%_60%_at_50%_100%,rgba(236,99,36,0.14),transparent_72%)]" />
+
+        <div className="relative w-full max-w-[400px] animate-fade-up rounded-[28px] border border-white/10 bg-white/[0.03] p-8 text-center shadow-[0_24px_90px_rgba(0,0,0,0.6)] backdrop-blur-xl sm:p-10">
+          <div className="mx-auto mb-6 grid h-[76px] w-[76px] place-items-center rounded-[22px] bg-black shadow-[0_0_50px_rgba(236,99,36,0.28)] ring-1 ring-white/10">
+            <img src="/icon.png" alt="FadeClipper" className="h-16 w-16 rounded-[18px]" />
+          </div>
+          <h1 className="font-display text-[1.6rem] font-bold tracking-tight text-white">FadeClipper Admin</h1>
+          <p className="mt-2 text-[0.92rem] text-white/45">Enter your access code to continue</p>
+
           <input
-            type="password" inputMode="numeric" autoComplete="off" maxLength={12}
-            value={code} onChange={(e) => setCode(e.target.value)} onKeyDown={(e) => e.key === "Enter" && login()}
+            type="password"
+            inputMode="numeric"
+            autoComplete="off"
+            maxLength={12}
+            autoFocus
+            value={code}
+            onChange={(e) => { setCode(e.target.value); setLoginErr(""); }}
+            onKeyDown={(e) => e.key === "Enter" && login()}
             placeholder="••••"
-            className="mt-6 w-full rounded-2xl border-2 border-line bg-paper-alt px-4 py-4 text-center text-[1.4rem] font-bold tracking-[0.4em] text-brand outline-none focus-visible:border-brand"
+            className={`mt-7 w-full rounded-2xl border bg-white/[0.04] px-4 py-4 text-center text-[1.6rem] font-bold tracking-[0.5em] text-white outline-none transition-all placeholder:text-white/25 ${
+              loginErr ? "border-[#ff6b6b] ring-2 ring-[#ff6b6b]/30" : "border-white/[0.12] focus-visible:border-brand focus-visible:ring-4 focus-visible:ring-brand/25"
+            }`}
           />
-          <button onClick={login} disabled={loggingIn} className="mt-4 w-full rounded-2xl bg-brand py-4 text-[1.05rem] font-semibold text-white transition-colors hover:bg-brand-dark disabled:opacity-70">
-            {loggingIn ? "…" : "Unlock"}
+          <button
+            onClick={login}
+            disabled={loggingIn || !code}
+            className="mt-4 w-full rounded-2xl bg-brand py-4 text-[1.05rem] font-semibold text-white shadow-[0_0_36px_rgba(236,99,36,0.5)] transition-all hover:bg-brand-dark hover:shadow-[0_0_48px_rgba(236,99,36,0.65)] active:translate-y-px disabled:opacity-50 disabled:shadow-none"
+          >
+            {loggingIn ? "Unlocking…" : "Unlock"}
           </button>
-          <p className="mt-3 min-h-[18px] text-[0.85rem] font-medium text-brand">{loginErr}</p>
+          <p className="mt-3 min-h-[20px] text-[0.85rem] font-medium text-[#ff8a8a]">{loginErr}</p>
+
+          <div className="mt-5 flex items-center justify-center gap-1.5 border-t border-white/[0.08] pt-5 text-[0.72rem] font-medium text-white/30">
+            <Lock className="h-3.5 w-3.5" /> Secure area · authorised access only
+          </div>
         </div>
       </div>
     );
@@ -111,6 +134,21 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
   const [openId, setOpenId] = useState<string | null>(null);
+  const [live, setLive] = useState<{ activeNow: number; visitsToday: number; visitsYesterday: number; configured?: boolean } | null>(null);
+
+  // Poll live visitor stats every 15s.
+  useEffect(() => {
+    let stop = false;
+    const poll = async () => {
+      try {
+        const r = await fetch("/api/admin/live");
+        if (r.ok) { const d = await r.json(); if (!stop) setLive(d); }
+      } catch {}
+    };
+    poll();
+    const iv = setInterval(poll, 15000);
+    return () => { stop = true; clearInterval(iv); };
+  }, []);
 
   // Patch one order in place (used for optimistic fulfilled toggles).
   const patchOrder = useCallback((id: string, patch: Partial<Row>) => {
@@ -193,8 +231,11 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
 
       <div className="mx-auto max-w-[1100px] px-4 pb-16 pt-5">
         {/* stat cards */}
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-5">
-          <StatCard live icon={<ShoppingCart className="h-[18px] w-[18px]" />} label="Orders today" value={String(stats?.ordersToday ?? "–")} delta="Since midnight" />
+        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+          <StatCard live icon={<Activity className="h-[18px] w-[18px]" />} label="Active now" value={live ? String(live.activeNow) : "–"} delta="Last 60 sec" />
+          <StatCard icon={<Users className="h-[18px] w-[18px]" />} label="Visits today" value={live ? live.visitsToday.toLocaleString("en-US") : "–"} delta={live ? `Yesterday: ${live.visitsYesterday.toLocaleString("en-US")}` : undefined} />
+          <StatCard tone="green" icon={<TrendingUp className="h-[18px] w-[18px]" />} label="Conversion today" value={live && live.visitsToday > 0 && stats ? ((stats.ordersToday / live.visitsToday) * 100).toFixed(1) + "%" : "–"} delta="Orders / visits" />
+          <StatCard icon={<ShoppingCart className="h-[18px] w-[18px]" />} label="Orders today" value={String(stats?.ordersToday ?? "–")} delta="Since midnight" />
           <StatCard icon={<DollarSign className="h-[18px] w-[18px]" />} label="Revenue today" value={stats ? kmoney(stats.revenueToday) : "–"} />
           <StatCard icon={<ShoppingCart className="h-[18px] w-[18px]" />} label={`Orders · ${stats?.rangeLabel || ""}`} value={String(stats?.totalOrders ?? "–")} />
           <StatCard icon={<TrendingUp className="h-[18px] w-[18px]" />} label={`Revenue · ${stats?.rangeLabel || ""}`} value={stats ? kmoney(stats.totalRevenue) : "–"} />

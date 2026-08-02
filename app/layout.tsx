@@ -8,6 +8,7 @@ import "./globals.css";
 import { SmoothScroll } from "@/components/SmoothScroll";
 import { CurrencyProvider } from "@/components/CurrencyProvider";
 import { ConsentCards } from "@/components/ConsentCards";
+import { VisitorTracker } from "@/components/VisitorTracker";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://fadeclipper.com"),
@@ -51,6 +52,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <SmoothScroll>{children}</SmoothScroll>
           </div>
           <ConsentCards />
+          <VisitorTracker />
         </CurrencyProvider>
       </body>
     </html>
