@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { Truck } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { fetchGeo } from "@/lib/geoClient";
 
 // Free-shipping delivery window (business days), varied by region so the
 // estimate reflects the visitor's location.
@@ -49,34 +50,17 @@ export function DeliveryEstimate({
       if (label) setPlace(label);
     };
 
-    // Reuse a cached geo lookup if we've done one before.
-    let cached: { cc?: string; label?: string } | null = null;
-    try {
-      cached = JSON.parse(localStorage.getItem("fc_geo") || "null");
-    } catch {}
-    if (cached && cached.cc) {
-      compute(cached.cc, cached.label || null);
-      return;
-    }
-
-    // Show a dated estimate immediately from the currency provider's country code…
+    // Show a dated estimate immediately from any cached country code…
     let quickCc: string | null = null;
     try {
       quickCc = localStorage.getItem("fc_cc");
     } catch {}
     compute(quickCc, null);
 
-    // …then refine with city + country by IP.
-    fetch("https://ipwho.is/?fields=city,country,country_code")
-      .then((r) => r.json())
-      .then((d) => {
-        if (!d || d.success === false) return;
-        const label = [d.city, d.country].filter(Boolean).join(", ") || d.country || null;
-        const cc = d.country_code || quickCc || null;
-        try {
-          localStorage.setItem("fc_geo", JSON.stringify({ cc, label }));
-        } catch {}
-        compute(cc, label);
+    // …then refine with the accurate city + country from edge geolocation.
+    fetchGeo()
+      .then((geo) => {
+        if (geo) compute(geo.cc, geo.label || null);
       })
       .catch(() => {});
   }, [compact]);
