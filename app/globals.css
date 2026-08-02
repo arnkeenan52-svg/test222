@@ -13,13 +13,22 @@
      iOS renders that strip slightly darker/muted than the page paints the same
      hex, so this source is nudged a touch brighter than the brand #ec6324 so the
      rendered strip matches the offer bar exactly. */
+  /* Orange only at the very top of the page (behind the iOS status bar); it fades
+     to white below, so the iOS bottom bar / home-indicator strip and bottom
+     overscroll are NOT tinted orange. Applied to both html (the canvas iOS may
+     sample for the bottom bar) and body, page-relative (not fixed) so it never
+     bleeds over the #content surface while scrolling. */
   html {
     scroll-behavior: smooth;
-    background-color: #fa6a24;
+    background-color: #ffffff;
+    background-image: linear-gradient(to bottom, #fa6a24 0, #fa6a24 130px, #ffffff 300px, #ffffff 100%);
+    background-repeat: no-repeat;
   }
   body {
     @apply text-ink font-sans antialiased;
-    background-color: #fa6a24;
+    background-color: #ffffff;
+    background-image: linear-gradient(to bottom, #fa6a24 0, #fa6a24 130px, #ffffff 300px, #ffffff 100%);
+    background-repeat: no-repeat;
     font-size: 16.5px;
   }
   /* The visible page surface. Covers the orange document background everywhere
