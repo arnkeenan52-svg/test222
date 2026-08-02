@@ -1,22 +1,31 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
+import { isAuthed, unauthorized } from "@/lib/adminAuth";
 
-// One-time helper: registers this site's domain with Apple Pay via your Stripe
-// account, so Apple Pay can be presented in the checkout. Visit it once on the
-// live site (e.g. https://www.fadeclipper.com/api/register-apple-pay). You can
-// also pass ?domain=example.com to register a specific host. Safe to delete
-// after Apple Pay is confirmed working.
+// One-time helper: registers this site's own domain with Apple Pay via your
+// Stripe account, so Apple Pay can be presented in the checkout. ADMIN-ONLY — it
+// mutates your Stripe account state, so it requires a valid admin session. Sign
+// in at /admin first, then visit this endpoint.
+//
+// The domain is derived from the configured site URL (or the request host) and
+// is NOT taken from a query parameter: as a GET with a SameSite=Lax session
+// cookie, an attacker-supplied ?domain= could otherwise be triggered via CSRF to
+// register a domain they control. We only ever (re)register our own host.
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
+  // Never let anonymous callers register domains under our account.
+  if (!isAuthed(req)) return unauthorized();
+
   const secret = process.env.STRIPE_SECRET_KEY;
   if (!secret) {
     return NextResponse.json({ error: "STRIPE_SECRET_KEY is not set in this project." }, { status: 500 });
   }
   const stripe = new Stripe(secret);
   const url = new URL(req.url);
-  const domain = (url.searchParams.get("domain") || req.headers.get("host") || url.host)
+  const configuredHost = (process.env.NEXT_PUBLIC_SITE_URL || "").replace(/^https?:\/\//, "").replace(/\/.*$/, "");
+  const domain = (configuredHost || req.headers.get("host") || url.host)
     .replace(/^https?:\/\//, "")
     .replace(/\/$/, "");
 

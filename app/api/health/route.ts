@@ -1,7 +1,9 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { isAuthed, unauthorized } from "@/lib/adminAuth";
 
 // Diagnostic only — reports whether the Stripe keys are configured (never the
-// keys themselves). Safe to delete once checkout is confirmed working.
+// keys themselves). ADMIN-ONLY: even key modes and env-var names are internal
+// configuration that shouldn't be exposed publicly. Sign in at /admin first.
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
@@ -12,7 +14,8 @@ function mode(k: string) {
   return "unrecognized";
 }
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  if (!isAuthed(req)) return unauthorized();
   const pk = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || process.env.STRIPE_PUBLISHABLE_KEY || "";
   const sk = process.env.STRIPE_SECRET_KEY || "";
   const pkMode = mode(pk);

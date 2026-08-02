@@ -40,12 +40,14 @@ export default function CheckoutSuccessPage() {
   useEffect(() => {
     if (started.current) return;
     started.current = true;
-    const pi = new URLSearchParams(window.location.search).get("payment_intent");
-    if (!pi) {
+    const params = new URLSearchParams(window.location.search);
+    const pi = params.get("payment_intent");
+    const cs = params.get("payment_intent_client_secret");
+    if (!pi || !cs) {
       setLoaded(true);
       return;
     }
-    fetch(`/api/order?pi=${encodeURIComponent(pi)}`)
+    fetch(`/api/order?pi=${encodeURIComponent(pi)}&cs=${encodeURIComponent(cs)}`)
       .then((r) => r.json())
       .then((d) => {
         if (d.ok) setOrder(d);

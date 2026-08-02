@@ -11,9 +11,16 @@ import { NextRequest, NextResponse } from "next/server";
 const COOKIE = "fc_admin";
 const TTL_MS = 1000 * 60 * 60 * 12; // 12 hours
 
+// A random per-process secret is used only when no real secret is configured.
+// This means an attacker who reads the (public) source can never forge a session
+// cookie: there is no known constant to sign with. In production STRIPE_SECRET_KEY
+// (or ADMIN_SECRET) is set, so the signing key is stable across requests; without
+// one, sessions simply reset when the instance restarts — fail closed, never open.
+const RANDOM_FALLBACK = crypto.randomBytes(32).toString("hex");
+
 function secret(): string {
   // Reuse an existing server-only secret so no extra env var is required.
-  return process.env.ADMIN_SECRET || process.env.STRIPE_SECRET_KEY || "fc-admin-dev-secret";
+  return process.env.ADMIN_SECRET || process.env.STRIPE_SECRET_KEY || RANDOM_FALLBACK;
 }
 
 export function adminCode(): string {

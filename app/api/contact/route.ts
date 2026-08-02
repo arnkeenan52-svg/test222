@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { sendMail } from "@/lib/email/resend";
 import { renderContactNotification, renderContactAck } from "@/lib/email/contact";
+import { rateLimit, clientIp } from "@/lib/rateLimit";
 
 // Contact form -> Resend -> the store owner's inbox. Configure in Vercel:
 //   CONTACT_TO    (optional) destination, default arnkeenan@gmail.com
@@ -25,6 +26,16 @@ export async function POST(req: NextRequest) {
 
   // Honeypot — real users never fill this hidden field. Silently accept bots.
   if (clip(body.company, 100)) return NextResponse.json({ ok: true });
+
+  // Rate-limit per IP: this endpoint sends mail (including to an address the
+  // caller supplies), so without a cap it's a spam / domain-reputation vector.
+  const rl = await rateLimit(`contact:${clientIp(req)}`, 5, 3600);
+  if (!rl.ok) {
+    return NextResponse.json(
+      { ok: false, error: "You've sent several messages already. Please try again a little later." },
+      { status: 429, headers: { "Retry-After": String(rl.retryAfter) } }
+    );
+  }
 
   const name = clip(body.name, 120);
   const email = clip(body.email, 200);
