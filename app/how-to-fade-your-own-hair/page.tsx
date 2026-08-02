@@ -135,7 +135,7 @@ export default function GuidePage() {
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
       <SiteNav variant="light" />
 
       <main className="container-x py-[clamp(2rem,5vw,3.5rem)]">

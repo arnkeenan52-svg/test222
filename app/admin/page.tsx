@@ -6,6 +6,19 @@ import {
 } from "lucide-react";
 import { Logo } from "@/components/Logo";
 
+// Render a search note with the quoted term in brand-bold, WITHOUT innerHTML.
+// The note echoes the operator's search text, so building HTML from it would be
+// an XSS sink; React escapes each fragment here instead.
+function renderSearchNote(note: string) {
+  const m = note.match(/^([\s\S]*?)“([^”]*)”([\s\S]*)$/);
+  if (!m) return note;
+  return (
+    <>
+      {m[1]}“<b className="text-brand">{m[2]}</b>”{m[3]}
+    </>
+  );
+}
+
 // ---- types ----
 type Row = {
   id: string; ref: string; customerName: string; email: string; city: string; country: string;
@@ -297,7 +310,7 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
               </button>
             ))}
           </div>
-          {searchNote && <div className="mb-2 text-[0.8rem] font-semibold text-muted" dangerouslySetInnerHTML={{ __html: searchNote.replace(/“([^”]*)”/, "“<b class='text-brand'>$1</b>”") }} />}
+          {searchNote && <div className="mb-2 text-[0.8rem] font-semibold text-muted">{renderSearchNote(searchNote)}</div>}
 
           {loading ? (
             <div className="py-8 text-center text-[0.9rem] text-muted">Loading orders…</div>

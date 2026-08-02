@@ -27,7 +27,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid request." }, { status: 400 });
   }
 
-  const origin = req.headers.get("origin") || new URL(req.url).origin;
+  // Prefer the configured canonical site URL over the client-sent Origin header,
+  // so a spoofed Origin can't point the post-payment redirect at another host.
+  const configured = (process.env.NEXT_PUBLIC_SITE_URL || "").replace(/\/$/, "");
+  const origin = configured || req.headers.get("origin") || new URL(req.url).origin;
 
   // Build line items from server-side prices (never trust amounts from the client).
   const line_items = items

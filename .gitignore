@@ -5,5 +5,10 @@ build/
 .DS_Store
 *.log
 .vercel
-.env*.local
+# Never commit real secrets to this public repo. Ignore every .env variant
+# except the checked-in .env.example template.
+.env
+.env.*
+!.env.example
 /tmp/
+*.tsbuildinfo
