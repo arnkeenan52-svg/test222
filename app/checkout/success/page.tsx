@@ -15,6 +15,8 @@ type Order = {
   paymentLast4: string;
   productTitle: string;
   productSub: string;
+  quantity: number;
+  unitCents: number;
   productCents: number;
   discountCents: number;
   discountCode: string;
@@ -166,11 +168,15 @@ export default function CheckoutSuccessPage() {
               <div className="flex items-center gap-4">
                 <span className="relative shrink-0">
                   <img src={PRODUCT_IMG} alt={order?.productTitle ?? "FadeClipper"} width={64} height={64} className="h-16 w-16 rounded-xl border border-line object-cover" />
-                  <span aria-hidden="true" className="absolute -right-2 -top-2 grid h-6 w-6 place-items-center rounded-full bg-ink text-[0.72rem] font-bold text-white">1</span>
+                  <span aria-hidden="true" className="absolute -right-2 -top-2 grid h-6 w-6 place-items-center rounded-full bg-ink text-[0.72rem] font-bold text-white tabular-nums">{order?.quantity ?? 1}</span>
                 </span>
                 <div className="min-w-0 flex-1">
                   <p className="font-semibold leading-tight">{order?.productTitle ?? "FadeClipper"}</p>
-                  <p className="truncate text-[0.82rem] text-muted">{order?.productSub ?? "Auto-fading cordless hair clipper"}</p>
+                  <p className="truncate text-[0.82rem] text-muted">
+                    {order && order.quantity > 1
+                      ? `${order.quantity} × ${money(order.unitCents)}`
+                      : order?.productSub ?? "Auto-fading cordless hair clipper"}
+                  </p>
                 </div>
                 <span className="font-semibold tabular-nums">{money(order?.productCents ?? 5900)}</span>
               </div>
