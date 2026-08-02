@@ -1,6 +1,7 @@
 "use client";
 import { createContext, useContext, useEffect, useState } from "react";
 import { CURRENCIES, currencyForCountry, formatPrice, type Currency } from "@/lib/currency";
+import { fetchGeo } from "@/lib/geoClient";
 
 type Ctx = {
   currency: Currency; // the currency actually used for display
@@ -45,25 +46,11 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
       }
     };
 
-    try {
-      const cc = localStorage.getItem("fc_cc");
-      if (cc) {
-        apply(cc);
-        return;
-      }
-    } catch {}
-
-    // Detect the visitor's country by IP (client-side, default USD on failure).
-    fetch("https://ipwho.is/?fields=country_code")
-      .then((r) => r.json())
-      .then((d) => {
-        const cc = d && d.country_code;
-        if (cc) {
-          try {
-            localStorage.setItem("fc_cc", cc);
-          } catch {}
-          apply(cc);
-        }
+    // Resolve the visitor's country via Vercel edge geolocation (accurate,
+    // unblockable), falling back to a third-party IP lookup off-Vercel.
+    fetchGeo()
+      .then((geo) => {
+        if (geo?.cc) apply(geo.cc);
       })
       .catch(() => {});
   }, []);
