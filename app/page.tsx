@@ -93,7 +93,7 @@ export default function Page() {
               <div className="bg-brand px-6 py-3 text-center text-sm font-semibold text-white">Launch sale — save 40% today</div>
               <div className="grid gap-8 p-8 md:grid-cols-2 md:p-10">
                 <div>
-                  <h2 className="font-display text-[2rem] font-bold leading-tight">Skip six barber visits. Keep the clipper.</h2>
+                  <h2 className="font-display text-[2rem] font-bold leading-tight">Stop wasting money at barbers. Keep the clipper.</h2>
                   <ul className="mt-5 grid gap-2.5">
                     {["FadeClipper + full accessory kit", "Free worldwide shipping", "14-day money-back guarantee", "1-year warranty"].map((t) => (
                       <li key={t} className="flex items-center gap-2.5 text-[0.98rem] text-ink-2">
@@ -105,7 +105,7 @@ export default function Page() {
                 <div className="flex flex-col justify-center rounded-4xl bg-card p-7 text-center">
                   <div className="flex items-baseline justify-center gap-2.5">
                     <Price usd={69.99} className="font-display text-[3rem] font-bold leading-none text-brand" />
-                    <Price usd={116.65} className="text-[1.3rem] text-muted line-through" />
+                    <Price usd={115} className="text-[1.3rem] text-muted line-through" />
                   </div>
                   <p className="mt-2 text-[0.84rem] text-muted">One-time payment · pays for itself in ~2 haircuts</p>
                   <Button asChild size="lg" className="mt-5 w-full"><a href="/product">Get FadeClipper <ArrowRight className="h-4 w-4" /></a></Button>
