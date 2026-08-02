@@ -40,7 +40,7 @@ export function currencyForCountry(cc: string): Currency {
 
 export function formatPrice(usd: number, c: Currency): string {
   const raw = usd * c.rate;
-  // USD shows the authored cents (e.g. 69.99); converted currencies round to whole units.
+  // USD shows the authored cents (e.g. 89.99); converted currencies round to whole units.
   const v = c.code === "USD" ? raw.toFixed(2).replace(/\.00$/, "") : String(Math.round(raw));
   return c.symbolAfter ? `${v} ${c.symbol}` : `${c.symbol}${v}`;
 }
