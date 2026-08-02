@@ -10,6 +10,7 @@ import {
   useElements,
 } from "@stripe/react-stripe-js";
 import { PRODUCTS } from "@/lib/products";
+import { useContent } from "@/components/useContent";
 import { Lock, ShieldCheck, Check, ChevronDown, Tag, Minus, Plus } from "lucide-react";
 
 type ShippingId = "standard" | "express";
@@ -30,11 +31,18 @@ function readQty(): number {
   return Math.min(10, Math.max(1, Number.isFinite(raw) ? raw : 1));
 }
 
+type FatalKey = "" | "notConfigured" | "couldNotStart" | "network";
+
 export default function CheckoutPage() {
+  const c = useContent().checkout;
   const [clientSecret, setClientSecret] = useState("");
   const [piId, setPiId] = useState("");
   const [quote, setQuote] = useState<Quote | null>(null);
-  const [fatal, setFatal] = useState("");
+  // Store a language-neutral key, not the resolved string: the effect runs once on
+  // mount (before the currency provider applies DKK), so a captured message would be
+  // stuck in English. Resolving at render keeps it in sync with the chosen language.
+  const [fatalKey, setFatalKey] = useState<FatalKey>("");
+  const fatal = !fatalKey ? "" : fatalKey === "notConfigured" ? c.notConfigured : fatalKey === "network" ? c.networkErr : c.couldNotStart;
   const [stripePromise, setStripePromise] = useState<ReturnType<typeof loadStripe> | null>(null);
   const started = useRef(false);
   const qtyRef = useRef(1);
@@ -51,7 +59,7 @@ export default function CheckoutPage() {
         pk = (await fetch("/api/stripe-config").then((r) => r.json()))?.publishableKey || "";
       } catch {}
       if (!pk) {
-        setFatal("Stripe isn’t configured yet. Add your publishable key to go live.");
+        setFatalKey("notConfigured");
         return;
       }
       setStripePromise(loadStripe(pk));
@@ -66,10 +74,10 @@ export default function CheckoutPage() {
           setPiId(d.paymentIntentId);
           setQuote(d);
         } else {
-          setFatal(d.error || "Could not start checkout.");
+          setFatalKey("couldNotStart");
         }
       } catch {
-        setFatal("Network error — please try again.");
+        setFatalKey("network");
       }
     })();
   }, []);
@@ -83,17 +91,17 @@ export default function CheckoutPage() {
             <img src="/assets/img/fadeclipper-stripe-logo.png" alt="FadeClipper" width={123} height={24} className="h-6 w-auto" />
           </a>
           <span className="flex items-center gap-1.5 text-[0.82rem] font-medium text-muted">
-            <Lock className="h-4 w-4" aria-hidden="true" /> Secure checkout
+            <Lock className="h-4 w-4" aria-hidden="true" /> {c.secure}
           </span>
         </div>
       </header>
-      <h1 className="sr-only">Checkout</h1>
+      <h1 className="sr-only">{c.secure}</h1>
 
       {fatal ? (
         <FatalFallback message={fatal} />
       ) : !stripePromise || !clientSecret || !quote ? (
         <div className="mx-auto max-w-[1100px] px-5 py-24 text-center text-muted" role="status" aria-live="polite">
-          Loading secure checkout…
+          {c.loading}
         </div>
       ) : (
         <Elements
@@ -141,6 +149,11 @@ function CheckoutInner({
   setQuote: (q: Quote) => void;
   qty: number;
 }) {
+  const c = useContent().checkout;
+  const shipInfo: Record<ShippingId, { label: string; eta: string }> = {
+    standard: { label: c.standardLabel, eta: c.standardEta },
+    express: { label: c.expressLabel, eta: c.expressEta },
+  };
   const stripe = useStripe();
   const elements = useElements();
   const [shipping, setShipping] = useState<ShippingId>("standard");
@@ -163,7 +176,7 @@ function CheckoutInner({
       const d = await res.json();
       if (d.total != null) {
         setQuote(d);
-        if (announce) setCodeMsg(d.codeOk ? "Discount applied." : "That code isn’t valid.");
+        if (announce) setCodeMsg(d.codeOk ? c.discountApplied : c.codeInvalid);
       }
     } catch {}
   };
@@ -185,7 +198,7 @@ function CheckoutInner({
       elements,
       confirmParams: { return_url: `${window.location.origin}/checkout/success` },
     });
-    if (error) setPayErr(error.message || "Payment could not be completed.");
+    if (error) setPayErr(error.message || c.payErr);
   };
 
   // Express Checkout (Apple Pay / Google Pay / Link) — collects contact + shipping
@@ -197,8 +210,8 @@ function CheckoutInner({
       shippingAddressRequired: true,
       lineItems: [{ name: quote.quantity > 1 ? `${PRODUCT.title} × ${quote.quantity}` : PRODUCT.title, amount: Math.max(0, quote.productCents - quote.discountCents) }],
       shippingRates: [
-        { id: "standard", displayName: "Standard shipping (7–10 business days)", amount: SHIP.standard.cents },
-        { id: "express", displayName: "Express shipping (2–3 business days)", amount: SHIP.express.cents },
+        { id: "standard", displayName: `${c.standardLabel} (${c.standardEta})`, amount: SHIP.standard.cents },
+        { id: "express", displayName: `${c.expressLabel} (${c.expressEta})`, amount: SHIP.express.cents },
       ],
     });
   const onExpressShippingRateChange = async ({ shippingRate, resolve }: any) => {
@@ -220,7 +233,7 @@ function CheckoutInner({
   const pay = async () => {
     if (!stripe || !elements || paying) return;
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
-      setPayErr("Please enter a valid email address.");
+      setPayErr(c.emailInvalid);
       return;
     }
     setPaying(true);
@@ -230,7 +243,7 @@ function CheckoutInner({
       confirmParams: { return_url: `${window.location.origin}/checkout/success`, receipt_email: email.trim() },
     });
     // Only reached if there's an immediate validation error (otherwise redirects away).
-    if (error) setPayErr(error.message || "Payment could not be completed.");
+    if (error) setPayErr(error.message || c.payErr);
     setPaying(false);
   };
 
@@ -244,7 +257,7 @@ function CheckoutInner({
         aria-controls="order-summary-mobile"
       >
         <span className="flex items-center gap-2 font-medium text-brand">
-          Order summary
+          {c.orderSummary}
           <ChevronDown aria-hidden="true" className={`h-4 w-4 transition-transform ${summaryOpen ? "rotate-180" : ""}`} />
         </span>
         <span className="font-display text-[1.1rem] font-bold tabular-nums">{money(quote.total)}</span>
@@ -260,7 +273,7 @@ function CheckoutInner({
         <div className="mx-auto max-w-[520px]">
           {/* Express checkout — Apple Pay / Google Pay / Amazon Pay / Link */}
           <div className={hasExpress ? "mb-6" : ""}>
-            {hasExpress && <p className="mb-3 text-center text-[0.9rem] font-medium text-muted">Express checkout</p>}
+            {hasExpress && <p className="mb-3 text-center text-[0.9rem] font-medium text-muted">{c.express}</p>}
             <ExpressCheckoutElement
               options={{ buttonHeight: 48, layout: { maxRows: 2 } }}
               onReady={(e: any) => setHasExpress(!!e?.availablePaymentMethods)}
@@ -271,13 +284,13 @@ function CheckoutInner({
             />
             {hasExpress && (
               <div className="mt-5 flex items-center gap-3 text-[0.8rem] text-muted">
-                <span className="h-px flex-1 bg-line" /> OR <span className="h-px flex-1 bg-line" />
+                <span className="h-px flex-1 bg-line" /> {c.or} <span className="h-px flex-1 bg-line" />
               </div>
             )}
           </div>
 
-          <Section title="Contact">
-            <label htmlFor="co-email" className="mb-1.5 block text-[0.9rem] font-medium text-ink">Email</label>
+          <Section title={c.contact}>
+            <label htmlFor="co-email" className="mb-1.5 block text-[0.9rem] font-medium text-ink">{c.email}</label>
             <input
               id="co-email"
               type="email"
@@ -289,10 +302,10 @@ function CheckoutInner({
               placeholder="you@example.com"
               className="w-full rounded-lg border border-[#d9dce1] bg-white px-3.5 py-3 text-[0.95rem] text-ink outline-none transition-colors focus-visible:border-brand focus-visible:ring-1 focus-visible:ring-brand"
             />
-            <p className="mt-1.5 text-[0.8rem] text-muted">Your order confirmation & receipt are sent here.</p>
+            <p className="mt-1.5 text-[0.8rem] text-muted">{c.emailNote}</p>
           </Section>
 
-          <Section title="Delivery">
+          <Section title={c.delivery}>
             {/* mode:shipping gives a country dropdown + Google-style address autocomplete */}
             <AddressElement
               options={{
@@ -304,10 +317,10 @@ function CheckoutInner({
             />
           </Section>
 
-          <Section title="Shipping method">
-            <div className="grid gap-2.5" role="radiogroup" aria-label="Shipping method">
+          <Section title={c.shippingMethod}>
+            <div className="grid gap-2.5" role="radiogroup" aria-label={c.shippingMethod}>
               {(Object.keys(SHIP) as ShippingId[]).map((id) => {
-                const s = SHIP[id];
+                const s = { ...SHIP[id], ...shipInfo[id] };
                 const active = shipping === id;
                 return (
                   <label
@@ -333,16 +346,16 @@ function CheckoutInner({
                         <span className="text-[0.82rem] text-muted">{s.eta}</span>
                       </span>
                     </span>
-                    <span className="font-semibold tabular-nums">{s.cents === 0 ? "FREE" : money(s.cents)}</span>
+                    <span className="font-semibold tabular-nums">{s.cents === 0 ? c.free : money(s.cents)}</span>
                   </label>
                 );
               })}
             </div>
           </Section>
 
-          <Section title="Payment">
+          <Section title={c.payment}>
             <p className="mb-3 flex items-center gap-1.5 text-[0.8rem] text-muted">
-              <ShieldCheck className="h-4 w-4 text-brand" aria-hidden="true" /> All transactions are secure and encrypted.
+              <ShieldCheck className="h-4 w-4 text-brand" aria-hidden="true" /> {c.paymentSecure}
             </p>
             {/* Card form. Apple Pay / Google Pay also appear as wallet tabs when
                 supported; the fast wallet buttons are at the top of the page.
@@ -356,23 +369,17 @@ function CheckoutInner({
             aria-busy={paying}
             className="mt-6 w-full touch-manipulation rounded-[10px] bg-brand py-[0.95rem] text-center font-display text-[1.05rem] font-semibold text-white transition-colors hover:bg-brand-dark disabled:opacity-60"
           >
-            {paying ? "Processing…" : "Pay now"}
+            {paying ? c.processing : c.payNow}
           </button>
           <p role="alert" aria-live="assertive" className="mt-3 text-center text-[0.85rem] text-[#d64545]">
             {payErr}
           </p>
           <p className="mt-1 flex items-center justify-center gap-1.5 text-[0.78rem] text-muted">
-            <Lock className="h-3.5 w-3.5" aria-hidden="true" /> Powered by Stripe · Backed by our 14-day money-back guarantee
+            <Lock className="h-3.5 w-3.5" aria-hidden="true" /> {c.poweredBy}
           </p>
 
           <nav aria-label="Policies" className="mt-8 flex flex-wrap gap-x-5 gap-y-2 border-t border-line pt-5 text-[0.8rem]">
-            {[
-              ["Refund policy", "/returns"],
-              ["Shipping", "/shipping"],
-              ["Privacy policy", "/privacy"],
-              ["Terms of service", "/terms"],
-              ["Contact", "/contact"],
-            ].map(([label, href]) => (
+            {c.policies.map(([label, href]) => (
               <a key={href} href={href} className="text-brand hover:underline">
                 {label}
               </a>
@@ -419,6 +426,9 @@ function Summary({
   qty: number;
   onQty: (n: number) => void;
 }) {
+  const t = useContent();
+  const c = t.checkout;
+  const shipLabel = shipping === "express" ? c.expressLabel : c.standardLabel;
   const [discountOpen, setDiscountOpen] = useState(!!code);
   return (
     <div>
@@ -429,9 +439,9 @@ function Summary({
         </span>
         <div className="min-w-0 flex-1">
           <p className="font-semibold leading-tight">
-            {PRODUCT.title} <span className="sr-only">, quantity {qty}</span>
+            {PRODUCT.title} <span className="sr-only">× {qty}</span>
           </p>
-          <p className="truncate text-[0.82rem] text-muted">{qty > 1 ? `${money(quote.unitCents)} each` : PRODUCT.sub}</p>
+          <p className="truncate text-[0.82rem] text-muted">{qty > 1 ? `${money(quote.unitCents)} ${c.each}` : t.buyBox.sub}</p>
           {/* quantity stepper — chosen here, not on the product page */}
           <div className="mt-2 inline-flex items-center rounded-lg border border-line bg-white">
             <button
@@ -464,18 +474,18 @@ function Summary({
           onClick={() => setDiscountOpen(true)}
           className="mt-5 inline-flex touch-manipulation items-center gap-1.5 rounded-lg border border-line px-4 py-2.5 text-[0.88rem] font-semibold text-ink transition-colors hover:bg-card"
         >
-          <Tag className="h-4 w-4" aria-hidden="true" /> Add discount
+          <Tag className="h-4 w-4" aria-hidden="true" /> {c.addDiscount}
         </button>
       ) : (
         <div className="mt-5 flex gap-2">
-          <label htmlFor="discount-code" className="sr-only">Discount code</label>
+          <label htmlFor="discount-code" className="sr-only">{c.discountCode}</label>
           <input
             id="discount-code"
             name="discount-code"
             value={code}
             onChange={(e) => setCode(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && applyCode()}
-            placeholder="Discount code"
+            placeholder={c.discountCode}
             autoComplete="off"
             autoCapitalize="characters"
             spellCheck={false}
@@ -485,7 +495,7 @@ function Summary({
             onClick={applyCode}
             className="shrink-0 touch-manipulation rounded-lg bg-[#e6e8eb] px-5 py-2.5 text-[0.9rem] font-semibold text-ink transition-colors hover:bg-[#dcdfe3]"
           >
-            Apply
+            {c.apply}
           </button>
         </div>
       )}
@@ -500,23 +510,23 @@ function Summary({
       {/* totals */}
       <div className="mt-5 space-y-2 border-t border-line pt-4 text-[0.92rem]">
         <div className="flex justify-between text-muted">
-          <span>Subtotal</span>
+          <span>{c.subtotal}</span>
           <span className="tabular-nums">{money(quote.productCents)}</span>
         </div>
         {quote.discountCents > 0 && (
           <div className="flex justify-between text-[#1b8a4e]">
-            <span>Discount</span>
+            <span>{c.discount}</span>
             <span className="tabular-nums">&minus;{money(quote.discountCents)}</span>
           </div>
         )}
         <div className="flex justify-between text-muted">
-          <span>Shipping &middot; {SHIP[shipping].label}</span>
+          <span>{c.shipping} &middot; {shipLabel}</span>
           <span className={`tabular-nums ${quote.shippingCents === 0 ? "text-[#1b8a4e]" : ""}`}>
-            {quote.shippingCents === 0 ? "Free" : money(quote.shippingCents)}
+            {quote.shippingCents === 0 ? c.freeWord : money(quote.shippingCents)}
           </span>
         </div>
         <div className="mt-2 flex items-baseline justify-between border-t border-line pt-3">
-          <span className="font-display text-[1.1rem] font-bold">Total</span>
+          <span className="font-display text-[1.1rem] font-bold">{c.total}</span>
           <span>
             <span className="mr-1.5 text-[0.72rem] text-muted">USD</span>
             <span className="font-display text-[1.3rem] font-bold tabular-nums">{money(quote.total)}</span>
@@ -530,6 +540,7 @@ function Summary({
 // If Stripe keys aren't set yet (or intent creation fails), keep the store working
 // by falling back to Stripe's hosted checkout.
 function FatalFallback({ message }: { message: string }) {
+  const c = useContent().checkout;
   const [loading, setLoading] = useState(false);
   const hosted = async () => {
     setLoading(true);
@@ -556,10 +567,10 @@ function FatalFallback({ message }: { message: string }) {
         aria-busy={loading}
         className="mt-5 touch-manipulation rounded-full bg-brand px-6 py-3 font-display font-bold text-white hover:bg-brand-dark disabled:opacity-60"
       >
-        {loading ? "Starting…" : "Continue to secure checkout"}
+        {loading ? c.starting : c.continueSecure}
       </button>
       <p className="mt-4">
-        <a href="/product" className="text-[0.85rem] text-muted underline">Back to product</a>
+        <a href="/product" className="text-[0.85rem] text-muted underline">{c.backToProduct}</a>
       </p>
     </div>
   );

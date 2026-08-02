@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Star, MapPin, Clock, Minus, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCurrency } from "@/components/CurrencyProvider";
+import { useContent } from "@/components/useContent";
 import { useBuyNow } from "@/components/useBuyNow";
 import { DeliveryEstimate } from "@/components/DeliveryEstimate";
 import { Countdown } from "@/components/Countdown";
@@ -10,18 +11,16 @@ import { Countdown } from "@/components/Countdown";
 // Base prices in USD — converted to the visitor's currency.
 const PRICE = { now: 89.99, was: 149 };
 
-// Included-free perks, shown as rendered product icons.
-const perks = [
-  { img: "/assets/img/fc-icon-shipping.png", label: "Free shipping" },
-  { img: "/assets/img/fc-icon-guards.png", label: "Free guard set" },
-  { img: "/assets/img/fc-icon-guide.png", label: "Digital guide" },
-];
+// Included-free perks, shown as rendered product icons (labels come from content).
+const PERK_IMGS = ["/assets/img/fc-icon-shipping.png", "/assets/img/fc-icon-guards.png", "/assets/img/fc-icon-guide.png"];
 
 export function BuyBox() {
   const { fmt } = useCurrency();
+  const c = useContent().buyBox;
   const { buy, loading, error } = useBuyNow();
   const [qty, setQty] = useState(1);
   const setQ = (n: number) => setQty(Math.min(10, Math.max(1, n)));
+  const perks = PERK_IMGS.map((img, i) => ({ img, label: c.perks[i] }));
 
   return (
     <div>
@@ -33,27 +32,27 @@ export function BuyBox() {
           ))}
         </span>
         <span className="text-sm font-medium text-muted">
-          <b className="text-ink">4.8</b> · 1,247 reviews
+          <b className="text-ink">4.8</b> · 1.247 {c.reviews}
         </span>
       </a>
 
       <h1 className="mt-3 font-display text-[clamp(2rem,5vw,2.8rem)] font-bold leading-[1.05] tracking-[-0.02em]">
-        FadeClipper
+        {c.title}
       </h1>
-      <p className="mt-1.5 text-[1.05rem] text-muted">The auto-fading cordless hair clipper.</p>
+      <p className="mt-1.5 text-[1.05rem] text-muted">{c.sub}</p>
 
       <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1">
         <span className="whitespace-nowrap font-display text-[1.9rem] font-bold text-brand">{fmt(PRICE.now)}</span>
         <span className="whitespace-nowrap text-[1.15rem] text-muted line-through">{fmt(PRICE.was)}</span>
         <span className="whitespace-nowrap rounded-full bg-brand-soft px-2.5 py-1 text-[0.72rem] font-bold uppercase tracking-wide text-brand-dark">
-          Save 40%
+          {c.save}
         </span>
       </div>
 
       {/* sale countdown + compact quantity stepper */}
       <div className="mt-5 flex items-stretch gap-2">
         <div className="flex flex-1 items-center justify-center gap-1.5 whitespace-nowrap rounded-2xl bg-brand-tint px-3 py-2.5 text-[0.82rem] font-semibold text-brand-dark">
-          <Clock className="h-3.5 w-3.5 shrink-0" aria-hidden="true" /> Sale ends in <Countdown />
+          <Clock className="h-3.5 w-3.5 shrink-0" aria-hidden="true" /> {c.saleEndsIn} <Countdown />
         </div>
         <div className="flex shrink-0 items-center rounded-2xl bg-brand-tint text-brand-dark" aria-label="Quantity">
           <button type="button" aria-label="Decrease quantity" onClick={() => setQ(qty - 1)} disabled={qty <= 1} className="grid h-full w-8 place-items-center rounded-l-2xl transition-colors hover:bg-brand-soft disabled:opacity-30">
@@ -67,7 +66,7 @@ export function BuyBox() {
       </div>
 
       <Button size="lg" className="mt-4 w-full rounded-2xl text-[1.05rem]" onClick={() => buy("single", qty)} disabled={loading}>
-        {loading ? "Starting checkout…" : `Buy now — ${fmt(PRICE.now * qty)}`}
+        {loading ? c.startingCheckout : `${c.buyNow}${fmt(PRICE.now * qty)}`}
       </Button>
 
       <DeliveryEstimate className="mt-3 text-[0.85rem] text-muted" iconClassName="text-brand" />
@@ -88,7 +87,7 @@ export function BuyBox() {
       <div className="mt-4 flex items-center gap-2 text-[0.85rem] text-muted">
         <MapPin className="h-4 w-4 shrink-0 text-brand" />
         <span>
-          In stock &middot; <span className="text-ink">order today, ships within 24 hours</span>
+          {c.inStock} &middot; <span className="text-ink">{c.inStockRest}</span>
         </span>
       </div>
     </div>

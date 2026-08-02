@@ -2,6 +2,8 @@
 import { useEffect, useState } from "react";
 import { Truck } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useContent } from "@/components/useContent";
+import { useLang } from "@/components/CurrencyProvider";
 
 // Free-shipping delivery window (business days), varied by region so the
 // estimate reflects the visitor's location.
@@ -37,10 +39,13 @@ export function DeliveryEstimate({
 }) {
   const [range, setRange] = useState("");
   const [place, setPlace] = useState<string | null>(null);
+  const t = useContent().common;
+  const lang = useLang();
+  const locale = lang === "da" ? "da-DK" : "en-US";
 
   useEffect(() => {
     const fmt = (d: Date) =>
-      d.toLocaleDateString(undefined, compact ? { month: "short", day: "numeric" } : { weekday: "short", month: "short", day: "numeric" });
+      d.toLocaleDateString(locale, compact ? { month: "short", day: "numeric" } : { weekday: "short", month: "short", day: "numeric" });
 
     const compute = (cc: string | null, label: string | null) => {
       const [min, max] = windowForCC(cc);
@@ -79,20 +84,20 @@ export function DeliveryEstimate({
         compute(cc, label);
       })
       .catch(() => {});
-  }, [compact]);
+  }, [compact, locale]);
 
   return (
     <p className={cn("flex items-center justify-center gap-1.5", className)}>
       <Truck className={cn("h-4 w-4 shrink-0", iconClassName)} />
       <span>
-        Free delivery
+        {t.freeDelivery}
         {!compact && place ? (
           <>
             {" "}
-            to <span className="font-medium">{place}</span>
+            {t.to} <span className="font-medium">{place}</span>
           </>
         ) : null}{" "}
-        &mdash; <span className="font-semibold">{range ? `arrives ${range}` : "7–10 business days"}</span>
+        &mdash; <span className="font-semibold">{range ? `${t.arrives} ${range}` : t.businessDays}</span>
       </span>
     </p>
   );

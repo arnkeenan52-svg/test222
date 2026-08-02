@@ -1,6 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useCurrency } from "@/components/CurrencyProvider";
+import { useContent } from "@/components/useContent";
+import { CONTENT } from "@/lib/content";
 import { CURRENCIES } from "@/lib/currency";
 
 const NAMES: Record<string, string> = {
@@ -17,6 +19,10 @@ const NAMES: Record<string, string> = {
 
 export function ConsentCards() {
   const { local, chosen, choose } = useCurrency();
+  // Cookie consent follows the chosen language; the currency picker is shown
+  // before a choice is made, so it greets a Danish visitor (local DKK) in Danish.
+  const cc = useContent().consent;
+  const pc = CONTENT[local.code === "DKK" ? "da" : "en"].consent;
   const [mounted, setMounted] = useState(false);
   const [cookieOpen, setCookieOpen] = useState(false);
 
@@ -41,7 +47,7 @@ export function ConsentCards() {
   const showCurrency = !chosen && local.code !== "USD";
   if (!showCurrency && !cookieOpen) return null;
 
-  const localName = NAMES[local.code] || local.code;
+  const localName = local.code === "DKK" ? "danske kroner" : NAMES[local.code] || local.code;
 
   return (
     <div className="fixed bottom-4 left-4 z-[100] flex w-[min(260px,calc(100vw-2rem))] flex-col gap-2.5 sm:bottom-5 sm:left-5 sm:w-[270px]">
@@ -49,19 +55,19 @@ export function ConsentCards() {
       {showCurrency && (
         <div className="rounded-2xl border border-white/10 bg-[#141414] p-3.5 text-white shadow-2xl">
           <p className="text-[0.78rem] leading-snug text-white/60">
-            Choose the currency you&rsquo;d like to see prices in.
+            {pc.currencyPrompt}
           </p>
           <button
             onClick={() => choose(CURRENCIES.USD)}
             className="mt-3 w-full rounded-full border border-white/20 py-2 text-[0.8rem] font-semibold text-white transition-colors hover:bg-white/10"
           >
-            Show USD ($)
+            {pc.showUsd}
           </button>
           <button
             onClick={() => choose(local)}
             className="mt-1.5 w-full rounded-full bg-white py-2 text-[0.8rem] font-semibold text-ink transition-colors hover:bg-white/90"
           >
-            Show {localName} ({local.symbol.trim()})
+            {pc.show} {localName} ({local.symbol.trim()})
           </button>
         </div>
       )}
@@ -70,21 +76,21 @@ export function ConsentCards() {
       {cookieOpen && (
         <div className="rounded-2xl border border-white/10 bg-[#141414] p-3.5 text-white shadow-2xl">
           <p className="text-[0.78rem] leading-snug text-white/60">
-            We use cookies to improve your experience. By continuing you agree to our{" "}
-            <a href="/terms" className="text-white underline underline-offset-2">Terms</a> &amp;{" "}
-            <a href="/privacy" className="text-white underline underline-offset-2">Privacy</a>.
+            {cc.cookiePre}
+            <a href="/terms" className="text-white underline underline-offset-2">{cc.terms}</a>{cc.cookieMid}
+            <a href="/privacy" className="text-white underline underline-offset-2">{cc.privacy}</a>{cc.cookiePost}
           </p>
           <button
             onClick={() => setCookie("essential")}
             className="mt-3 w-full rounded-full border border-white/20 py-2 text-[0.8rem] font-semibold text-white transition-colors hover:bg-white/10"
           >
-            Essential only
+            {cc.essentialOnly}
           </button>
           <button
             onClick={() => setCookie("all")}
             className="mt-1.5 w-full rounded-full bg-brand py-2 text-[0.8rem] font-semibold text-white transition-colors hover:bg-brand-dark"
           >
-            Accept &amp; agree
+            {cc.acceptAgree}
           </button>
         </div>
       )}
