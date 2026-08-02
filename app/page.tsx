@@ -45,7 +45,7 @@ export default function Page() {
               </p>
               <div className="mt-6 flex w-full max-w-[280px] flex-col gap-2.5">
                 <Button asChild size="sm" className="h-11 text-[0.95rem]"><a href="/product">Order now &mdash; <Price usd={69.99} /></a></Button>
-                <WatchDemo size="sm" className="h-11 text-[0.95rem] border-white/35 text-white/80 hover:border-white/60 hover:bg-white/10 hover:text-white" />
+                <WatchDemo size="sm" className="h-11 text-[0.95rem] border border-white/10 bg-white/[0.16] text-white/85 backdrop-blur-md hover:bg-white/25 hover:text-white" />
               </div>
               <Reveal className="mt-10 w-full max-w-[860px]">
                 <figure className="overflow-hidden rounded-5xl border border-white/10 shadow-soft">
