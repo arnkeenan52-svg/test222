@@ -84,7 +84,7 @@ export function SiteNav({ variant = "light", buyBar = false }: { variant?: "hero
       <div className={wrap}>
         <nav className={bar}>
           <a href="/" aria-label="FadeClipper home" className={logoColor}>
-            <Logo />
+            <Logo size={hero ? "lg" : "default"} />
           </a>
           <ul className="hidden items-center gap-7 md:flex">
             {links.map(([label, href]) => (

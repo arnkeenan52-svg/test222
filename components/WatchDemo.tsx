@@ -4,7 +4,7 @@ import { Play, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-export function WatchDemo({ className }: { className?: string }) {
+export function WatchDemo({ className, size = "lg" }: { className?: string; size?: "default" | "lg" | "sm" }) {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -16,7 +16,7 @@ export function WatchDemo({ className }: { className?: string }) {
 
   return (
     <>
-      <Button size="lg" variant="outline" onClick={() => setOpen(true)} className={cn("w-full", className)}>
+      <Button size={size} variant="outline" onClick={() => setOpen(true)} className={cn("w-full", className)}>
         <Play className="h-4 w-4 fill-current" /> See how it works
       </Button>
       {open && (
