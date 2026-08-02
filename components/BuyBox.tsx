@@ -50,18 +50,18 @@ export function BuyBox() {
         </span>
       </div>
 
-      {/* launch-sale urgency countdown + compact quantity stepper */}
-      <div className="mt-5 flex items-stretch gap-2.5">
-        <div className="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-brand-tint px-3.5 py-3 text-[0.9rem] font-semibold text-brand-dark">
-          <Clock className="h-4 w-4 shrink-0" aria-hidden="true" /> Launch sale ends in <Countdown />
+      {/* sale countdown + compact quantity stepper */}
+      <div className="mt-5 flex items-stretch gap-2">
+        <div className="flex flex-1 items-center justify-center gap-1.5 whitespace-nowrap rounded-2xl bg-brand-tint px-3 py-2.5 text-[0.82rem] font-semibold text-brand-dark">
+          <Clock className="h-3.5 w-3.5 shrink-0" aria-hidden="true" /> Sale ends in <Countdown />
         </div>
         <div className="flex shrink-0 items-center rounded-2xl bg-brand-tint text-brand-dark" aria-label="Quantity">
-          <button type="button" aria-label="Decrease quantity" onClick={() => setQ(qty - 1)} disabled={qty <= 1} className="grid h-full w-9 place-items-center rounded-l-2xl transition-colors hover:bg-brand-soft disabled:opacity-30">
-            <Minus className="h-3.5 w-3.5" strokeWidth={2.5} />
+          <button type="button" aria-label="Decrease quantity" onClick={() => setQ(qty - 1)} disabled={qty <= 1} className="grid h-full w-8 place-items-center rounded-l-2xl transition-colors hover:bg-brand-soft disabled:opacity-30">
+            <Minus className="h-3 w-3" strokeWidth={2.5} />
           </button>
-          <span aria-live="polite" className="w-6 select-none text-center text-[0.95rem] font-bold tabular-nums">{qty}</span>
-          <button type="button" aria-label="Increase quantity" onClick={() => setQ(qty + 1)} disabled={qty >= 10} className="grid h-full w-9 place-items-center rounded-r-2xl transition-colors hover:bg-brand-soft disabled:opacity-30">
-            <Plus className="h-3.5 w-3.5" strokeWidth={2.5} />
+          <span aria-live="polite" className="w-5 select-none text-center text-[0.85rem] font-bold tabular-nums">{qty}</span>
+          <button type="button" aria-label="Increase quantity" onClick={() => setQ(qty + 1)} disabled={qty >= 10} className="grid h-full w-8 place-items-center rounded-r-2xl transition-colors hover:bg-brand-soft disabled:opacity-30">
+            <Plus className="h-3 w-3" strokeWidth={2.5} />
           </button>
         </div>
       </div>
