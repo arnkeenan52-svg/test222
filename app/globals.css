@@ -4,26 +4,21 @@
 @tailwind utilities;
 
 @layer base {
-  /* iOS Safari colours the top status-bar strip from the document background-color
-     (confirmed on-device: a white body gives a white strip). So html + body are
-     brand orange to make that strip match the orange offer bar; the visible page
-     surface lives on #content (white) on top. The source is nudged a touch
-     brighter than #ec6324 because iOS renders the strip slightly muted.
-     NOTE: iOS uses this same one colour for the bottom bar too — they can't be
-     split. */
+  /* Exactly like flowalarmclock: WHITE body + orange offer bar at the very top.
+     iOS Safari colours the top status bar from the content at the top edge (the
+     orange offer bar) and the bottom bar from the body background (white). So a
+     white body gives orange top + white bottom — the two are NOT the same colour.
+     Do not paint the body orange (that makes the bottom orange). */
   html {
     scroll-behavior: smooth;
-    background-color: #fa6a24;
     /* Stop the page over-scrolling past the top — kills iOS pull-to-refresh. */
     overscroll-behavior-y: none;
   }
   body {
-    @apply text-ink font-sans antialiased;
-    background-color: #fa6a24;
+    @apply bg-paper text-ink font-sans antialiased;
     overscroll-behavior-y: none;
     font-size: 16.5px;
   }
-  #content { @apply bg-paper; }
   ::selection { @apply bg-brand text-white; }
   h1, h2, h3 {
     @apply font-display;
