@@ -382,8 +382,10 @@ function OrderModal({ id, onClose, onRefunded, onPatch, onAuth }: { id: string; 
   const [err, setErr] = useState("");
   const [amount, setAmount] = useState("");
   const [rcode, setRcode] = useState("");
-  const [refunding, setRefunding] = useState(false);
+  const [partial, setPartial] = useState(false); // partial-refund amount row revealed
+  const [refunding, setRefunding] = useState<"full" | "partial" | null>(null);
   const [refundMsg, setRefundMsg] = useState("");
+  const [refundOk, setRefundOk] = useState(false);
   const [fulfilling, setFulfilling] = useState(false);
   const startedRef = useRef(false);
 
@@ -419,19 +421,26 @@ function OrderModal({ id, onClose, onRefunded, onPatch, onAuth }: { id: string; 
 
   const remaining = d ? Math.max(0, (d.total || 0) - (d.amountRefunded || 0)) : 0;
 
-  const doRefund = async () => {
+  const doRefund = async (kind: "full" | "partial") => {
     if (refunding) return;
-    if (!rcode.trim()) { setRefundMsg("Enter the admin code to confirm."); return; }
-    const amt = amount.trim() ? parseFloat(amount) : null;
-    if (amt != null && (!Number.isFinite(amt) || amt <= 0 || amt > remaining + 0.001)) { setRefundMsg(`Amount must be between $0 and ${money(remaining)}.`); return; }
-    setRefunding(true); setRefundMsg("");
+    if (!rcode.trim()) { setRefundOk(false); setRefundMsg("Enter the admin code to confirm."); return; }
+    let amt: number | null = null;
+    if (kind === "partial") {
+      amt = parseFloat(amount);
+      if (!amount.trim() || !Number.isFinite(amt) || amt <= 0 || amt > remaining + 0.001) {
+        setRefundOk(false); setRefundMsg(`Enter an amount between $0.01 and ${money(remaining)}.`); return;
+      }
+    }
+    setRefunding(kind); setRefundMsg("");
     try {
       const r = await fetch("/api/admin/order", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id, code: rcode.trim(), ...(amt != null ? { amount: amt } : {}) }) });
       const j = await r.json();
       if (!j.ok) throw new Error(j.error || "Refund failed");
-      setRcode(""); setAmount(""); fetchDetail(); onRefunded();
-    } catch (e: any) { setRefundMsg(e.message); }
-    setRefunding(false);
+      setRcode(""); setAmount(""); setPartial(false);
+      setRefundOk(true); setRefundMsg(kind === "full" ? `Full refund of ${money(remaining)} issued.` : `Refunded ${money(amt!)} to the customer.`);
+      fetchDetail(); onRefunded();
+    } catch (e: any) { setRefundOk(false); setRefundMsg(e.message); }
+    setRefunding(null);
   };
 
   return (
@@ -488,15 +497,67 @@ function OrderModal({ id, onClose, onRefunded, onPatch, onAuth }: { id: string; 
                 <div className="mt-5 rounded-xl bg-card py-3 text-center text-[0.9rem] font-bold text-muted">✓ Order refunded</div>
               ) : d.paymentStatus === "paid" ? (
                 <div className="mt-5 rounded-2xl border border-line bg-paper-alt p-4">
-                  <div className="mb-2 text-[0.8rem] font-semibold text-ink">Refund to the customer’s card (via Stripe)</div>
-                  <div className="flex gap-2">
-                    <input value={amount} onChange={(e) => setAmount(e.target.value)} inputMode="decimal" placeholder={`Amount (blank = full ${money(remaining)})`} className="min-w-0 flex-1 rounded-lg border border-line bg-white px-3 py-2.5 text-[0.88rem] outline-none focus-visible:border-brand" />
+                  <div className="text-[0.8rem] font-semibold text-ink">Refund to the customer’s card (via Stripe)</div>
+                  <div className="mt-0.5 text-[0.75rem] text-muted">
+                    Refundable: <span className="font-semibold text-ink">{money(remaining)}</span>
+                    {d.amountRefunded > 0 && <> · already refunded {money(d.amountRefunded)}</>}
                   </div>
-                  <div className="mt-2 flex gap-2">
-                    <input value={rcode} onChange={(e) => setRcode(e.target.value)} type="password" inputMode="numeric" placeholder="Admin code" className="min-w-0 flex-1 rounded-lg border border-line bg-white px-3 py-2.5 text-[0.88rem] outline-none focus-visible:border-brand" />
-                    <button onClick={doRefund} disabled={refunding} className="shrink-0 rounded-lg bg-[#b23b3b] px-4 py-2.5 text-[0.88rem] font-bold text-white hover:bg-[#9c3232] disabled:opacity-60">{refunding ? "Refunding…" : "Refund"}</button>
+
+                  <input
+                    value={rcode}
+                    onChange={(e) => { setRcode(e.target.value); setRefundMsg(""); }}
+                    type="password"
+                    inputMode="numeric"
+                    autoComplete="off"
+                    placeholder="Admin code to confirm"
+                    className="mt-3 w-full rounded-lg border border-line bg-white px-3 py-2.5 text-[0.88rem] outline-none focus-visible:border-brand"
+                  />
+
+                  {/* two explicit choices: full or partial */}
+                  <div className="mt-2 grid grid-cols-2 gap-2">
+                    <button
+                      onClick={() => doRefund("full")}
+                      disabled={!!refunding}
+                      className="rounded-lg bg-[#b23b3b] px-3 py-2.5 text-[0.85rem] font-bold text-white transition-colors hover:bg-[#9c3232] disabled:opacity-60"
+                    >
+                      {refunding === "full" ? "Refunding…" : `Full refund · ${money(remaining)}`}
+                    </button>
+                    <button
+                      onClick={() => { setPartial((v) => !v); setRefundMsg(""); }}
+                      disabled={!!refunding}
+                      aria-pressed={partial}
+                      className={`rounded-lg border px-3 py-2.5 text-[0.85rem] font-bold transition-colors disabled:opacity-60 ${partial ? "border-[#b23b3b] bg-[#f7ecec] text-[#b23b3b]" : "border-line bg-white text-ink hover:border-ink/30"}`}
+                    >
+                      Partial refund
+                    </button>
                   </div>
-                  {refundMsg && <div className="mt-2 text-[0.8rem] font-medium text-[#b23b3b]">{refundMsg}</div>}
+
+                  {/* partial amount + confirm, revealed on demand */}
+                  {partial && (
+                    <div className="mt-2 flex gap-2">
+                      <div className="relative min-w-0 flex-1">
+                        <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[0.88rem] text-muted">$</span>
+                        <input
+                          value={amount}
+                          onChange={(e) => { setAmount(e.target.value); setRefundMsg(""); }}
+                          onKeyDown={(e) => e.key === "Enter" && doRefund("partial")}
+                          inputMode="decimal"
+                          autoFocus
+                          placeholder={`Max ${money(remaining)}`}
+                          className="w-full rounded-lg border border-line bg-white py-2.5 pl-7 pr-3 text-[0.88rem] outline-none focus-visible:border-brand"
+                        />
+                      </div>
+                      <button
+                        onClick={() => doRefund("partial")}
+                        disabled={!!refunding}
+                        className="shrink-0 rounded-lg bg-[#b23b3b] px-4 py-2.5 text-[0.85rem] font-bold text-white transition-colors hover:bg-[#9c3232] disabled:opacity-60"
+                      >
+                        {refunding === "partial" ? "Refunding…" : "Refund this amount"}
+                      </button>
+                    </div>
+                  )}
+
+                  {refundMsg && <div className={`mt-2 text-[0.8rem] font-medium ${refundOk ? "text-[#1b8a4e]" : "text-[#b23b3b]"}`}>{refundMsg}</div>}
                 </div>
               ) : null}
             </>
