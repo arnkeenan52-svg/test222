@@ -11,7 +11,7 @@ import {
   useElements,
 } from "@stripe/react-stripe-js";
 import { PRODUCTS } from "@/lib/products";
-import { Lock, ShieldCheck, Check, ChevronDown, Tag } from "lucide-react";
+import { Lock, ShieldCheck, Check, ChevronDown, Tag, Minus, Plus } from "lucide-react";
 
 type ShippingId = "standard" | "express";
 const SHIP: Record<ShippingId, { label: string; cents: number; eta: string }> = {
@@ -134,7 +134,7 @@ function CheckoutInner({
   piId,
   quote,
   setQuote,
-  qty,
+  qty: initialQty,
 }: {
   clientSecret: string;
   piId: string;
@@ -151,13 +151,14 @@ function CheckoutInner({
   const [payErr, setPayErr] = useState("");
   const [summaryOpen, setSummaryOpen] = useState(false);
   const [hasExpress, setHasExpress] = useState(false);
+  const [qty, setQty] = useState(initialQty);
 
-  const recomputeAsync = async (nextShipping: ShippingId, nextCode: string, announce = false) => {
+  const recomputeAsync = async (nextShipping: ShippingId, nextCode: string, nextQty: number, announce = false) => {
     try {
       const res = await fetch("/api/payment-intent", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ paymentIntentId: piId, shipping: nextShipping, code: nextCode || null, qty }),
+        body: JSON.stringify({ paymentIntentId: piId, shipping: nextShipping, code: nextCode || null, qty: nextQty }),
       });
       const d = await res.json();
       if (d.total != null) {
@@ -166,8 +167,16 @@ function CheckoutInner({
       }
     } catch {}
   };
-  const recompute = (nextShipping: ShippingId, nextCode: string, announce = false) => {
-    void recomputeAsync(nextShipping, nextCode, announce);
+  const recompute = (nextShipping: ShippingId, nextCode: string, nextQty: number, announce = false) => {
+    void recomputeAsync(nextShipping, nextCode, nextQty, announce);
+  };
+
+  // Quantity is chosen here, in the order summary — the product page stays clean.
+  const changeQty = (next: number) => {
+    const q = Math.min(10, Math.max(1, next));
+    if (q === qty) return;
+    setQty(q);
+    recompute(shipping, code, q);
   };
 
   const confirm = async () => {
@@ -195,17 +204,17 @@ function CheckoutInner({
   const onExpressShippingRateChange = async ({ shippingRate, resolve }: any) => {
     const next: ShippingId = shippingRate?.id === "express" ? "express" : "standard";
     setShipping(next);
-    await recomputeAsync(next, code);
+    await recomputeAsync(next, code, qty);
     resolve();
   };
 
   const chooseShipping = (id: ShippingId) => {
     setShipping(id);
-    recompute(id, code);
+    recompute(id, code, qty);
   };
 
   const applyCode = () => {
-    recompute(shipping, code, true);
+    recompute(shipping, code, qty, true);
   };
 
   const pay = async () => {
@@ -238,7 +247,7 @@ function CheckoutInner({
       </button>
       {summaryOpen && (
         <div id="order-summary-mobile" className="border-b border-line bg-paper-alt px-5 py-5 md:hidden">
-          <Summary quote={quote} shipping={shipping} code={code} setCode={setCode} applyCode={applyCode} codeMsg={codeMsg} />
+          <Summary quote={quote} shipping={shipping} code={code} setCode={setCode} applyCode={applyCode} codeMsg={codeMsg} qty={qty} onQty={changeQty} />
         </div>
       )}
 
@@ -357,7 +366,7 @@ function CheckoutInner({
       {/* desktop summary */}
       <aside className="order-1 hidden border-l border-line bg-paper-alt px-5 py-12 md:order-2 md:block md:pl-12">
         <div className="sticky top-8 max-w-[420px]">
-          <Summary quote={quote} shipping={shipping} code={code} setCode={setCode} applyCode={applyCode} codeMsg={codeMsg} />
+          <Summary quote={quote} shipping={shipping} code={code} setCode={setCode} applyCode={applyCode} codeMsg={codeMsg} qty={qty} onQty={changeQty} />
         </div>
       </aside>
     </div>
@@ -380,6 +389,8 @@ function Summary({
   setCode,
   applyCode,
   codeMsg,
+  qty,
+  onQty,
 }: {
   quote: Quote;
   shipping: ShippingId;
@@ -387,6 +398,8 @@ function Summary({
   setCode: (v: string) => void;
   applyCode: () => void;
   codeMsg: string;
+  qty: number;
+  onQty: (n: number) => void;
 }) {
   const [discountOpen, setDiscountOpen] = useState(!!code);
   return (
@@ -394,17 +407,37 @@ function Summary({
       <div className="flex items-center gap-4">
         <span className="relative shrink-0">
           <img src={PRODUCT_IMG} alt={PRODUCT.title} width={64} height={64} className="h-16 w-16 rounded-xl border border-line object-cover" />
-          <span aria-hidden="true" className="absolute -right-2 -top-2 grid h-6 w-6 place-items-center rounded-full bg-ink text-[0.72rem] font-bold text-white tabular-nums">{quote.quantity}</span>
+          <span aria-hidden="true" className="absolute -right-2 -top-2 grid h-6 w-6 place-items-center rounded-full bg-ink text-[0.72rem] font-bold text-white tabular-nums">{qty}</span>
         </span>
         <div className="min-w-0 flex-1">
           <p className="font-semibold leading-tight">
-            {PRODUCT.title} <span className="sr-only">, quantity {quote.quantity}</span>
+            {PRODUCT.title} <span className="sr-only">, quantity {qty}</span>
           </p>
-          <p className="truncate text-[0.82rem] text-muted">
-            {quote.quantity > 1 ? `${quote.quantity} × ${money(quote.unitCents)}` : PRODUCT.sub}
-          </p>
+          <p className="truncate text-[0.82rem] text-muted">{qty > 1 ? `${money(quote.unitCents)} each` : PRODUCT.sub}</p>
+          {/* quantity stepper — chosen here, not on the product page */}
+          <div className="mt-2 inline-flex items-center rounded-lg border border-line bg-white">
+            <button
+              type="button"
+              aria-label="Decrease quantity"
+              onClick={() => onQty(qty - 1)}
+              disabled={qty <= 1}
+              className="grid h-8 w-8 touch-manipulation place-items-center rounded-l-lg text-ink transition-colors hover:bg-card disabled:opacity-30"
+            >
+              <Minus className="h-3.5 w-3.5" strokeWidth={2.5} />
+            </button>
+            <span aria-live="polite" className="w-8 select-none text-center text-[0.9rem] font-semibold tabular-nums">{qty}</span>
+            <button
+              type="button"
+              aria-label="Increase quantity"
+              onClick={() => onQty(qty + 1)}
+              disabled={qty >= 10}
+              className="grid h-8 w-8 touch-manipulation place-items-center rounded-r-lg text-ink transition-colors hover:bg-card disabled:opacity-30"
+            >
+              <Plus className="h-3.5 w-3.5" strokeWidth={2.5} />
+            </button>
+          </div>
         </div>
-        <span className="font-semibold tabular-nums">{money(quote.productCents)}</span>
+        <span className="self-start font-semibold tabular-nums">{money(quote.productCents)}</span>
       </div>
 
       {/* discount */}
