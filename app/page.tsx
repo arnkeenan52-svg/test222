@@ -8,7 +8,7 @@ import { ComparisonTable } from "@/components/ComparisonTable";
 import { RedditReviews } from "@/components/RedditReviews";
 import { Price } from "@/components/Price";
 import { SiteFooter } from "@/components/SiteFooter";
-import { Check, Plus, Star, ArrowRight } from "lucide-react";
+import { Check, Plus, Star, ArrowRight, Lock, CircleDollarSign } from "lucide-react";
 
 const faqs: [string, string][] = [
   ["Can I really fade the back of my own head?", "Yes — that's exactly what FadeClipper is built for. The tapered 45° auto-fade blade blends the gradient as you glide up, so you don't need barber-level skill or two mirrors. Most people get a clean back fade on the first or second try."],
@@ -62,6 +62,10 @@ export default function Page() {
                   </video>
                 </figure>
               </Reveal>
+              <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[0.85rem] font-medium text-white/55">
+                <span className="flex items-center gap-1.5"><Lock className="h-4 w-4" strokeWidth={2} /> Secure payment</span>
+                <span className="flex items-center gap-1.5"><CircleDollarSign className="h-4 w-4" strokeWidth={2} /> 14-day guarantee</span>
+              </div>
             </div>
           </header>
         </div>
@@ -74,7 +78,7 @@ export default function Page() {
         {/* HOW DOES IT WORK */}
         <Section id="how">
           <Head center eyebrow="60-second setup" title="How does it work?" sub="No experience needed. If you can comb your hair, you can run a FadeClipper." />
-          <Reveal><HowItWorks /></Reveal>
+          <Reveal><HowItWorks openAll /></Reveal>
         </Section>
 
         {/* WHY BETTER */}
