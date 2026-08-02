@@ -7,7 +7,7 @@ import { DeliveryEstimate } from "@/components/DeliveryEstimate";
 import { Countdown } from "@/components/Countdown";
 
 // Base prices in USD — converted to the visitor's currency.
-const PRICE = { now: 59, was: 99 };
+const PRICE = { now: 69.99, was: 116.65 };
 
 // Included-free perks, shown as rendered product icons.
 const perks = [

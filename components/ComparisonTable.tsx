@@ -8,7 +8,7 @@ const rows: { label: string; values: Cell[] }[] = [
   { label: "Fade anytime, at home", values: [true, "Hard", false] },
   { label: "Waterproof, rinse-clean", values: [true, "Some", "—"] },
   { label: "240-min cordless runtime", values: [true, "Varies", "—"] },
-  { label: "Cost in year one", values: ["$59", "$30–60", "$900+"] },
+  { label: "Cost in year one", values: ["$69.99", "$30–60", "$900+"] },
 ];
 
 function Mark({ v }: { v: Cell }) {
