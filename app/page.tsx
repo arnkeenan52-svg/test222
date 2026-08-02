@@ -1,4 +1,3 @@
-"use client";
 import { Button } from "@/components/ui/button";
 import { Reveal } from "@/components/Reveal";
 import { SiteNav } from "@/components/SiteNav";
@@ -10,13 +9,17 @@ import { RedditReviews } from "@/components/RedditReviews";
 import { Reviews } from "@/components/Reviews";
 import { Price } from "@/components/Price";
 import { SiteFooter } from "@/components/SiteFooter";
-import { useContent } from "@/components/useContent";
-import { useLang } from "@/components/CurrencyProvider";
 import { Check, Plus, Star, ArrowRight, Lock, CircleDollarSign } from "lucide-react";
 
+const faqs: [string, string][] = [
+  ["Can I really fade the back of my own head?", "Yes — that's exactly what FadeClipper is built for. The tapered 45° auto-fade blade blends the gradient as you glide up, so you don't need barber-level skill or two mirrors. Most people get a clean back fade on the first or second try."],
+  ["Is it hard to use if I've never faded before?", "No. Pick a length and glide it flat around your head — the blade does the blending. Follow the four steps above and you'll have a sharp fade in minutes."],
+  ["How long does the battery last?", "Up to 240 minutes of cordless runtime per charge — weeks of fades. The display shows exactly how many minutes remain, and it charges over USB-C on the dock."],
+  ["Is it actually waterproof?", "Yes. You can fade in the shower and rinse the whole clipper under the tap. Cleanup takes about ten seconds."],
+  ["What if I don't like it?", "You're covered by a 14-day money-back guarantee. If it isn't for you, send it back for a full refund."],
+];
+
 export default function Page() {
-  const t = useContent();
-  const lang = useLang();
   return (
     <>
       {/* TOP — nav + hero live in ONE black box behind a SINGLE glow, so there is
@@ -33,18 +36,18 @@ export default function Page() {
                 <span className="flex text-brand">
                   {Array.from({ length: 5 }).map((_, i) => <Star key={i} className="h-[18px] w-[18px] fill-current" />)}
                 </span>
-                <span className="text-sm font-medium text-white/70"><b className="text-white">{lang === "da" ? "1.200+" : "1,200+"}</b> {t.hero.reviews}</span>
+                <span className="text-sm font-medium text-white/70"><b className="text-white">1,200+</b> reviews</span>
               </div>
               <h1 className="font-display text-[clamp(2.6rem,6.4vw,4.6rem)] font-bold leading-[1.1] tracking-[-0.02em]">
-                {t.hero.h1a}<br />
-                <span className="text-brand">{t.hero.h1b}</span>
+                Fade your own hair.<br />
+                <span className="text-brand">In minutes.</span>
               </h1>
               <p className="mt-6 max-w-[42ch] text-[1.12rem] text-white/65">
-                {t.hero.subA}
-                <span className="underline decoration-white/30 underline-offset-2">{t.hero.subEmph}</span>.
+                The auto-fading clipper with a 45&deg; blade that blends the gradient for you &mdash;{" "}
+                <span className="underline decoration-white/30 underline-offset-2">no skill needed</span>.
               </p>
               <div className="mt-6 flex w-full max-w-[280px] flex-col gap-2.5">
-                <Button asChild size="sm" className="h-11 text-[0.95rem]"><a href="/product">{t.hero.orderNow}<Price usd={89.99} /></a></Button>
+                <Button asChild size="sm" className="h-11 text-[0.95rem]"><a href="/product">Order now &mdash; <Price usd={89.99} /></a></Button>
                 <WatchDemo size="sm" className="h-11 text-[0.95rem] border border-white/10 bg-[#524d48]/80 text-white/85 backdrop-blur-md hover:bg-[#585350]/80 hover:text-white" />
               </div>
               <Reveal className="mt-10 w-full max-w-[860px]">
@@ -55,7 +58,7 @@ export default function Page() {
                     loop
                     playsInline
                     poster="/assets/img/product-hero-dark.jpg"
-                    aria-label={t.hero.videoAlt}
+                    aria-label="FadeClipper auto-fading cordless hair clipper"
                     className="aspect-[4/3] w-full object-cover"
                   >
                     <source src="/assets/video/hero-zoom.mp4" type="video/mp4" />
@@ -63,8 +66,8 @@ export default function Page() {
                 </figure>
               </Reveal>
               <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[0.85rem] font-medium text-white/55">
-                <span className="flex items-center gap-1.5"><Lock className="h-4 w-4" strokeWidth={2} /> {t.hero.securePayment}</span>
-                <span className="flex items-center gap-1.5"><CircleDollarSign className="h-4 w-4" strokeWidth={2} /> {t.hero.guarantee}</span>
+                <span className="flex items-center gap-1.5"><Lock className="h-4 w-4" strokeWidth={2} /> Secure payment</span>
+                <span className="flex items-center gap-1.5"><CircleDollarSign className="h-4 w-4" strokeWidth={2} /> 14-day guarantee</span>
               </div>
             </div>
           </header>
@@ -77,13 +80,13 @@ export default function Page() {
 
         {/* HOW DOES IT WORK */}
         <Section id="how">
-          <Head center eyebrow={t.how.eyebrow} title={t.how.title} sub={t.how.sub} />
+          <Head center eyebrow="60-second setup" title="How does it work?" sub="No experience needed. If you can comb your hair, you can run a FadeClipper." />
           <Reveal><HowItWorks openAll /></Reveal>
         </Section>
 
         {/* WHY BETTER */}
         <Section alt id="compare">
-          <Head center eyebrow={t.compare.eyebrow} title={t.compare.title} sub={t.compare.sub} />
+          <Head center eyebrow="The difference" title="Why FadeClipper beats ordinary clippers." sub="The auto-fade blade does what regular clippers can't — and what the barber charges you for, on repeat." />
           <Reveal><div className="rounded-4xl bg-white p-4 shadow-card md:p-7"><ComparisonTable /></div></Reveal>
         </Section>
 
@@ -94,14 +97,14 @@ export default function Page() {
         <Section alt id="buy">
           <div className="mx-auto max-w-[760px]">
             <div className="overflow-hidden rounded-5xl bg-white shadow-soft">
-              <div className="bg-brand px-6 py-3 text-center text-sm font-semibold text-white">{t.offer.bar}</div>
+              <div className="bg-brand px-6 py-3 text-center text-sm font-semibold text-white">Launch sale — save 40% today</div>
               <div className="grid gap-8 p-8 md:grid-cols-2 md:p-10">
                 <div>
-                  <h2 className="font-display text-[2rem] font-bold leading-tight">{t.offer.h2}</h2>
+                  <h2 className="font-display text-[2rem] font-bold leading-tight">Stop wasting money at barbers. Keep the clipper.</h2>
                   <ul className="mt-5 grid gap-2.5">
-                    {t.offer.bullets.map((b) => (
-                      <li key={b} className="flex items-center gap-2.5 text-[0.98rem] text-ink-2">
-                        <Check className="h-4 w-4 shrink-0 text-brand" strokeWidth={3} />{b}
+                    {["FadeClipper + full accessory kit", "Free worldwide shipping", "14-day money-back guarantee", "1-year warranty"].map((t) => (
+                      <li key={t} className="flex items-center gap-2.5 text-[0.98rem] text-ink-2">
+                        <Check className="h-4 w-4 shrink-0 text-brand" strokeWidth={3} />{t}
                       </li>
                     ))}
                   </ul>
@@ -111,9 +114,9 @@ export default function Page() {
                     <Price usd={89.99} className="font-display text-[3rem] font-bold leading-none text-brand" />
                     <Price usd={149} className="text-[1.3rem] text-muted line-through" />
                   </div>
-                  <p className="mt-2 text-[0.84rem] text-muted">{t.offer.oneTime}</p>
-                  <Button asChild size="lg" className="mt-5 w-full"><a href="/product">{t.offer.cta} <ArrowRight className="h-4 w-4" /></a></Button>
-                  <p className="mt-3 text-[0.74rem] text-muted">{t.offer.secure}</p>
+                  <p className="mt-2 text-[0.84rem] text-muted">One-time payment · pays for itself in ~2 haircuts</p>
+                  <Button asChild size="lg" className="mt-5 w-full"><a href="/product">Get FadeClipper <ArrowRight className="h-4 w-4" /></a></Button>
+                  <p className="mt-3 text-[0.74rem] text-muted">Secure checkout · Visa · Mastercard · PayPal</p>
                 </div>
               </div>
             </div>
@@ -122,9 +125,9 @@ export default function Page() {
 
         {/* FAQ */}
         <Section alt id="faq">
-          <Head center eyebrow={t.faq.eyebrow} title={t.faq.title} />
+          <Head center eyebrow="Questions" title="Everything you're wondering." />
           <div className="mx-auto grid max-w-[720px] gap-3">
-            {t.faq.items.map(([q, a]) => (
+            {faqs.map(([q, a]) => (
               <details key={q} className="group rounded-4xl bg-white px-6 shadow-card">
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-5 font-display text-[1.04rem] font-semibold [&::-webkit-details-marker]:hidden">
                   {q}
@@ -142,10 +145,10 @@ export default function Page() {
         {/* FINAL CTA */}
         <section className="px-3 pb-10">
           <Reveal className="container-x overflow-hidden rounded-5xl bg-ink px-6 py-[clamp(3.5rem,7vw,6rem)] text-center text-white">
-            <h2 className="font-display text-[clamp(2rem,4.4vw,3.2rem)] font-bold text-white">{t.finalCta.title}</h2>
-            <p className="mx-auto mb-7 mt-4 max-w-[42ch] text-[1.06rem] text-white/70">{t.finalCta.sub}</p>
-            <Button asChild size="lg" variant="invert"><a href="/product">{t.finalCta.cta}<Price usd={89.99} /></a></Button>
-            <p className="mt-5 text-[0.8rem] text-white/50">{t.finalCta.note}</p>
+            <h2 className="font-display text-[clamp(2rem,4.4vw,3.2rem)] font-bold text-white">Your next fade is on you.</h2>
+            <p className="mx-auto mb-7 mt-4 max-w-[42ch] text-[1.06rem] text-white/70">The auto-fading clipper that turns a barber-only skill into a one-swipe move.</p>
+            <Button asChild size="lg" variant="invert"><a href="/product">Get FadeClipper — <Price usd={89.99} /></a></Button>
+            <p className="mt-5 text-[0.8rem] text-white/50">14-day money-back guarantee · Free worldwide shipping</p>
           </Reveal>
         </section>
       </main>

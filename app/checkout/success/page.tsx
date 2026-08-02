@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { useContent } from "@/components/useContent";
 import { Check } from "lucide-react";
 
 type Order = {
@@ -28,11 +27,15 @@ type Order = {
 
 const PRODUCT_IMG = "/assets/img/packaging.jpg";
 const money = (c: number) => `$${(c / 100).toFixed(2)}`;
+const LINKS: [string, string][] = [
+  ["Refund policy", "/returns"],
+  ["Shipping", "/shipping"],
+  ["Privacy policy", "/privacy"],
+  ["Terms of service", "/terms"],
+  ["Contact", "/contact"],
+];
 
 export default function CheckoutSuccessPage() {
-  const t = useContent();
-  const c = t.success;
-  const cc = t.checkout;
   const [order, setOrder] = useState<Order | null>(null);
   const [loaded, setLoaded] = useState(false);
   const started = useRef(false);
@@ -57,9 +60,6 @@ export default function CheckoutSuccessPage() {
   }, []);
 
   const firstName = order?.name?.trim().split(" ")[0] || "";
-  const isExpress = !!order && order.shippingCents > 0;
-  const shipLabel = isExpress ? cc.expressLabel : cc.standardLabel;
-  const shipEta = isExpress ? cc.expressEta : cc.standardEta;
 
   return (
     <div className="min-h-screen bg-white text-ink">
@@ -73,7 +73,7 @@ export default function CheckoutSuccessPage() {
 
       {!loaded ? (
         <div className="mx-auto max-w-[1000px] px-5 py-24 text-center text-muted" role="status" aria-live="polite">
-          {c.loading}
+          Loading your order…
         </div>
       ) : (
         <div className="mx-auto grid max-w-[1000px] md:grid-cols-[1.05fr_0.95fr]">
@@ -81,43 +81,43 @@ export default function CheckoutSuccessPage() {
           <main className="order-2 px-5 py-10 md:order-1 md:py-14 md:pr-14">
             <div className="mx-auto max-w-[520px]">
               {order?.orderNo && (
-                <p className="text-[0.78rem] font-semibold uppercase tracking-[0.08em] text-muted">{c.order} #{order.orderNo}</p>
+                <p className="text-[0.78rem] font-semibold uppercase tracking-[0.08em] text-muted">Order #{order.orderNo}</p>
               )}
               <div className="mt-2 flex items-center gap-2.5">
                 <span aria-hidden="true" className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-[#1b8a4e] text-white">
                   <Check className="h-4 w-4" strokeWidth={3} />
                 </span>
                 <h1 className="font-display text-[clamp(1.5rem,3.4vw,2rem)] font-bold tracking-[-0.01em]">
-                  {c.thankYou}{firstName ? `, ${firstName}` : ""}!
+                  Thank you{firstName ? `, ${firstName}` : ""}!
                 </h1>
               </div>
 
               <p className="mt-3 text-[1rem] leading-relaxed text-ink-2">
-                {c.confirmedA}
+                Your order is confirmed
                 {order?.email ? (
-                  <>{c.emailOnWay}<span className="font-medium text-ink">{order.email}</span></>
+                  <> — a confirmation email is on its way to <span className="font-medium text-ink">{order.email}</span></>
                 ) : null}
-                {c.confirmedB}
+                . We&rsquo;ll email your tracking number as soon as it ships.
               </p>
 
               {order && (
                 <div className="mt-8 overflow-hidden rounded-2xl border border-line">
                   <div className="border-b border-line bg-[#fafafa] px-6 py-3.5">
-                    <h2 className="font-display text-[0.98rem] font-bold">{c.orderDetails}</h2>
+                    <h2 className="font-display text-[0.98rem] font-bold">Order details</h2>
                   </div>
                   <dl className="divide-y divide-line">
                     <div className="grid gap-6 px-6 py-5 sm:grid-cols-2">
-                      {order.email && <Field label={c.contact}>{order.email}</Field>}
-                      <Field label={c.payment}>
+                      {order.email && <Field label="Contact">{order.email}</Field>}
+                      <Field label="Payment">
                         {order.paymentBrand && order.paymentLast4
                           ? `${order.paymentBrand} ···· ${order.paymentLast4}`
-                          : c.paidVia}
+                          : "Paid securely via Stripe"}
                         <span className="mt-0.5 block text-muted">{money(order.totalCents)} {order.currency}</span>
                       </Field>
                     </div>
                     {order.address && (
                       <div className="grid gap-6 px-6 py-5 sm:grid-cols-2">
-                        <Field label={c.shippingAddress}>
+                        <Field label="Shipping address">
                           {order.name && (
                             <>
                               {order.name}
@@ -132,12 +132,12 @@ export default function CheckoutSuccessPage() {
                           <br />
                           {order.address.country}
                         </Field>
-                        <Field label={c.billingAddress}>{c.sameAsShipping}</Field>
+                        <Field label="Billing address">Same as shipping address</Field>
                       </div>
                     )}
                     <div className="px-6 py-5">
-                      <Field label={c.shippingMethod}>
-                        {shipLabel} — {c.arrivesInAbout} {shipEta}
+                      <Field label="Shipping method">
+                        {order.shippingMethod} — arrives in about {order.shippingEta}
                       </Field>
                     </div>
                   </dl>
@@ -146,15 +146,15 @@ export default function CheckoutSuccessPage() {
 
               <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
                 <Button asChild size="lg" className="touch-manipulation">
-                  <a href="/">{c.continueShopping}</a>
+                  <a href="/">Continue shopping</a>
                 </Button>
                 <a href="/contact" className="text-[0.9rem] font-medium text-brand hover:underline">
-                  {c.needHelp}
+                  Need help with your order?
                 </a>
               </div>
 
               <nav aria-label="Policies" className="mt-10 flex flex-wrap gap-x-5 gap-y-2 border-t border-line pt-5 text-[0.8rem]">
-                {cc.policies.map(([label, href]) => (
+                {LINKS.map(([label, href]) => (
                   <a key={href} href={href} className="text-muted transition-colors hover:text-ink">
                     {label}
                   </a>
@@ -166,7 +166,7 @@ export default function CheckoutSuccessPage() {
           {/* summary */}
           <aside className="order-1 border-b border-line bg-[#fafafa] px-5 py-8 md:order-2 md:border-b-0 md:border-l md:py-14 md:pl-12">
             <div className="sticky top-8 mx-auto max-w-[400px]">
-              <h2 className="sr-only">{c.orderSummary}</h2>
+              <h2 className="sr-only">Order summary</h2>
               <div className="flex items-center gap-4">
                 <span className="relative shrink-0">
                   <img src={PRODUCT_IMG} alt={order?.productTitle ?? "FadeClipper"} width={64} height={64} className="h-16 w-16 rounded-xl border border-line object-cover" />
@@ -177,7 +177,7 @@ export default function CheckoutSuccessPage() {
                   <p className="truncate text-[0.82rem] text-muted">
                     {order && order.quantity > 1
                       ? `${order.quantity} × ${money(order.unitCents)}`
-                      : t.buyBox.sub}
+                      : order?.productSub ?? "Auto-fading cordless hair clipper"}
                   </p>
                 </div>
                 <span className="font-semibold tabular-nums">{money(order?.productCents ?? 5900)}</span>
@@ -185,23 +185,23 @@ export default function CheckoutSuccessPage() {
 
               <div className="mt-5 space-y-2 border-t border-line pt-4 text-[0.92rem]">
                 <div className="flex justify-between text-muted">
-                  <span>{cc.subtotal}</span>
+                  <span>Subtotal</span>
                   <span className="tabular-nums">{money(order?.productCents ?? 5900)}</span>
                 </div>
                 {order && order.discountCents > 0 && (
                   <div className="flex justify-between text-[#1b8a4e]">
-                    <span>{cc.discount}{order.discountCode ? ` · ${order.discountCode}` : ""}</span>
+                    <span>Discount{order.discountCode ? ` · ${order.discountCode}` : ""}</span>
                     <span className="tabular-nums">&minus;{money(order.discountCents)}</span>
                   </div>
                 )}
                 <div className="flex justify-between text-muted">
-                  <span>{cc.shipping}{order ? ` · ${shipLabel}` : ""}</span>
+                  <span>Shipping{order ? ` · ${order.shippingMethod}` : ""}</span>
                   <span className={`tabular-nums ${(order?.shippingCents ?? 0) === 0 ? "text-[#1b8a4e]" : ""}`}>
-                    {(order?.shippingCents ?? 0) === 0 ? cc.freeWord : money(order!.shippingCents)}
+                    {(order?.shippingCents ?? 0) === 0 ? "Free" : money(order!.shippingCents)}
                   </span>
                 </div>
                 <div className="mt-2 flex items-baseline justify-between border-t border-line pt-3">
-                  <span className="font-display text-[1.05rem] font-bold">{cc.total}</span>
+                  <span className="font-display text-[1.05rem] font-bold">Total</span>
                   <span>
                     <span className="mr-1.5 text-[0.72rem] text-muted">{order?.currency ?? "USD"}</span>
                     <span className="font-display text-[1.25rem] font-bold tabular-nums">{money(order?.totalCents ?? 5900)}</span>

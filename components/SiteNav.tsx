@@ -4,18 +4,22 @@ import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/Logo";
 import { Countdown } from "@/components/Countdown";
 import { useCurrency } from "@/components/CurrencyProvider";
-import { useContent } from "@/components/useContent";
 import { useBuyNow } from "@/components/useBuyNow";
 import { DeliveryEstimate } from "@/components/DeliveryEstimate";
 import { cn } from "@/lib/utils";
 import { Menu, X, Zap, Droplets } from "lucide-react";
 
+const links: [string, string][] = [
+  ["How it works", "/#how"],
+  ["Why FadeClipper", "/#compare"],
+  ["Reviews", "/#reviews"],
+  ["FAQ", "/#faq"],
+];
+
 export function SiteNav({ variant = "light", buyBar = false }: { variant?: "hero" | "light"; buyBar?: boolean }) {
   const [open, setOpen] = useState(false);
   const [showBar, setShowBar] = useState(false);
   const { fmt } = useCurrency();
-  const t = useContent();
-  const links = t.nav.links;
   const { buy, loading } = useBuyNow();
 
   useEffect(() => {
@@ -68,11 +72,11 @@ export function SiteNav({ variant = "light", buyBar = false }: { variant?: "hero
       <div className="bg-brand text-white">
         <div className="mx-auto flex max-w-container items-center justify-between gap-3 px-4 py-2 text-[0.8rem]">
           <span className="flex items-center gap-1.5 font-medium">
-            <span className="uppercase tracking-wide opacity-90">{t.nav.offerEndsIn}</span>
+            <span className="uppercase tracking-wide opacity-90">Offer ends in</span>
             <Countdown />
           </span>
           <a href="/product" className="shrink-0 rounded-full bg-white px-3 py-1 text-[0.72rem] font-semibold text-brand">
-            {t.nav.launchSale}
+            40% off &mdash; Launch Sale
           </a>
         </div>
       </div>
@@ -94,7 +98,7 @@ export function SiteNav({ variant = "light", buyBar = false }: { variant?: "hero
           </ul>
           <div className="flex items-center gap-1.5">
             <Button asChild size="sm" className="hidden sm:inline-flex">
-              <a href="/product">{t.nav.getYours}</a>
+              <a href="/product">Get yours</a>
             </Button>
             <button
               aria-label={open ? "Close menu" : "Open menu"}
@@ -119,7 +123,7 @@ export function SiteNav({ variant = "light", buyBar = false }: { variant?: "hero
             ))}
             <Button asChild className="mt-4 w-full">
               <a href="/product" onClick={() => setOpen(false)}>
-                {t.nav.getYours}
+                Get yours
               </a>
             </Button>
           </div>
@@ -140,11 +144,11 @@ export function SiteNav({ variant = "light", buyBar = false }: { variant?: "hero
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0 flex-1">
                 <p className="font-display text-[1.5rem] font-medium leading-[1.02] tracking-[-0.01em]">FadeClipper</p>
-                <p className="mt-0.5 text-[0.8rem] leading-snug text-white/50">{t.nav.subline}</p>
+                <p className="mt-0.5 text-[0.8rem] leading-snug text-white/50">+ free kit &amp; 14-day guarantee</p>
                 {/* feature bullets — tight, single line */}
                 <ul className="mt-2.5 grid gap-1.5 text-[0.85rem] text-white/90">
-                  <li className="flex items-center gap-2"><Zap className="h-4 w-4 shrink-0" strokeWidth={1.75} /> {t.nav.bladeBullet}</li>
-                  <li className="flex items-center gap-2"><Droplets className="h-4 w-4 shrink-0" strokeWidth={1.75} /> {t.nav.waterproofBullet}</li>
+                  <li className="flex items-center gap-2"><Zap className="h-4 w-4 shrink-0" strokeWidth={1.75} /> 45&deg; auto-fade blade</li>
+                  <li className="flex items-center gap-2"><Droplets className="h-4 w-4 shrink-0" strokeWidth={1.75} /> Waterproof, 240-min battery</li>
                 </ul>
               </div>
               {/* product tile — floating clipper render */}
@@ -161,7 +165,7 @@ export function SiteNav({ variant = "light", buyBar = false }: { variant?: "hero
               disabled={loading}
               className="relative mt-3 w-full rounded-full bg-brand py-[0.7rem] text-center font-display text-[0.9rem] font-medium text-white transition-colors hover:bg-brand-dark disabled:opacity-70"
             >
-              {loading ? t.nav.startingCheckout : <>{fmt(89.99)} - {t.nav.buyNow}</>}
+              {loading ? "Starting checkout…" : <>{fmt(89.99)} - Buy Now</>}
               <span className="absolute -top-2.5 right-3 grid h-7 w-7 place-items-center rounded-full bg-white text-[0.72rem] font-medium text-ink shadow-md">
                 1
               </span>

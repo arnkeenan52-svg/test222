@@ -1,6 +1,4 @@
-"use client";
 import { ArrowBigUp, MessageCircle } from "lucide-react";
-import { useContent } from "@/components/useContent";
 
 // ⚠️ SAMPLE social proof for design preview. The photos are AI-generated and the
 // posts are illustrative — swap for real, permissioned Reddit posts / customer
@@ -21,28 +19,26 @@ function Snoo({ className = "" }: { className?: string }) {
   );
 }
 
-const POST_META = [
-  { img: "/assets/img/reddit/r1.jpg", user: "u/no_barber_needed", time: "3d", up: "2.4k", comments: 184 },
-  { img: "/assets/img/reddit/r2.jpg", user: "u/homecut_mike", time: "1w", up: "1.8k", comments: 96 },
-  { img: "/assets/img/reddit/r3.jpg", user: "u/fadegod_23", time: "5d", up: "3.1k", comments: 210 },
+const POSTS = [
+  { img: "/assets/img/reddit/r1.jpg", user: "u/no_barber_needed", time: "3d", title: "First self-fade with the FadeClipper — didn't expect the back to come out this clean", up: "2.4k", comments: 184 },
+  { img: "/assets/img/reddit/r2.jpg", user: "u/homecut_mike", time: "1w", title: "Three weeks of practice + this clipper = barber-level fade at home", up: "1.8k", comments: 96 },
+  { img: "/assets/img/reddit/r3.jpg", user: "u/fadegod_23", time: "5d", title: "Did the whole back fade solo using my phone camera. This thing basically blends itself", up: "3.1k", comments: 210 },
 ];
 
 export function TrustedByReddit() {
-  const c = useContent().trustedReddit;
-  const posts = POST_META.map((m, i) => ({ ...m, title: c.postTitles[i] }));
   return (
     <section className="py-[clamp(3rem,6vw,5rem)]">
       <div className="container-x">
         <div className="mx-auto mb-9 flex max-w-[640px] flex-col items-center text-center">
           <Snoo className="h-10 w-10" />
-          <h2 className="mt-4 font-display text-[clamp(1.7rem,3.4vw,2.4rem)] font-bold leading-[1.1]">{c.title}</h2>
+          <h2 className="mt-4 font-display text-[clamp(1.7rem,3.4vw,2.4rem)] font-bold leading-[1.1]">Real fades, straight from Reddit</h2>
           <p className="mt-3 max-w-[46ch] text-[1.02rem] text-muted">
-            {c.subA}<span className="font-medium text-ink">{c.subHighlight}</span>{c.subB}
+            Self-cutters across <span className="font-medium text-ink">r/SelfBarber</span> are posting their FadeClipper results.
           </p>
         </div>
 
         <div className="mx-auto grid max-w-[980px] gap-5 sm:grid-cols-3">
-          {posts.map((p) => (
+          {POSTS.map((p) => (
             <article key={p.user} className="flex flex-col overflow-hidden rounded-3xl border border-line bg-white shadow-card">
               <div className="flex items-center gap-2 px-4 pt-4 text-[0.82rem]">
                 <Snoo className="h-5 w-5 shrink-0" />
