@@ -29,7 +29,7 @@ export default function Page() {
           <SiteNav variant="hero" />
           <header>
             <div className="container-x flex flex-col items-center pb-[clamp(3rem,6vw,5rem)] pt-[clamp(2.5rem,5.5vw,4rem)] text-center">
-              <div className="mb-5 flex items-center gap-2">
+              <div className="mb-3.5 flex items-center gap-2">
                 <span className="flex text-brand">
                   {Array.from({ length: 5 }).map((_, i) => <Star key={i} className="h-[18px] w-[18px] fill-current" />)}
                 </span>
@@ -39,7 +39,7 @@ export default function Page() {
                 Fade your own hair.<br />
                 <span className="text-brand">In minutes.</span>
               </h1>
-              <p className="mt-5 max-w-[42ch] text-[1.12rem] text-white/65">
+              <p className="mt-6 max-w-[42ch] text-[1.12rem] text-white/65">
                 The auto-fading clipper with a 45&deg; blade that blends the gradient for you &mdash;{" "}
                 <span className="underline decoration-white/30 underline-offset-2">no skill needed</span>.
               </p>
