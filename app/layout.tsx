@@ -1,11 +1,16 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
-// Colours the iOS status-bar strip (the area behind the clock/battery) to match
-// the offer bar. On iOS Safari this only works WITHOUT viewport-fit=cover —
-// with cover, Safari lets content show through the bar instead of tinting it.
+// Orange iOS status-bar strip (the area behind the clock/battery).
+// Two mechanisms, so it's orange regardless of how iOS treats the page:
+//   1. theme-color  — Safari/Chrome tint the browser chrome to this colour.
+//   2. viewport-fit=cover + the offer bar padding its top safe-area  — lets the
+//      orange offer bar render UP behind the status bar, so even when Safari
+//      ignores theme-color it still samples orange (this is what flowalarmclock
+//      relies on). The safe-area padding lives on the offer bar in SiteNav.
 export const viewport: Viewport = {
   themeColor: "#ec6324",
+  viewportFit: "cover",
 };
 import { SmoothScroll } from "@/components/SmoothScroll";
 import { CurrencyProvider } from "@/components/CurrencyProvider";
