@@ -6,15 +6,20 @@
 @layer base {
   /* iOS Safari paints the status-bar strip (behind the clock/battery) with the
      document's background-color — it ignores the theme-color meta and any child
-     element. So the root + body are brand orange; the real page surface lives on
-     #content below, which covers everything from the top of the viewport down.
-     This is how flowalarmclock gets its orange status bar. */
+     element. So the root + body carry the status-bar orange; the real page
+     surface lives on #content below, which covers everything from the top of the
+     viewport down. This is how flowalarmclock gets its orange status bar.
+
+     iOS renders that strip slightly darker/muted than the page paints the same
+     hex, so this source is nudged a touch brighter than the brand #ec6324 so the
+     rendered strip matches the offer bar exactly. */
   html {
     scroll-behavior: smooth;
-    background-color: #ec6324;
+    background-color: #fa6a24;
   }
   body {
-    @apply bg-brand text-ink font-sans antialiased;
+    @apply text-ink font-sans antialiased;
+    background-color: #fa6a24;
     font-size: 16.5px;
   }
   /* The visible page surface. Covers the orange document background everywhere
