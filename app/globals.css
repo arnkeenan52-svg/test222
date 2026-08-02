@@ -4,30 +4,26 @@
 @tailwind utilities;
 
 @layer base {
-  /* iOS Safari paints the status-bar strip (behind the clock/battery) with the
-     document's background-color — it ignores the theme-color meta and any child
-     element. So the root + body carry the status-bar orange; the real page
-     surface lives on #content below, which covers everything from the top of the
-     viewport down. This is how flowalarmclock gets its orange status bar.
-
-     iOS renders that strip slightly darker/muted than the page paints the same
-     hex, so this source is nudged a touch brighter than the brand #ec6324 so the
-     rendered strip matches the offer bar exactly. */
-  /* Neutral (white) document, exactly like flowalarmclock. iOS Safari colours the
-     top status bar from the page content at the top edge (the orange offer bar)
-     and the bottom bar from the content at the bottom edge (the dark footer). So
-     we do NOT paint the body orange — that would force BOTH bars orange. */
+  /* iOS Safari colours the top status-bar strip from the document background-color
+     (confirmed on-device: a white body gives a white strip). So html + body are
+     brand orange to make that strip match the orange offer bar; the visible page
+     surface lives on #content (white) on top. The source is nudged a touch
+     brighter than #ec6324 because iOS renders the strip slightly muted.
+     NOTE: iOS uses this same one colour for the bottom bar too — they can't be
+     split. */
   html {
     scroll-behavior: smooth;
-    /* Stop the page over-scrolling past the top — kills iOS pull-to-refresh (the
-       reload you get by dragging up at the very top). */
+    background-color: #fa6a24;
+    /* Stop the page over-scrolling past the top — kills iOS pull-to-refresh. */
     overscroll-behavior-y: none;
   }
   body {
-    @apply bg-paper text-ink font-sans antialiased;
+    @apply text-ink font-sans antialiased;
+    background-color: #fa6a24;
     overscroll-behavior-y: none;
     font-size: 16.5px;
   }
+  #content { @apply bg-paper; }
   ::selection { @apply bg-brand text-white; }
   h1, h2, h3 {
     @apply font-display;
