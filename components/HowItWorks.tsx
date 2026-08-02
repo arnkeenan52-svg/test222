@@ -10,16 +10,25 @@ const steps = [
   { n: 4, title: "Blend & finish", text: "Step the length up a notch and pass a little higher to melt the lines into a smooth, sharp fade.", img: "/assets/img/step-4.jpg" },
 ];
 
-export function HowItWorks() {
-  const [open, setOpen] = useState(0);
+export function HowItWorks({ openAll = false }: { openAll?: boolean }) {
+  // Set of open step indices. On the home page (openAll) every step starts open;
+  // elsewhere only the first is open. Clicking still toggles each step.
+  const [open, setOpen] = useState<Set<number>>(() => new Set(openAll ? steps.map((_, i) => i) : [0]));
+  const toggle = (i: number) =>
+    setOpen((prev) => {
+      const next = new Set(prev);
+      if (next.has(i)) next.delete(i);
+      else next.add(i);
+      return next;
+    });
   return (
     <div className="mx-auto max-w-[700px]">
       {steps.map((s, i) => {
-        const isOpen = open === i;
+        const isOpen = open.has(i);
         return (
           <div key={s.n} className="mb-4 overflow-hidden rounded-4xl bg-card">
             <button
-              onClick={() => setOpen(isOpen ? -1 : i)}
+              onClick={() => toggle(i)}
               className="flex w-full items-center gap-4 p-5 text-left"
               aria-expanded={isOpen}
             >
