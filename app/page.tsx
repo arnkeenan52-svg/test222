@@ -43,11 +43,11 @@ export default function Page() {
                 The auto-fading clipper with a 45&deg; blade that blends the gradient for you &mdash;{" "}
                 <span className="underline decoration-white/30 underline-offset-2">no skill needed</span>.
               </p>
-              <div className="mt-7 flex w-full max-w-[360px] flex-col gap-3">
-                <Button asChild size="lg"><a href="/product">Order now &mdash; <Price usd={59} /></a></Button>
-                <WatchDemo className="border-white/35 text-white/80 hover:border-white/60 hover:bg-white/10 hover:text-white" />
+              <div className="mt-6 flex w-full max-w-[280px] flex-col gap-2.5">
+                <Button asChild size="sm" className="h-11 text-[0.95rem]"><a href="/product">Order now &mdash; <Price usd={59} /></a></Button>
+                <WatchDemo size="sm" className="h-11 text-[0.95rem] border-white/35 text-white/80 hover:border-white/60 hover:bg-white/10 hover:text-white" />
               </div>
-              <Reveal className="mt-10 w-full max-w-[620px]">
+              <Reveal className="mt-10 w-full max-w-[860px]">
                 <figure className="overflow-hidden rounded-5xl border border-white/10 shadow-soft">
                   <video
                     autoPlay
