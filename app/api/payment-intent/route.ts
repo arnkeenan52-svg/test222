@@ -64,9 +64,11 @@ export async function POST(req: NextRequest) {
     const pi = await stripe.paymentIntents.create({
       amount: q.total,
       currency: "usd",
-      // Card only (excludes Link, so no "save my info for Link" prompt). Apple Pay
-      // and Google Pay ride on the card method via the Payment Element's wallets.
-      payment_method_types: ["card"],
+      // Includes every method enabled in the Stripe Dashboard — card plus the
+      // Apple Pay / Google Pay / Amazon Pay express wallets. Only activated methods
+      // are included (so this never errors), and Link is controlled in the Dashboard
+      // (the Express element also hides its Link button on the client).
+      automatic_payment_methods: { enabled: true },
       description: PRODUCTS.single.title,
       metadata,
     });
