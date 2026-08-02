@@ -39,6 +39,18 @@ export default function AdminPage() {
     fetch("/api/admin/login").then((r) => r.json()).then((d) => setAuthed(!!d.authed)).catch(() => setAuthed(false));
   }, []);
 
+  // While the (dark) login is shown, paint html/body dark so the iOS standalone
+  // status-bar and home-indicator safe areas aren't white strips. Reverted once
+  // the (light) dashboard is shown.
+  useEffect(() => {
+    if (authed !== false) return;
+    const html = document.documentElement, body = document.body;
+    const pH = html.style.backgroundColor, pB = body.style.backgroundColor;
+    html.style.backgroundColor = "#0a0a0c";
+    body.style.backgroundColor = "#0a0a0c";
+    return () => { html.style.backgroundColor = pH; body.style.backgroundColor = pB; };
+  }, [authed]);
+
   const login = async () => {
     if (loggingIn) return;
     setLoginErr(""); setLoggingIn(true);
@@ -104,18 +116,18 @@ export default function AdminPage() {
   return <Dashboard onLogout={logout} />;
 }
 
-function StatCard({ icon, label, value, delta, live, tone = "brand" }: { icon: React.ReactNode; label: string; value: string; delta?: string; live?: boolean; tone?: "brand" | "green" }) {
+function StatCard({ icon, label, value, delta, live, tone = "brand", className = "" }: { icon: React.ReactNode; label: string; value: string; delta?: string; live?: boolean; tone?: "brand" | "green"; className?: string }) {
   const chip = tone === "green" ? "bg-[#e6f1ea] text-[#1b8a4e]" : "bg-brand-tint text-brand";
   return (
-    <div className="group relative overflow-hidden rounded-2xl border border-line bg-white p-5 shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:shadow-soft">
+    <div className={`group relative overflow-hidden rounded-2xl border border-line bg-white p-5 shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:shadow-soft ${className}`}>
       <span className={`absolute inset-x-0 top-0 h-[3px] ${tone === "green" ? "bg-[#1b8a4e]" : "bg-brand"} opacity-0 transition-opacity group-hover:opacity-100`} />
       <div className={`absolute right-4 top-4 grid h-9 w-9 place-items-center rounded-xl ${chip}`}>{icon}</div>
-      <div className="flex items-center gap-1.5 text-[0.75rem] font-semibold text-muted">
-        {live && <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-[#1b8a4e]" />}
+      <div className="flex min-w-0 items-center gap-1.5 pr-11 text-[0.75rem] font-semibold text-muted">
+        {live && <span className="inline-block h-2 w-2 shrink-0 animate-pulse rounded-full bg-[#1b8a4e]" />}
         <span className="truncate">{label}</span>
       </div>
-      <div className="mt-2 font-display text-[1.85rem] font-extrabold leading-none tracking-tight text-ink tabular-nums">{value}</div>
-      {delta && <div className="mt-1.5 text-[0.78rem] font-medium text-muted">{delta}</div>}
+      <div className="mt-2.5 font-display text-[1.85rem] font-extrabold leading-none tracking-tight text-ink tabular-nums">{value}</div>
+      {delta && <div className="mt-2 truncate text-[0.78rem] font-medium text-muted">{delta}</div>}
     </div>
   );
 }
@@ -231,15 +243,12 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
 
       <div className="mx-auto max-w-[1100px] px-4 pb-16 pt-5">
         {/* stat cards */}
-        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3.5 lg:grid-cols-5">
           <StatCard live icon={<Activity className="h-[18px] w-[18px]" />} label="Active now" value={live ? String(live.activeNow) : "–"} delta="Last 60 sec" />
           <StatCard icon={<Users className="h-[18px] w-[18px]" />} label="Visits today" value={live ? live.visitsToday.toLocaleString("en-US") : "–"} delta={live ? `Yesterday: ${live.visitsYesterday.toLocaleString("en-US")}` : undefined} />
-          <StatCard tone="green" icon={<TrendingUp className="h-[18px] w-[18px]" />} label="Conversion today" value={live && live.visitsToday > 0 && stats ? ((stats.ordersToday / live.visitsToday) * 100).toFixed(1) + "%" : "–"} delta="Orders / visits" />
-          <StatCard icon={<ShoppingCart className="h-[18px] w-[18px]" />} label="Orders today" value={String(stats?.ordersToday ?? "–")} delta="Since midnight" />
-          <StatCard icon={<DollarSign className="h-[18px] w-[18px]" />} label="Revenue today" value={stats ? kmoney(stats.revenueToday) : "–"} />
-          <StatCard icon={<ShoppingCart className="h-[18px] w-[18px]" />} label={`Orders · ${stats?.rangeLabel || ""}`} value={String(stats?.totalOrders ?? "–")} />
-          <StatCard icon={<TrendingUp className="h-[18px] w-[18px]" />} label={`Revenue · ${stats?.rangeLabel || ""}`} value={stats ? kmoney(stats.totalRevenue) : "–"} />
-          <StatCard tone="green" icon={<DollarSign className="h-[18px] w-[18px]" />} label="Avg. order value" value={stats ? money(stats.avgOrder) : "–"} />
+          <StatCard icon={<ShoppingCart className="h-[18px] w-[18px]" />} label="Orders" value={String(stats?.totalOrders ?? "–")} delta={stats?.rangeLabel} />
+          <StatCard tone="green" icon={<DollarSign className="h-[18px] w-[18px]" />} label="Revenue" value={stats ? kmoney(stats.totalRevenue) : "–"} delta={stats?.rangeLabel} />
+          <StatCard icon={<TrendingUp className="h-[18px] w-[18px]" />} label="Conversion today" value={live && live.visitsToday > 0 && stats ? ((stats.ordersToday / live.visitsToday) * 100).toFixed(1) + "%" : "–"} delta="Orders / visits" className="col-span-2 lg:col-span-1" />
         </div>
 
         {live && live.configured === false && (
