@@ -85,6 +85,16 @@ html.lenis body { height: auto; }
 @keyframes fc-check { 0%,58% { opacity:0; transform: scale(.5);} 74%,100% { opacity:1; transform: scale(1);} }
 @keyframes fc-spin { to { transform: rotate(360deg); } }
 
+/* Living hero glow — a barely-there, very slow drift so the orange<->black blend
+   feels alive rather than static. Auto-disabled under prefers-reduced-motion. */
+@keyframes fc-glow-drift {
+  0%   { transform: translate3d(-2%, -1%, 0) scale(1); opacity: .82; }
+  50%  { transform: translate3d(2%, 1.5%, 0) scale(1.09); opacity: 1; }
+  100% { transform: translate3d(-2%, -1%, 0) scale(1); opacity: .82; }
+}
+.hero-glow   { animation: fc-glow-drift 26s ease-in-out infinite; will-change: transform, opacity; }
+.hero-glow-2 { animation: fc-glow-drift 34s ease-in-out infinite reverse; will-change: transform, opacity; }
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
