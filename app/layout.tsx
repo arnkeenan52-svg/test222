@@ -12,6 +12,9 @@ import { VisitorTracker } from "@/components/VisitorTracker";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://fadeclipper.com"),
+  // Storefront manifest (start_url "/"). The /admin layout overrides this with its
+  // own manifest (start_url "/admin") so installing from /admin opens the dashboard.
+  manifest: "/site.webmanifest",
   title: "FadeClipper — Fade your own hair in minutes",
   description:
     "The auto-fading clipper that blends a salon-quality fade for you. One swipe, fade done. Cordless, waterproof, 240-minute runtime.",
