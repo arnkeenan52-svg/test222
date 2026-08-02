@@ -39,16 +39,12 @@ export function BuyBox() {
       </h1>
       <p className="mt-1.5 text-[1.05rem] text-muted">The auto-fading cordless hair clipper.</p>
 
-      <div className="mt-4 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+      <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1">
         <span className="whitespace-nowrap font-display text-[1.9rem] font-bold text-brand">{fmt(PRICE.now)}</span>
         <span className="whitespace-nowrap text-[1.15rem] text-muted line-through">{fmt(PRICE.was)}</span>
         <span className="whitespace-nowrap rounded-full bg-brand-soft px-2.5 py-1 text-[0.72rem] font-bold uppercase tracking-wide text-brand-dark">
           Save 40%
         </span>
-      </div>
-
-      <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-[#e9f7ef] px-3.5 py-1.5 text-[0.82rem] font-medium text-[#1b8a4e]">
-        <span className="h-2 w-2 rounded-full bg-[#2bb673]" /> One-time payment &middot; no subscriptions
       </div>
 
       {/* launch-sale urgency countdown */}
