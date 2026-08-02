@@ -73,7 +73,7 @@ const faqs: { q: string; a: string }[] = [
   { q: "How long does the battery last?", a: "Up to 240 minutes of cordless runtime per charge — weeks of fades. A digital display shows the exact minutes remaining and it recharges over USB-C on the dock." },
   { q: "Can I get a skin fade at home?", a: "Yes. For a skin (bald) fade, set the fade line low and let the auto-fade blade taper down to the skin at the bottom. Go over the lowest section with light passes to take it all the way down." },
   { q: "Does it work on curly, thick or Afro/Black hair?", a: "Yes. Adjustable power lets you raise the RPM for thick, coarse or curly hair and lower it for fine detail, and the auto-fade blade blends the same way across hair types. Glide slowly through denser hair for the cleanest result." },
-  { q: "How much does it cost to fade your own hair vs going to a barber?", a: "A barber fade is typically $30–$50 and most people go every 2–3 weeks, which is roughly $600–$850 a year. The FadeClipper is a one-time purchase (currently $59 on launch sale), so it usually pays for itself within the first two haircuts." },
+  { q: "How much does it cost to fade your own hair vs going to a barber?", a: "A barber fade is typically $30–$50 and most people go every 2–3 weeks, which is roughly $600–$850 a year. The FadeClipper is a one-time purchase (currently $69.99 on launch sale), so it usually pays for itself within the first two haircuts." },
   { q: "What is an auto-fade clipper?", a: "An auto-fade clipper has a specially tapered blade (on the FadeClipper, a 45° auto-fade blade) where static and moving blades work together to taper the cut as you glide. Instead of manually blending multiple guard lengths, the clipper creates the fade gradient itself — which is what makes self-fading possible for non-barbers." },
   { q: "How do I do a low, mid or high fade?", a: "It's all about where the fade starts. A low fade begins just above the ear, a mid fade around the temple, and a high fade higher up the side of the head. With the FadeClipper you simply start your upward glide at that height — the blade handles the blend below it." },
   { q: "Do I need two mirrors to fade my own hair?", a: "It helps for the back, but it isn't required. Many people use their phone's camera instead. Because the FadeClipper blends automatically, small imperfections in your passes still come out smooth, so you don't need a perfect view of the back of your head." },
@@ -128,7 +128,7 @@ export default function GuidePage() {
         brand: { "@type": "Brand", name: "FadeClipper" },
         image: `${SITE_URL}/assets/img/product-hero-dark.jpg`,
         aggregateRating: { "@type": "AggregateRating", ratingValue: "4.8", reviewCount: "1200" },
-        offers: { "@type": "Offer", price: "59", priceCurrency: "USD", availability: "https://schema.org/InStock", url: `${SITE_URL}/product` },
+        offers: { "@type": "Offer", price: "69.99", priceCurrency: "USD", availability: "https://schema.org/InStock", url: `${SITE_URL}/product` },
       },
     ],
   };
@@ -260,13 +260,13 @@ export default function GuidePage() {
               rows={[
                 ["Cost each time", "$30–$50", "$0"],
                 ["Visits per year", "~17", "Unlimited"],
-                ["First-year cost", "~$680", "$59 once"],
+                ["First-year cost", "~$680", "$69.99 once"],
                 ["Booking & travel", "Every time", "Never"],
                 ["Touch-ups between cuts", "Pay again", "Free, anytime"],
               ]}
             />
             <p className="!mt-6">
-              At a one-time <strong><Price usd={59} /></strong>, the FadeClipper typically pays for itself within{" "}
+              At a one-time <strong><Price usd={69.99} /></strong>, the FadeClipper typically pays for itself within{" "}
               <strong>two haircuts</strong> — everything after that is free.
             </p>
           </Section>
@@ -310,7 +310,7 @@ export default function GuidePage() {
             <h2 className="font-display text-[clamp(1.6rem,3.5vw,2.4rem)] font-bold text-white">Ready to fade your own hair?</h2>
             <p className="mx-auto mt-3 max-w-[46ch] text-white/70">
               The FadeClipper does the blending for you — get a sharp fade at home in minutes, for a one-time{" "}
-              <Price usd={59} />.
+              <Price usd={69.99} />.
             </p>
             <Button asChild size="lg" variant="invert" className="mt-6">
               <a href="/product">See the FadeClipper <ArrowRight className="h-4 w-4" /></a>

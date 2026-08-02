@@ -46,10 +46,11 @@ export function SiteNav({ variant = "light", buyBar = false }: { variant?: "hero
 
   const hero = variant === "hero";
 
-  // "hero" = transparent over the homepage glow; "light" = white floating pill (Flow-style)
-  const wrap = hero ? "" : "px-3 pt-3";
+  // Both variants are a floating pill. "hero" = a frosted grey oval over the dark
+  // homepage glow; "light" = a white pill on light pages (Flow-style).
+  const wrap = "px-3 pt-3";
   const bar = hero
-    ? "mx-auto flex max-w-container items-center justify-between gap-4 px-4 py-3.5 text-white"
+    ? "mx-auto flex max-w-container items-center justify-between gap-4 rounded-full border border-white/10 bg-white/10 px-3 py-2.5 pl-5 text-white shadow-soft backdrop-blur-md"
     : "mx-auto flex max-w-container items-center justify-between gap-4 rounded-full border border-line bg-white px-3 py-2.5 pl-5 text-ink shadow-soft";
   const logoColor = hero ? "text-white" : "text-ink";
   const link = hero
@@ -59,18 +60,16 @@ export function SiteNav({ variant = "light", buyBar = false }: { variant?: "hero
     ? "grid h-10 w-10 place-items-center rounded-full text-white hover:bg-white/10 md:hidden"
     : "grid h-10 w-10 place-items-center rounded-full text-ink hover:bg-card md:hidden";
   const panel = hero
-    ? "fixed inset-x-3 top-[calc(112px+env(safe-area-inset-top))] z-40 rounded-4xl border border-white/10 bg-[#111] p-5 shadow-soft md:hidden"
-    : "fixed inset-x-3 top-[calc(124px+env(safe-area-inset-top))] z-40 rounded-4xl border border-line bg-white p-5 shadow-soft md:hidden";
+    ? "fixed inset-x-3 top-[124px] z-40 rounded-4xl border border-white/10 bg-[#111] p-5 shadow-soft md:hidden"
+    : "fixed inset-x-3 top-[124px] z-40 rounded-4xl border border-line bg-white p-5 shadow-soft md:hidden";
   const panelLink = hero
     ? "border-b border-white/10 py-3 font-semibold text-white last:border-0"
     : "border-b border-line-2 py-3 font-semibold text-ink last:border-0";
 
   return (
     <>
-      {/* offer bar — its orange also fills the iOS status-bar safe area (behind
-          the clock/battery) via padding-top, so the top strip reads orange even
-          when Safari ignores theme-color. */}
-      <div className="bg-brand text-white" style={{ paddingTop: "env(safe-area-inset-top)" }}>
+      {/* offer bar */}
+      <div className="bg-brand text-white">
         <div className="mx-auto flex max-w-container items-center justify-between gap-3 px-4 py-2 text-[0.8rem]">
           <span className="flex items-center gap-1.5 font-medium">
             <span className="uppercase tracking-wide opacity-90">Offer ends in</span>
@@ -86,7 +85,7 @@ export function SiteNav({ variant = "light", buyBar = false }: { variant?: "hero
       <div className={wrap}>
         <nav className={bar}>
           <a href="/" aria-label="FadeClipper home" className={logoColor}>
-            <Logo size={hero ? "lg" : "default"} />
+            <Logo />
           </a>
           <ul className="hidden items-center gap-7 md:flex">
             {links.map(([label, href]) => (
@@ -166,7 +165,7 @@ export function SiteNav({ variant = "light", buyBar = false }: { variant?: "hero
               disabled={loading}
               className="relative mt-3 w-full rounded-full bg-brand py-[0.7rem] text-center font-display text-[0.9rem] font-medium text-white transition-colors hover:bg-brand-dark disabled:opacity-70"
             >
-              {loading ? "Starting checkout…" : <>{fmt(59)} - Buy Now</>}
+              {loading ? "Starting checkout…" : <>{fmt(69.99)} - Buy Now</>}
               <span className="absolute -top-2.5 right-3 grid h-7 w-7 place-items-center rounded-full bg-white text-[0.72rem] font-medium text-ink shadow-md">
                 1
               </span>

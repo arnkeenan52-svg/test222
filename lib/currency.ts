@@ -17,7 +17,7 @@ export const CURRENCIES: Record<string, Currency> = {
   NOK: { code: "NOK", symbol: "kr", rate: 10.8, symbolAfter: true },
   CAD: { code: "CAD", symbol: "CA$", rate: 1.36 },
   AUD: { code: "AUD", symbol: "A$", rate: 1.52 },
-  CHF: { code: "CHF", symbol: "CHF ", rate: 0.88 },
+  CHF: { code: "CHF", symbol: "CHF ", rate: 0.88 },
 };
 
 const EURO = [
@@ -39,6 +39,8 @@ export function currencyForCountry(cc: string): Currency {
 }
 
 export function formatPrice(usd: number, c: Currency): string {
-  const v = Math.round(usd * c.rate);
+  const raw = usd * c.rate;
+  // USD shows the authored cents (e.g. 69.99); converted currencies round to whole units.
+  const v = c.code === "USD" ? raw.toFixed(2).replace(/\.00$/, "") : String(Math.round(raw));
   return c.symbolAfter ? `${v} ${c.symbol}` : `${c.symbol}${v}`;
 }
