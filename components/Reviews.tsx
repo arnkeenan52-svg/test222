@@ -20,7 +20,7 @@ function colorFor(name: string) {
 const A = (n: number) => `/assets/img/avatars/a${n}.jpg`;
 
 type Reply = { name: string; date: string; body: string; avatar?: string; children?: Reply[] };
-type Review = { name: string; stars: number; date: string; age: number; title: string; body: string; helpful: number; avatar?: string; replies?: Reply[] };
+type Review = { name: string; stars: number; date: string; age: number; title: string; body: string; helpful: number; avatar?: string; photos?: string[]; replies?: Reply[] };
 
 const HERO: Review[] = [
   {
@@ -80,10 +80,10 @@ const HERO: Review[] = [
       ] },
     ],
   },
-  { name: "Ethan W.", stars: 5, date: "6 days ago", age: 6, title: "First time doing my own hair", helpful: 58, body: "Used my phone camera for the back like the guide suggests. Came out way better than I expected for a first try. The four guards are clearly marked." },
+  { name: "Ethan W.", stars: 5, date: "6 days ago", age: 6, title: "First time doing my own hair", helpful: 58, photos: ["/assets/img/reviews/result-a1.jpg", "/assets/img/reviews/result-a2.jpg"], body: "Used my phone camera for the back like the guide suggests. Came out way better than I expected for a first try. The four guards are clearly marked. Adding a couple pics of the back." },
   { name: "Priya N.", stars: 5, date: "2 months ago", age: 60, title: "Bought it for my husband", helpful: 47, body: "He does his own fades now and they look professional. Also much quieter than our old clippers, which he loves.",
     replies: [{ name: "Grace T.", date: "6 weeks ago", body: "thinking of getting this for my partner too — was it hard for him to learn?" }] },
-  { name: "Tyler K.", stars: 5, date: "5 days ago", age: 5, title: "Waterproof is legit", helpful: 42, body: "Fade in the shower, rinse the whole thing under the tap, done. Cleanup used to be the worst part — now it's ten seconds." },
+  { name: "Tyler K.", stars: 5, date: "5 days ago", age: 5, title: "Waterproof is legit", helpful: 42, photos: ["/assets/img/reviews/result-b1.jpg"], body: "Fade in the shower, rinse the whole thing under the tap, done. Cleanup used to be the worst part — now it's ten seconds. Result after my second go 👇" },
   { name: "Sam O.", stars: 3, date: "3 weeks ago", age: 21, title: "Good tool, small learning curve", helpful: 61, body: "Blade is sharp and blends well, but my first fade was a little uneven — my technique, not the clipper. By the third cut it clicked. Go slow at first." },
 ];
 
@@ -257,6 +257,21 @@ export function Reviews({ id = "reviews" }: { id?: string } = {}) {
                 <span className="text-[0.85rem] text-muted">{r.date}</span>
               </div>
               <p className="mt-2.5 text-[1rem] leading-relaxed text-ink-2">{r.body}</p>
+              {r.photos && r.photos.length > 0 && (
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {r.photos.map((src, k) => (
+                    <img
+                      key={k}
+                      src={src}
+                      alt="Customer result photo"
+                      loading="lazy"
+                      width={96}
+                      height={128}
+                      className="h-32 w-24 rounded-xl border border-line object-cover object-top"
+                    />
+                  ))}
+                </div>
+              )}
               <ReplyLink />
               {r.replies && r.replies.length > 0 && (
                 <div className="mt-6 space-y-6 border-t border-line pt-6">
