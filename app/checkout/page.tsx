@@ -6,7 +6,6 @@ import {
   PaymentElement,
   ExpressCheckoutElement,
   AddressElement,
-  LinkAuthenticationElement,
   useStripe,
   useElements,
 } from "@stripe/react-stripe-js";
@@ -152,6 +151,7 @@ function CheckoutInner({
   const [summaryOpen, setSummaryOpen] = useState(false);
   const [hasExpress, setHasExpress] = useState(false);
   const [qty, setQty] = useState(initialQty);
+  const [email, setEmail] = useState("");
 
   const recomputeAsync = async (nextShipping: ShippingId, nextCode: string, nextQty: number, announce = false) => {
     try {
@@ -219,11 +219,15 @@ function CheckoutInner({
 
   const pay = async () => {
     if (!stripe || !elements || paying) return;
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      setPayErr("Please enter a valid email address.");
+      return;
+    }
     setPaying(true);
     setPayErr("");
     const { error } = await stripe.confirmPayment({
       elements,
-      confirmParams: { return_url: `${window.location.origin}/checkout/success` },
+      confirmParams: { return_url: `${window.location.origin}/checkout/success`, receipt_email: email.trim() },
     });
     // Only reached if there's an immediate validation error (otherwise redirects away).
     if (error) setPayErr(error.message || "Payment could not be completed.");
@@ -273,7 +277,19 @@ function CheckoutInner({
           </div>
 
           <Section title="Contact">
-            <LinkAuthenticationElement />
+            <label htmlFor="co-email" className="mb-1.5 block text-[0.9rem] font-medium text-ink">Email</label>
+            <input
+              id="co-email"
+              type="email"
+              required
+              inputMode="email"
+              autoComplete="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@example.com"
+              className="w-full rounded-lg border border-[#d9dce1] bg-white px-3.5 py-3 text-[0.95rem] text-ink outline-none transition-colors focus-visible:border-brand focus-visible:ring-1 focus-visible:ring-brand"
+            />
+            <p className="mt-1.5 text-[0.8rem] text-muted">Your order confirmation & receipt are sent here.</p>
           </Section>
 
           <Section title="Delivery">
@@ -328,7 +344,8 @@ function CheckoutInner({
             <p className="mb-3 flex items-center gap-1.5 text-[0.8rem] text-muted">
               <ShieldCheck className="h-4 w-4 text-brand" aria-hidden="true" /> All transactions are secure and encrypted.
             </p>
-            {/* Apple Pay / Google Pay / Link appear as fast-pay buttons when available */}
+            {/* Apple Pay / Google Pay show here (in the payment section) as wallet tabs
+                alongside card, when the device supports them. Link is disabled. */}
             <PaymentElement options={{ wallets: { applePay: "auto", googlePay: "auto" } }} />
           </Section>
 
