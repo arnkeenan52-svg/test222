@@ -242,6 +242,13 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
           <StatCard tone="green" icon={<DollarSign className="h-[18px] w-[18px]" />} label="Avg. order value" value={stats ? money(stats.avgOrder) : "–"} />
         </div>
 
+        {live && live.configured === false && (
+          <div className="mt-3 flex items-start gap-2 rounded-xl border border-brand/30 bg-brand-tint px-4 py-2.5 text-[0.82rem] text-brand-dark">
+            <Activity className="mt-0.5 h-4 w-4 shrink-0" />
+            <span>Visitor tracking is idle — connect a <b>Vercel KV / Upstash Redis</b> store to this project (Storage → Create Database), then <b>Active now</b> &amp; <b>Visits today</b> start counting.</span>
+          </div>
+        )}
+
         {/* range filter */}
         <div className="mt-6 flex flex-wrap gap-2">
           {[["Today", "days=1"], ["7 days", "days=7"], ["30 days", "days=30"], ["90 days", "days=90"]].map(([label, qv]) => (
