@@ -258,11 +258,11 @@ function CheckoutInner({
       {/* form */}
       <main className="order-2 px-5 py-8 md:order-1 md:py-12 md:pr-12">
         <div className="mx-auto max-w-[520px]">
-          {/* Express checkout — Apple Pay / Google Pay / Amazon Pay (Link hidden) */}
+          {/* Express checkout — Apple Pay / Google Pay / Amazon Pay / Link */}
           <div className={hasExpress ? "mb-6" : ""}>
             {hasExpress && <p className="mb-3 text-center text-[0.9rem] font-medium text-muted">Express checkout</p>}
             <ExpressCheckoutElement
-              options={{ buttonHeight: 48, layout: { maxRows: 2 }, paymentMethods: { link: "never" } }}
+              options={{ buttonHeight: 48, layout: { maxRows: 2 } }}
               onReady={(e: any) => setHasExpress(!!e?.availablePaymentMethods)}
               onClick={onExpressClick}
               onShippingAddressChange={({ resolve }: any) => resolve()}
