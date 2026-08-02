@@ -14,6 +14,7 @@ const gallery = [
   { src: "/assets/img/product-box-stand.jpg", alt: "FadeClipper box and clipper on the charging stand" },
   { src: "/assets/img/product-open-box.jpg", alt: "FadeClipper in its open box" },
   { src: "/assets/img/product-whats-included.jpg", alt: "Everything included — FadeClipper, guards, blades, comb and USB-C cable" },
+  { src: "/assets/img/product-in-use.jpg", alt: "The FadeClipper in use — fading at home" },
 ];
 
 export default function ProductPage() {
