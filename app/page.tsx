@@ -25,9 +25,9 @@ export default function Page() {
       {/* TOP — nav + hero live in ONE black box behind a SINGLE glow, so there is
           no seam between the logo/menu bar and the hero. */}
       <div id="top" className="relative overflow-hidden bg-black text-white">
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-[720px] bg-[radial-gradient(90%_60%_at_50%_15%,rgba(236,99,36,0.32),transparent_70%)]" />
+        <div className="hero-glow pointer-events-none absolute inset-x-0 top-0 h-[720px] bg-[radial-gradient(90%_60%_at_50%_15%,rgba(236,99,36,0.32),transparent_70%)]" />
         {/* subtle orange↔black blend at the bottom of the hero, mirroring the top */}
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[440px] bg-[radial-gradient(85%_62%_at_50%_100%,rgba(236,99,36,0.20),transparent_72%)]" />
+        <div className="hero-glow-2 pointer-events-none absolute inset-x-0 bottom-0 h-[440px] bg-[radial-gradient(85%_62%_at_50%_100%,rgba(236,99,36,0.20),transparent_72%)]" />
         <div className="relative">
           <SiteNav variant="hero" />
           <header>

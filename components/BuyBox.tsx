@@ -52,7 +52,7 @@ export function BuyBox() {
         <Clock className="h-4 w-4 shrink-0" aria-hidden="true" /> Launch sale ends in <Countdown />
       </div>
 
-      <Button size="lg" className="mt-4 w-full text-[1.05rem]" onClick={() => buy("single")} disabled={loading}>
+      <Button size="lg" className="mt-4 w-full rounded-2xl text-[1.05rem]" onClick={() => buy("single")} disabled={loading}>
         {loading ? "Starting checkout…" : `Buy now — ${fmt(PRICE.now)}`}
       </Button>
 
