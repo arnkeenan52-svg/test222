@@ -1,8 +1,15 @@
-"use client";
 import { Check, X } from "lucide-react";
-import { useContent } from "@/components/useContent";
 
 type Cell = boolean | string;
+const cols = ["FadeClipper", "Ordinary", "Barber"];
+const rows: { label: string; values: Cell[] }[] = [
+  { label: "Auto-fades & blends for you", values: [true, false, true] },
+  { label: "No skill or 2nd mirror needed", values: [true, false, "—"] },
+  { label: "Fade anytime, at home", values: [true, "Hard", false] },
+  { label: "Waterproof, rinse-clean", values: [true, "Some", "—"] },
+  { label: "240-min cordless runtime", values: [true, "Varies", "—"] },
+  { label: "Cost in year one", values: ["$89.99", "$30–60", "$900+"] },
+];
 
 function Mark({ v }: { v: Cell }) {
   if (v === true) return <Check className="mx-auto h-4 w-4 text-brand sm:h-5 sm:w-5" strokeWidth={3} />;
@@ -13,7 +20,6 @@ function Mark({ v }: { v: Cell }) {
 const grid = "grid grid-cols-[1.25fr_repeat(3,minmax(0,1fr))]";
 
 export function ComparisonTable() {
-  const { cols, rows, you } = useContent().compare;
   return (
     <div className="mx-auto max-w-[560px]">
       {/* header */}
@@ -37,7 +43,7 @@ export function ComparisonTable() {
             </span>
             {i === 0 && (
               <span className="mt-0.5 block text-[0.54rem] font-medium uppercase tracking-[0.1em] text-paper/60 sm:text-[0.66rem]">
-                {you}
+                You
               </span>
             )}
           </div>
