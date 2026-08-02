@@ -14,13 +14,18 @@ export const metadata: Metadata = {
   title: "FadeClipper — Fade your own hair in minutes",
   description:
     "The auto-fading clipper that blends a salon-quality fade for you. One swipe, fade done. Cordless, waterproof, 240-minute runtime.",
-  // Favicon (the circle in Google results + browser tab) comes from app/icon.png
-  // and app/apple-icon.png via Next's file convention.
+  // Favicon (browser tab + Google result) comes from app/icon.png, app/apple-icon.png
+  // and app/favicon.ico. The link-share preview comes from app/opengraph-image.png +
+  // app/twitter-image.png — all via Next's file conventions, so no images are set here.
   openGraph: {
     title: "FadeClipper — Fade your own hair in minutes",
     description: "The auto-fading clipper that blends your fade for you. One swipe, fade done.",
-    images: ["/assets/img/product-hero.jpg"],
     type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "FadeClipper — Fade your own hair in minutes",
+    description: "The auto-fading clipper that blends your fade for you. One swipe, fade done.",
   },
 };
 
