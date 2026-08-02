@@ -23,12 +23,17 @@
     background-color: #ffffff;
     background-image: linear-gradient(to bottom, #fa6a24 0, #fa6a24 130px, #ffffff 300px, #ffffff 100%);
     background-repeat: no-repeat;
+    /* Stop the page over-scrolling past the top — kills iOS pull-to-refresh (the
+       reload you get by dragging up at the very top). Any tiny residual bounce
+       shows the orange top above, so it matches the offer bar. */
+    overscroll-behavior-y: none;
   }
   body {
     @apply text-ink font-sans antialiased;
     background-color: #ffffff;
     background-image: linear-gradient(to bottom, #fa6a24 0, #fa6a24 130px, #ffffff 300px, #ffffff 100%);
     background-repeat: no-repeat;
+    overscroll-behavior-y: none;
     font-size: 16.5px;
   }
   /* The visible page surface. Covers the orange document background everywhere
