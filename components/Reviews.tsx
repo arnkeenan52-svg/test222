@@ -1,13 +1,13 @@
 "use client";
 import { useMemo, useState } from "react";
-import { Star, MessageCircle, ShieldCheck, ChevronDown } from "lucide-react";
+import { Star, MessageCircle, ShieldCheck, ChevronDown, ThumbsUp, BadgeCheck } from "lucide-react";
 
-// ⚠️ PLACEHOLDER REVIEWS — sample copy generated for design preview only.
+// ⚠️ PLACEHOLDER REVIEWS — sample copy for design/pitch preview only.
 // Publishing invented reviews/threads as genuine is illegal (FTC) and against
 // ad-platform policy. Replace with your REAL verified reviews before launch.
 
 const GOLD = "#f5a623";
-const SUMMARY = { rating: 4.7, count: 1247, dist: [82, 11, 4, 2, 1] as const };
+const SUMMARY = { rating: 4.8, count: 1247, dist: [86, 9, 3, 1, 1] as const };
 
 // Solid colour circles (no initial) for anyone without a photo — Google style.
 const COLORS = ["#1a73e8", "#1e8e3e", "#d93025", "#9334e6", "#e37400", "#12b5cb", "#c5221f", "#7b1fa2", "#0b8043", "#e52592", "#2a56c6", "#ad1457"];
@@ -19,84 +19,88 @@ function colorFor(name: string) {
 
 const A = (n: number) => `/assets/img/avatars/a${n}.jpg`;
 
+// A reply is a comment under a review. Top-level replies are questions from other
+// shoppers; `children` are answers. Many questions have no answer on purpose —
+// that's what a real review thread looks like.
 type Reply = { name: string; date: string; body: string; avatar?: string; children?: Reply[] };
 type Review = { name: string; stars: number; date: string; age: number; title: string; body: string; helpful: number; avatar?: string; photos?: string[]; replies?: Reply[] };
 
 const HERO: Review[] = [
   {
-    name: "Marcus J.", stars: 5, date: "3 weeks ago", age: 22, title: "First self-fade came out clean", avatar: A(1), helpful: 214,
-    body: "I was nervous doing my own fade but the blade genuinely blends it — I just glide it flat around my head and it does the rest. Second attempt looked like a shop fade. Already saved me two barber visits.",
+    name: "Marcus J.", stars: 5, date: "3 weeks ago", age: 22, title: "First fade actually came out clean", avatar: A(1), helpful: 214,
+    body: "Ngl I was nervous cutting my own hair but the blade basically blends it for you. I just glide it flat around my head and it does the rest. Second go looked like a proper shop fade. Already saved me like two barber trips.",
     replies: [
-      { name: "Kevin D.", date: "2 weeks ago", body: "does this actually work on thick curly hair? mine's pretty coarse", children: [
-        { name: "Marcus J.", date: "2 weeks ago", avatar: A(1), body: "@Kevin yeah I've got thick hair and it powered straight through, just bump the power up a notch" },
+      { name: "Kevin D.", date: "2 weeks ago", body: "does this actually work on thick curly hair?? mine's super coarse", children: [
+        { name: "Marcus J.", date: "2 weeks ago", avatar: A(1), body: "@Kevin mine's thick too, just turned the power up a notch and it went straight through no problem" },
       ] },
-      { name: "Tobias R.", date: "12 days ago", body: "how loud is it? got a baby that naps lol", children: [
-        { name: "Marcus J.", date: "11 days ago", avatar: A(1), body: "@Tobias way quieter than my old Wahl, honestly surprised how quiet it is" },
-      ] },
+      { name: "Tobias R.", date: "12 days ago", body: "how loud is it, got a newborn that naps 😅" },
     ],
   },
   {
-    name: "Malik R.", stars: 5, date: "1 month ago", age: 32, title: "Stopped booking the barber", avatar: A(5), helpful: 301,
-    body: "Pays for itself in about two cuts. I do my own fade every couple weeks now and it looks sharp every time. Wish I'd bought this years ago.",
+    name: "Malik R.", stars: 5, date: "1 month ago", age: 32, title: "Stopped booking the barber tbh", avatar: A(5), helpful: 301,
+    body: "Pays for itself in like two cuts. I do my own fade every couple weeks now and it looks sharp every time. Wish I'd bought it years ago honestly.",
     replies: [
       { name: "Andre P.", date: "3 weeks ago", body: "how long does one charge actually last?", children: [
-        { name: "Malik R.", date: "3 weeks ago", avatar: A(5), body: "@Andre I've gotten about 6 cuts on a single charge. The display shows minutes left so you're never caught out" },
+        { name: "Malik R.", date: "3 weeks ago", avatar: A(5), body: "@Andre got about 6 cuts out of one charge. there's a little screen that shows minutes left so you're never caught out" },
       ] },
     ],
   },
   {
-    name: "Dwayne P.", stars: 5, date: "1 month ago", age: 34, title: "Battery lasts forever", avatar: A(6), helpful: 156,
-    body: "Charged it once and I've cut my whole family's hair. The little display showing minutes left is a nice touch so you're never caught mid-cut.",
-    replies: [
-      { name: "Sam W.", date: "3 weeks ago", body: "does it come with the guards or do you buy those separate?", children: [
-        { name: "Dwayne P.", date: "3 weeks ago", avatar: A(6), body: "@Sam comes with the full guard set — four fade lengths on the one lever" },
-      ] },
-    ],
+    name: "Dwayne P.", stars: 5, date: "1 month ago", age: 34, title: "Battery genuinely lasts", avatar: A(6), helpful: 156,
+    body: "Charged it once and I've done my whole family's hair. The screen showing minutes left is such a nice touch, never get caught halfway through a cut.",
   },
   {
     name: "Aisha R.", stars: 4, date: "2 weeks ago", age: 15, title: "Great for my son's hair", avatar: A(3), helpful: 88,
-    body: "Cut my son's curls with it and the length settings made it easy. One practice run to nail the back, now it's quick. Docking a star only because I'd love a travel case.",
+    body: "Cut my son's curls and the length settings made it easy. Took one practice run to get the back right, quick now. Only reason it's not 5 stars is I wish it came with a travel case.",
     replies: [
-      { name: "Nina K.", date: "10 days ago", body: "is it easy enough for a total beginner? I've literally never cut hair", children: [
-        { name: "Aisha R.", date: "9 days ago", avatar: A(3), body: "@Nina honestly yeah — took me one practice run and the guide walks you through the back with your phone camera" },
+      { name: "Nina K.", date: "10 days ago", body: "is this ok for a total beginner? I've legit never cut hair before", children: [
+        { name: "Aisha R.", date: "9 days ago", avatar: A(3), body: "@Nina honestly yeah, took me one go. the little guide walks you through doing the back with your phone camera" },
       ] },
     ],
   },
   {
-    name: "Carlos V.", stars: 5, date: "4 days ago", age: 4, title: "Thick curly hair, no problem", avatar: A(2), helpful: 63,
-    body: "Turned the power up for my hair type and it powered straight through — no pulling or snagging. Fade blended smooth.",
+    name: "Carlos V.", stars: 5, date: "4 days ago", age: 4, title: "Handles thick hair no problem", avatar: A(2), helpful: 63,
+    body: "Turned the power up for my hair type and it powered through, no pulling or snagging. Fade blended smooth. Can't complain.",
     replies: [
-      { name: "Deshawn T.", date: "3 days ago", body: "can you actually get a proper skin fade with this or just a taper?", children: [
-        { name: "Carlos V.", date: "2 days ago", avatar: A(2), body: "@Deshawn skin fade no problem — lowest guard off and go slow at the bottom" },
-      ] },
+      { name: "Deshawn T.", date: "3 days ago", body: "can you get an actual skin fade with this or just a taper?" },
     ],
   },
   {
-    name: "Jordan B.", stars: 5, date: "3 weeks ago", age: 20, title: "The auto-fade is the whole difference", avatar: A(4), helpful: 129,
-    body: "Cheap clippers make you blend the gradient yourself — impossible on the back of your own head. This one does the blending. Night and day.",
+    name: "Jordan B.", stars: 5, date: "3 weeks ago", age: 20, title: "The auto-fade is the whole thing", avatar: A(4), helpful: 129,
+    body: "Cheap clippers make YOU blend the gradient, which is basically impossible on the back of your own head. This one does the blending. Completely different.",
     replies: [
-      { name: "Mohammed A.", date: "2 weeks ago", body: "is it actually waterproof? want to do it in the shower", children: [
-        { name: "Jordan B.", date: "2 weeks ago", avatar: A(4), body: "@Mohammed yep fully waterproof, I rinse the whole thing under the tap after" },
+      { name: "Mohammed A.", date: "2 weeks ago", body: "is it actually waterproof? wanna do it in the shower", children: [
+        { name: "Jordan B.", date: "2 weeks ago", avatar: A(4), body: "@Mohammed yep fully waterproof, I just rinse the whole thing under the tap after" },
+      ] },
+      { name: "Reece", date: "9 days ago", body: "does it come charged out the box or do you gotta wait" },
+    ],
+  },
+  { name: "Ethan W.", stars: 5, date: "6 days ago", age: 6, title: "First time doing my own hair", helpful: 58, photos: ["/assets/img/reviews/result-a1.jpg", "/assets/img/reviews/result-a2.jpg"], body: "Used my phone for the back like the guide says. Came out way better than I expected for a first try, and the guards are clearly labelled. Adding a couple pics of the back 👇" },
+  { name: "Priya N.", stars: 5, date: "2 months ago", age: 60, title: "Bought it for my husband", helpful: 47, body: "He does his own fades now and they look professional. Also way quieter than our old clippers, which he loves.",
+    replies: [{ name: "Grace T.", date: "6 weeks ago", body: "thinking of getting this for my partner too, was it hard for him to learn?" }] },
+  { name: "Tyler K.", stars: 5, date: "5 days ago", age: 5, title: "Waterproof is legit", helpful: 42, photos: ["/assets/img/reviews/result-b1.jpg"], body: "Fade in the shower, rinse the whole thing under the tap, done. Cleanup used to be the worst part, now it's like ten seconds. Pic from my second go 👇" },
+  { name: "Sam O.", stars: 3, date: "3 weeks ago", age: 21, title: "Good but takes a little practice", helpful: 61, body: "Blade's sharp and blends well, but my first fade was a bit uneven — that was my technique, not the clipper tbh. Clicked by the third cut. Just go slow at first.",
+    replies: [
+      { name: "Louis", date: "2 weeks ago", body: "did it get easier fast or did it take a while?", children: [
+        { name: "Sam O.", date: "2 weeks ago", body: "@Louis pretty fast, by the third time it was quick" },
       ] },
     ],
   },
-  { name: "Ethan W.", stars: 5, date: "6 days ago", age: 6, title: "First time doing my own hair", helpful: 58, photos: ["/assets/img/reviews/result-a1.jpg", "/assets/img/reviews/result-a2.jpg"], body: "Used my phone camera for the back like the guide suggests. Came out way better than I expected for a first try. The four guards are clearly marked. Adding a couple pics of the back." },
-  { name: "Priya N.", stars: 5, date: "2 months ago", age: 60, title: "Bought it for my husband", helpful: 47, body: "He does his own fades now and they look professional. Also much quieter than our old clippers, which he loves.",
-    replies: [{ name: "Grace T.", date: "6 weeks ago", body: "thinking of getting this for my partner too — was it hard for him to learn?" }] },
-  { name: "Tyler K.", stars: 5, date: "5 days ago", age: 5, title: "Waterproof is legit", helpful: 42, photos: ["/assets/img/reviews/result-b1.jpg"], body: "Fade in the shower, rinse the whole thing under the tap, done. Cleanup used to be the worst part — now it's ten seconds. Result after my second go 👇" },
-  { name: "Sam O.", stars: 3, date: "3 weeks ago", age: 21, title: "Good tool, small learning curve", helpful: 61, body: "Blade is sharp and blends well, but my first fade was a little uneven — my technique, not the clipper. By the third cut it clicked. Go slow at first." },
 ];
 
 const FIRST = ["Marcus","Andre","Dwayne","Jordan","Kevin","Carlos","Ethan","Sam","Marco","Tyler","Nadia","Malik","Liam","Noah","Oliver","Elijah","James","Lucas","Mason","Logan","Hassan","Diego","Terrance","Kwame","Brian","Tommy","Victor","Omar","Isaac","Nathan","Ryan","Cole","Jaylen","Devin","Felix","Grant","Shane","Troy","Wesley","Chad","Derek","Gavin","Curtis","Leon","Ronnie","Xavier","Zane","Amir","Bilal","Caleb","Darnell","Eddie","Frankie","Hector","Ibrahim","Jamal","Priya","Aisha","Sofia","Nina"];
 const LAST = "ABCDEFGHIJKLMNOPRSTVWY".split("");
 const DATE_AGES: [string, number][] = [["2 days ago",2],["3 days ago",3],["4 days ago",4],["6 days ago",6],["1 week ago",8],["2 weeks ago",15],["3 weeks ago",22],["4 weeks ago",28],["1 month ago",34],["6 weeks ago",44],["2 months ago",62],["3 months ago",92]];
-const TITLES = ["Sharpest fade I've done at home","Barber-level results","No more $40 cuts","Blends like magic","So easy to use","Better than my old clippers","Worth every penny","My go-to now","Clean fade every time","Impressed by the battery","Quiet and powerful","Saved me so much money","Perfect for beginners","The battery display is genius","Basically fades itself","Shower cuts changed the game","Family clipper now","Wish I'd bought it sooner","Professional results at home","Cuts thick hair with ease","Fast shipping, sharp fade","Feels premium in the hand","Guards are clearly labelled","One swipe and done","My fades finally look right","Holds a charge for weeks","Simple and effective","Great gift for my dad","Nailed it first try","Best grooming buy this year"];
-const POS = ["The 45° blade does the blending for you — my fade looks even without any skill. Genuinely surprised.","Charged it once and it's still going strong two weeks later. The minutes-left display is so handy.","Waterproof means I fade in the shower and rinse it clean in seconds. Cleanup used to be the worst part.","Went from paying the barber every two weeks to doing it myself. Paid for itself almost immediately.","Thick, coarse hair here — turned the power up and it powered through with zero snagging.","Used my phone for the back and the guide made it easy. First attempt looked way better than expected.","The four fade lengths on one lever make it foolproof. No guessing which guard to grab.","Blends the gradient at the back of my head that I could never do with normal clippers.","Quieter than my old pair and doesn't get hot even after a full cut. Really well built.","Bought it skeptical, now the whole house uses it. Kids' cuts included.","Delivery was quick and it was well packaged. The fade came out sharp on the first go.","Feels premium and solid, not cheap and plasticky like the ones I've had before.","My line-up and fade finally look like the shop. Massive upgrade from my old trimmer.","Holds a charge for weeks of cuts. I only remember to charge it because the display reminds me.","Honestly idiot-proof. If you can comb your hair you can run this thing.","Saved a fortune already. Two cuts and it's basically paid for itself.","Skin-fade to a taper, it handles both cleanly. The blade glides, doesn't tug.","My son sits still for it now because it's quiet. Cuts his curls no problem.","Sharp out of the box and stayed sharp. Blends beautifully with a little practice.","The build quality is what sold me — metal blade, solid grip, proper charging dock."];
-const MIXED_T = ["Good but takes a little practice","Solid, minor learning curve","Great tool — go slow at first","Happy overall, small nitpick","Works well after a couple tries","Nearly perfect"];
-const MIXED = ["Blends well but my first fade was uneven — my technique, not the clipper. By the third cut it clicked.","Great clipper, just wish it came with a travel case for the guards.","Took a couple tries to get the back right with my phone camera, but now it's quick.","Powerful and sharp; the guards could click on a touch more firmly.","Does the job well. Battery is great; instructions could be a bit clearer for total beginners.","Solid fade once you find the angle — give yourself one practice run and you're set.","Love it overall; docking a star only because I'd like a couple more guard sizes.","Works exactly as described. Slightly louder than I pictured but honestly not bad."];
+
+// Titles + bodies written to read like normal people typed them — casual, varied
+// length, contractions, the odd lowercase start.
+const TITLES = ["Sharpest fade I've done myself","Looks like a barber did it","No more $40 cuts","It blends it for you, wild","So easy honestly","Way better than my old clippers","Worth it","My go-to now","Clean every time","Battery is insane","Quiet and powerful","Saved me so much money","Perfect if you're new to this","The little screen is genius","Basically fades itself","Shower cuts changed the game","Whole family uses it now","Should've bought this sooner","Barber results at home","Eats through thick hair","Came fast, cuts great","Feels premium not cheap","Guards are easy to figure out","One swipe, done","My fades finally look right","Holds charge for weeks","Simple and it just works","Got it for my dad, he loves it","Nailed it first try","Best thing I bought this year"];
+const POS = ["The 45° blade does the blending for you, my fade looks even and I've got zero skill. Genuinely shocked.","Charged it once and it's still going two weeks later. The minutes-left screen is so handy.","Waterproof so I just fade in the shower and rinse it clean. Cleanup used to be the worst part.","Went from the barber every two weeks to doing it myself. Paid for itself almost immediately.","Thick coarse hair here, turned the power up and it went through, no snagging.","Used my phone for the back and it was easy, first try looked way better than I expected.","Four lengths on one lever so no guessing which guard. Foolproof honestly.","Blends the back of my head, which I could never do with normal clippers.","Quieter than my old pair and doesn't get hot even after a full cut.","Bought it skeptical, now the whole house uses it, kids included.","Came quick and packaged well. Fade came out sharp first go.","Feels solid and premium, not the cheap plasticky ones I've had before.","My lineup and fade finally look like the shop. Massive upgrade.","Holds a charge for weeks, I only remember to charge it cause the screen tells me.","Honestly idiot proof. If you can comb your hair you can use this.","Saved a fortune already, two cuts and it basically paid for itself.","Does a skin fade or a taper, both come out clean. The blade glides, doesn't tug.","My son actually sits still cause it's quiet. Cuts his curls fine.","Sharp out the box and stayed sharp. Blends nice once you get the hang of it.","The build is what got me, metal blade, solid grip, proper charging dock.","Does exactly what it says. Clean fade, no fuss.","10/10, wish I got it sooner.","Really easy, really sharp. No notes."];
+const MIXED_T = ["Good but takes a little practice","Solid, small learning curve","Great once you get the hang of it","Happy overall, tiny nitpick","Works well after a couple goes","Nearly perfect"];
+const MIXED = ["Blends well but my first fade was uneven — that was me, not the clipper. Clicked by the third go.","Great clipper, just wish it came with a case for the guards.","Took a couple tries to nail the back with my phone camera, but it's quick now.","Powerful and sharp, the guards could click on a bit firmer though.","Does the job. Battery's great, instructions could be clearer for total beginners.","Solid fade once you find the angle, give yourself one practice run.","Love it overall, only docking a star cause I'd like a couple more guard sizes.","Works as described, bit louder than I expected but honestly not bad."];
 // 1–2 star: something went wrong with the unit, but the refund/replacement was handled well.
-const LOW_T = ["Arrived faulty — refunded fast","Dead on arrival, but sorted quickly","Didn't work out, got my money back","Faulty unit — support made it right","Stopped working, they replaced it","Not my experience, but well handled"];
-const LOW = ["Mine wouldn't power on out of the box, which was really disappointing. I emailed support and had a full refund within two days, no arguing. Not the experience I hoped for, but they handled it properly.","The first one died after a single charge. Frustrating. To their credit they shipped a replacement straight away and it's worked fine since, so it did work out in the end — just a rough start.","Charging port on my unit was faulty. Annoying, but customer service refunded me the same day I reached out. Can't fault how they dealt with it, just unlucky with the clipper.","Battery wouldn't hold a charge. I asked for a refund and got it back quickly, no questions asked. Shame, because the one fade I managed actually looked good.","Turned up with a loose, rattling blade. I sent a photo and they refunded in full within 48 hours. Didn't work out for me, but the support was genuinely solid.","Stopped turning on after about a week. I expected a hassle and instead got a replacement in a few days. Rocky start, but they made it right and the new one's been fine."];
+const LOW_T = ["Arrived faulty, refunded fast","Dead on arrival but sorted quick","Didn't work out, got my money back","Faulty unit, support made it right","Stopped working, they replaced it","Not my experience but handled well"];
+const LOW = ["Mine wouldn't turn on out the box, which was annoying. Emailed support and got a full refund in two days, no hassle. Not what I hoped for, but they sorted it.","First one died after one charge. Frustrating. To be fair they shipped a replacement straight away and it's been fine since.","Charging port was faulty on mine. Customer service refunded me the same day I messaged. Can't fault how they handled it, just unlucky.","Battery wouldn't hold a charge. Asked for a refund, got it back quick, no questions. Shame cause the one fade I got looked good.","Came with a loose, rattly blade. Sent a photo and they refunded in full within two days. Didn't work out for me but support was solid.","Stopped turning on after a week. Expected a hassle, instead got a replacement in a few days. Rough start but they made it right."];
 
 function starsFor(i: number) {
   const m = i % 100;
@@ -136,28 +140,32 @@ function Avatar({ avatar, name, size = "md" }: { avatar?: string; name: string; 
 
 function ReplyLink() {
   return (
-    <button className="mt-2 inline-flex items-center gap-1.5 text-[0.85rem] font-medium text-muted transition-colors hover:text-ink">
-      <MessageCircle className="h-4 w-4" aria-hidden="true" /> Reply
+    <button className="mt-1.5 inline-flex items-center gap-1.5 text-[0.82rem] font-medium text-muted transition-colors hover:text-ink">
+      <MessageCircle className="h-3.5 w-3.5" aria-hidden="true" /> Reply
     </button>
   );
 }
 
-function ReplyThread({ reply, nested = false }: { reply: Reply; nested?: boolean }) {
+function ReplyThread({ reply, author, nested = false }: { reply: Reply; author: string; nested?: boolean }) {
+  const isAuthor = reply.name === author; // the reviewer answering their own thread
   return (
-    <div className={nested ? "ml-2 border-l-2 border-line pl-4 sm:ml-3 sm:pl-5" : ""}>
+    <div className={nested ? "ml-3 border-l-2 border-line pl-4 sm:ml-4 sm:pl-5" : ""}>
       <div className="flex items-center gap-2.5">
         <Avatar avatar={reply.avatar} name={reply.name} size="sm" />
-        <p className="text-[0.95rem]">
+        <p className="text-[0.92rem] leading-tight">
           <span className="font-semibold text-ink">{reply.name}</span>
+          {isAuthor && (
+            <span className="ml-1.5 rounded-full bg-brand-tint px-1.5 py-0.5 align-middle text-[0.6rem] font-bold uppercase tracking-wide text-brand-dark">Reviewer</span>
+          )}
           <span className="text-muted"> · {reply.date}</span>
         </p>
       </div>
-      <p className="ml-[42px] mt-1 text-[0.95rem] leading-relaxed text-ink-2">{reply.body}</p>
-      <div className="ml-[42px]"><ReplyLink /></div>
+      <p className="ml-[42px] mt-1 text-[0.94rem] leading-relaxed text-ink-2">{reply.body}</p>
+      {!isAuthor && <div className="ml-[42px]"><ReplyLink /></div>}
       {reply.children && reply.children.length > 0 && (
         <div className="ml-[42px] mt-4 space-y-4">
           {reply.children.map((c, i) => (
-            <ReplyThread key={i} reply={c} nested />
+            <ReplyThread key={i} reply={c} author={author} nested />
           ))}
         </div>
       )}
@@ -244,19 +252,29 @@ export function Reviews({ id = "reviews" }: { id?: string } = {}) {
           </div>
         </div>
 
-        {/* threaded review list */}
+        {/* review list */}
         <div className="mx-auto mt-6 max-w-[720px] overflow-hidden rounded-4xl border border-line bg-white shadow-card">
           {list.slice(0, visible).map((r, i) => (
             <article key={`${r.name}-${r.title}-${i}`} className="border-t border-line px-6 py-7 first:border-t-0">
-              <div className="flex items-center gap-3">
-                <Avatar avatar={r.avatar} name={r.name} />
-                <p className="font-semibold text-ink">{r.name}</p>
+              {/* header: who + verified, date on the right */}
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <Avatar avatar={r.avatar} name={r.name} />
+                  <div className="leading-tight">
+                    <p className="font-semibold text-ink">{r.name}</p>
+                    <span className="mt-0.5 inline-flex items-center gap-1 text-[0.72rem] font-medium text-[#1b8a4e]">
+                      <BadgeCheck className="h-3.5 w-3.5" aria-hidden="true" /> Verified purchase
+                    </span>
+                  </div>
+                </div>
+                <span className="shrink-0 pt-0.5 text-[0.8rem] text-muted">{r.date}</span>
               </div>
-              <div className="mt-2.5 flex items-center gap-2">
-                <Stars n={r.stars} />
-                <span className="text-[0.85rem] text-muted">{r.date}</span>
-              </div>
-              <p className="mt-2.5 text-[1rem] leading-relaxed text-ink-2">{r.body}</p>
+
+              {/* stars + title + body */}
+              <div className="mt-3"><Stars n={r.stars} className="h-[16px] w-[16px]" /></div>
+              {r.title && <p className="mt-2 font-display text-[1.05rem] font-semibold leading-snug text-ink">{r.title}</p>}
+              <p className="mt-1.5 text-[1rem] leading-relaxed text-ink-2">{r.body}</p>
+
               {r.photos && r.photos.length > 0 && (
                 <div className="mt-3 flex flex-wrap gap-2">
                   {r.photos.map((src, k) => (
@@ -272,11 +290,21 @@ export function Reviews({ id = "reviews" }: { id?: string } = {}) {
                   ))}
                 </div>
               )}
-              <ReplyLink />
+
+              {/* helpful + reply */}
+              <div className="mt-4 flex items-center gap-5 text-[0.85rem] text-muted">
+                <button className="inline-flex items-center gap-1.5 transition-colors hover:text-ink">
+                  <ThumbsUp className="h-4 w-4" aria-hidden="true" /> Helpful ({r.helpful})
+                </button>
+                <button className="inline-flex items-center gap-1.5 transition-colors hover:text-ink">
+                  <MessageCircle className="h-4 w-4" aria-hidden="true" /> Reply
+                </button>
+              </div>
+
               {r.replies && r.replies.length > 0 && (
-                <div className="mt-6 space-y-6 border-t border-line pt-6">
+                <div className="mt-5 space-y-5 border-t border-line pt-5">
                   {r.replies.map((rep, j) => (
-                    <ReplyThread key={j} reply={rep} />
+                    <ReplyThread key={j} reply={rep} author={r.name} />
                   ))}
                 </div>
               )}
