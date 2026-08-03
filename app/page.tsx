@@ -9,7 +9,15 @@ import { RedditReviews } from "@/components/RedditReviews";
 import { Reviews } from "@/components/Reviews";
 import { Price } from "@/components/Price";
 import { SiteFooter } from "@/components/SiteFooter";
+import { JsonLd } from "@/components/JsonLd";
+import { SITE_URL } from "@/lib/site";
+import type { Metadata } from "next";
 import { Check, Plus, Star, ArrowRight, Lock, CircleDollarSign } from "lucide-react";
+
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+  openGraph: { url: SITE_URL },
+};
 
 const faqs: [string, string][] = [
   ["Can I really fade the back of my own head?", "Yes — that's exactly what FadeClipper is built for. The tapered 45° auto-fade blade blends the gradient as you glide up, so you don't need barber-level skill or two mirrors. Most people get a clean back fade on the first or second try."],
@@ -19,9 +27,20 @@ const faqs: [string, string][] = [
   ["What if I don't like it?", "You're covered by a 14-day money-back guarantee. If it isn't for you, send it back for a full refund."],
 ];
 
+const homeSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: faqs.map(([q, a]) => ({
+    "@type": "Question",
+    name: q,
+    acceptedAnswer: { "@type": "Answer", text: a },
+  })),
+};
+
 export default function Page() {
   return (
     <>
+      <JsonLd data={homeSchema} />
       {/* TOP — nav + hero live in ONE black box behind a SINGLE glow, so there is
           no seam between the logo/menu bar and the hero. */}
       <div id="top" className="relative overflow-hidden bg-black text-white">

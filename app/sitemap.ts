@@ -1,22 +1,30 @@
 import type { MetadataRoute } from "next";
-
-const SITE_URL = "https://fadeclipper.com"; // ← change to your real .com domain
+import { SITE_URL } from "@/lib/site";
+import { GUIDES } from "@/lib/guides";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const routes = [
-    "",
-    "/product",
-    "/how-to-fade-your-own-hair",
-    "/about",
-    "/contact",
-    "/shipping",
-    "/returns",
-    "/terms",
-    "/privacy",
+  const now = new Date();
+
+  // High-value indexable pages with tuned priority/frequency.
+  const core: MetadataRoute.Sitemap = [
+    { url: `${SITE_URL}/`, changeFrequency: "weekly", priority: 1 },
+    { url: `${SITE_URL}/product`, changeFrequency: "weekly", priority: 0.9 },
+    { url: `${SITE_URL}/how-to-fade-your-own-hair`, changeFrequency: "monthly", priority: 0.9 },
+    { url: `${SITE_URL}/guides`, changeFrequency: "weekly", priority: 0.7 },
   ];
-  return routes.map((path) => ({
-    url: `${SITE_URL}${path}`,
-    changeFrequency: path === "" || path === "/product" ? "weekly" : "monthly",
-    priority: path === "" ? 1 : path === "/product" || path === "/how-to-fade-your-own-hair" ? 0.9 : 0.5,
+
+  const guidePages: MetadataRoute.Sitemap = GUIDES.map((g) => ({
+    url: `${SITE_URL}/guides/${g.slug}`,
+    lastModified: new Date(g.updated),
+    changeFrequency: "monthly",
+    priority: 0.8,
   }));
+
+  const info: MetadataRoute.Sitemap = ["/about", "/contact", "/shipping", "/returns", "/terms", "/privacy"].map((path) => ({
+    url: `${SITE_URL}${path}`,
+    changeFrequency: "monthly",
+    priority: 0.4,
+  }));
+
+  return [...core.map((e) => ({ ...e, lastModified: now })), ...guidePages, ...info.map((e) => ({ ...e, lastModified: now }))];
 }
