@@ -10,7 +10,7 @@ import {
   useElements,
 } from "@stripe/react-stripe-js";
 import { PRODUCTS } from "@/lib/products";
-import { Lock, ShieldCheck, Check, ChevronDown, Tag, Minus, Plus } from "lucide-react";
+import { Lock, ShieldCheck, Check, Tag, Minus, Plus } from "lucide-react";
 
 type ShippingId = "standard" | "express";
 const SHIP: Record<ShippingId, { label: string; cents: number; eta: string }> = {
@@ -22,6 +22,12 @@ type Quote = { productCents: number; unitCents: number; quantity: number; shippi
 const money = (cents: number) => `$${(cents / 100).toFixed(2)}`;
 const PRODUCT = PRODUCTS.single;
 const PRODUCT_IMG = "/assets/img/packaging.jpg";
+
+// Set NEXT_PUBLIC_GOOGLE_MAPS_API_KEY in Vercel (with the "Maps JavaScript API"
+// and "Places API" enabled) to get Google-powered address autocomplete that
+// auto-fills city/postcode/region worldwide — including Denmark. Without a key,
+// Stripe's free built-in autocomplete is used (fewer countries covered).
+const MAPS_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "";
 
 // Order quantity comes in from the product page as ?qty=N — clamp it 1–10.
 function readQty(): number {
@@ -148,10 +154,10 @@ function CheckoutInner({
   const [codeMsg, setCodeMsg] = useState("");
   const [paying, setPaying] = useState(false);
   const [payErr, setPayErr] = useState("");
-  const [summaryOpen, setSummaryOpen] = useState(false);
   const [hasExpress, setHasExpress] = useState(false);
   const [qty, setQty] = useState(initialQty);
   const [email, setEmail] = useState("");
+  const [addrComplete, setAddrComplete] = useState(false); // shipping options unlock once the address is filled
 
   const recomputeAsync = async (nextShipping: ShippingId, nextCode: string, nextQty: number, announce = false) => {
     try {
@@ -236,27 +242,8 @@ function CheckoutInner({
 
   return (
     <div className="mx-auto grid max-w-[1100px] gap-0 md:grid-cols-2">
-      {/* mobile collapsible summary */}
-      <button
-        onClick={() => setSummaryOpen((v) => !v)}
-        className="flex touch-manipulation items-center justify-between border-b border-line bg-paper-alt px-5 py-3 text-[0.9rem] md:hidden"
-        aria-expanded={summaryOpen}
-        aria-controls="order-summary-mobile"
-      >
-        <span className="flex items-center gap-2 font-medium text-brand">
-          Order summary
-          <ChevronDown aria-hidden="true" className={`h-4 w-4 transition-transform ${summaryOpen ? "rotate-180" : ""}`} />
-        </span>
-        <span className="font-display text-[1.1rem] font-bold tabular-nums">{money(quote.total)}</span>
-      </button>
-      {summaryOpen && (
-        <div id="order-summary-mobile" className="border-b border-line bg-paper-alt px-5 py-5 md:hidden">
-          <Summary quote={quote} shipping={shipping} code={code} setCode={setCode} applyCode={applyCode} codeMsg={codeMsg} qty={qty} onQty={changeQty} />
-        </div>
-      )}
-
       {/* form */}
-      <main className="order-2 px-5 py-8 md:order-1 md:py-12 md:pr-12">
+      <main className="order-1 px-5 py-8 md:py-12 md:pr-12">
         <div className="mx-auto max-w-[520px]">
           {/* Express checkout — Apple Pay / Google Pay / Amazon Pay / Link */}
           <div className={hasExpress ? "mb-6" : ""}>
@@ -293,51 +280,59 @@ function CheckoutInner({
           </Section>
 
           <Section title="Delivery">
-            {/* mode:shipping gives a country dropdown + Google-style address autocomplete */}
+            {/* mode:shipping gives a country dropdown, split name fields and
+                Google-powered address autocomplete that fills city/postcode/region. */}
             <AddressElement
               options={{
                 mode: "shipping",
                 display: { name: "split" },
                 fields: { phone: "always" },
-                autocomplete: { mode: "automatic" },
+                autocomplete: MAPS_KEY ? { mode: "google_maps_api", apiKey: MAPS_KEY } : { mode: "automatic" },
               }}
+              onChange={(e: any) => setAddrComplete(!!e?.complete)}
             />
           </Section>
 
           <Section title="Shipping method">
-            <div className="grid gap-2.5" role="radiogroup" aria-label="Shipping method">
-              {(Object.keys(SHIP) as ShippingId[]).map((id) => {
-                const s = SHIP[id];
-                const active = shipping === id;
-                return (
-                  <label
-                    key={id}
-                    className={`flex cursor-pointer touch-manipulation items-center justify-between rounded-lg border px-4 py-3 text-left transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-brand has-[:focus-visible]:ring-offset-1 ${
-                      active ? "border-brand bg-brand-tint" : "border-line hover:border-ink/30"
-                    }`}
-                  >
-                    <input
-                      type="radio"
-                      name="shipping-method"
-                      value={id}
-                      checked={active}
-                      onChange={() => chooseShipping(id)}
-                      className="sr-only"
-                    />
-                    <span className="flex items-center gap-3">
-                      <span aria-hidden="true" className={`grid h-5 w-5 place-items-center rounded-full border ${active ? "border-brand" : "border-line-2"}`}>
-                        {active && <span className="h-2.5 w-2.5 rounded-full bg-brand" />}
+            {addrComplete ? (
+              <div className="grid gap-2.5" role="radiogroup" aria-label="Shipping method">
+                {(Object.keys(SHIP) as ShippingId[]).map((id) => {
+                  const s = SHIP[id];
+                  const active = shipping === id;
+                  return (
+                    <label
+                      key={id}
+                      className={`flex cursor-pointer touch-manipulation items-center justify-between rounded-lg border px-4 py-3 text-left transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-brand has-[:focus-visible]:ring-offset-1 ${
+                        active ? "border-brand bg-brand-tint" : "border-line hover:border-ink/30"
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="shipping-method"
+                        value={id}
+                        checked={active}
+                        onChange={() => chooseShipping(id)}
+                        className="sr-only"
+                      />
+                      <span className="flex items-center gap-3">
+                        <span aria-hidden="true" className={`grid h-5 w-5 place-items-center rounded-full border ${active ? "border-brand" : "border-line-2"}`}>
+                          {active && <span className="h-2.5 w-2.5 rounded-full bg-brand" />}
+                        </span>
+                        <span>
+                          <span className="block font-medium">{s.label}</span>
+                          <span className="text-[0.82rem] text-muted">{s.eta}</span>
+                        </span>
                       </span>
-                      <span>
-                        <span className="block font-medium">{s.label}</span>
-                        <span className="text-[0.82rem] text-muted">{s.eta}</span>
-                      </span>
-                    </span>
-                    <span className="font-semibold tabular-nums">{s.cents === 0 ? "FREE" : money(s.cents)}</span>
-                  </label>
-                );
-              })}
-            </div>
+                      <span className="font-semibold tabular-nums">{s.cents === 0 ? "FREE" : money(s.cents)}</span>
+                    </label>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="rounded-lg border border-dashed border-line bg-paper-alt px-4 py-6 text-center text-[0.88rem] text-muted">
+                Enter your shipping address to see delivery options.
+              </div>
+            )}
           </Section>
 
           <Section title="Payment">
@@ -381,10 +376,16 @@ function CheckoutInner({
         </div>
       </main>
 
-      {/* desktop summary */}
-      <aside className="order-1 hidden border-l border-line bg-paper-alt px-5 py-12 md:order-2 md:block md:pl-12">
+      {/* order summary + product — at the bottom on mobile (Shopify style) */}
+      <section className="order-2 border-t border-line bg-paper-alt px-5 py-8 md:hidden">
+        <h2 className="mb-4 font-display text-[1.05rem] font-bold">Order summary</h2>
+        <Summary quote={quote} shipping={shipping} code={code} setCode={setCode} applyCode={applyCode} codeMsg={codeMsg} qty={qty} onQty={changeQty} ready={addrComplete} />
+      </section>
+
+      {/* order summary — sticky sidebar on desktop */}
+      <aside className="order-2 hidden border-l border-line bg-paper-alt px-5 py-12 md:block md:pl-12">
         <div className="sticky top-8 max-w-[420px]">
-          <Summary quote={quote} shipping={shipping} code={code} setCode={setCode} applyCode={applyCode} codeMsg={codeMsg} qty={qty} onQty={changeQty} />
+          <Summary quote={quote} shipping={shipping} code={code} setCode={setCode} applyCode={applyCode} codeMsg={codeMsg} qty={qty} onQty={changeQty} ready={addrComplete} />
         </div>
       </aside>
     </div>
@@ -409,6 +410,7 @@ function Summary({
   codeMsg,
   qty,
   onQty,
+  ready = true,
 }: {
   quote: Quote;
   shipping: ShippingId;
@@ -418,6 +420,7 @@ function Summary({
   codeMsg: string;
   qty: number;
   onQty: (n: number) => void;
+  ready?: boolean; // false until the shipping address is filled
 }) {
   const [discountOpen, setDiscountOpen] = useState(!!code);
   return (
@@ -510,10 +513,14 @@ function Summary({
           </div>
         )}
         <div className="flex justify-between text-muted">
-          <span>Shipping &middot; {SHIP[shipping].label}</span>
-          <span className={`tabular-nums ${quote.shippingCents === 0 ? "text-[#1b8a4e]" : ""}`}>
-            {quote.shippingCents === 0 ? "Free" : money(quote.shippingCents)}
-          </span>
+          <span>Shipping{ready ? ` · ${SHIP[shipping].label}` : ""}</span>
+          {ready ? (
+            <span className={`tabular-nums ${quote.shippingCents === 0 ? "text-[#1b8a4e]" : ""}`}>
+              {quote.shippingCents === 0 ? "Free" : money(quote.shippingCents)}
+            </span>
+          ) : (
+            <span className="text-[0.85rem]">Enter address</span>
+          )}
         </div>
         <div className="mt-2 flex items-baseline justify-between border-t border-line pt-3">
           <span className="font-display text-[1.1rem] font-bold">Total</span>
