@@ -5,13 +5,13 @@ import {
   Elements,
   PaymentElement,
   ExpressCheckoutElement,
-  AddressElement,
   useStripe,
   useElements,
 } from "@stripe/react-stripe-js";
 import { PRODUCTS } from "@/lib/products";
+import { COUNTRIES } from "@/lib/countries";
 import { useCountry } from "@/components/CurrencyProvider";
-import { Lock, ShieldCheck, Check, ChevronDown, Tag, Search } from "lucide-react";
+import { Lock, ShieldCheck, Check, ChevronDown, Tag, Search, X } from "lucide-react";
 
 type ShippingId = "standard" | "express";
 const SHIP: Record<ShippingId, { label: string; cents: number; eta: string }> = {
@@ -24,10 +24,12 @@ const money = (cents: number) => `$${(cents / 100).toFixed(2)}`;
 const PRODUCT = PRODUCTS.single;
 const PRODUCT_IMG = "/assets/img/packaging.jpg";
 
-// Set NEXT_PUBLIC_GOOGLE_MAPS_API_KEY in Vercel (with the "Maps JavaScript API"
-// and "Places API" enabled) to get Google-powered address autocomplete that
-// auto-fills city/postcode/region worldwide — including Denmark. Without a key,
-// Stripe's free built-in autocomplete is used (fewer countries covered).
+// Google Places address autocomplete (the same source Shopify's checkout uses).
+// Set NEXT_PUBLIC_GOOGLE_MAPS_API_KEY in Vercel and enable "Places API (New)" +
+// billing on the Google Cloud project so the key can call the Places endpoint.
+// It autocompletes every country — including Denmark, which Stripe's own address
+// widget can't. If the key is missing or Google isn't enabled yet, Danish
+// addresses still autocomplete via the official DK register (DAWA) fallback.
 const MAPS_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "";
 
 // Order quantity comes in from the product page as ?qty=N — clamp it 1–10.
@@ -170,12 +172,15 @@ function CheckoutInner({
   const [hasExpress, setHasExpress] = useState(false);
   const [qty, setQty] = useState(initialQty);
   const [email, setEmail] = useState("");
+  const geoCountry = useCountry(); // IP-detected country — prefills the country field
+  const [addr, setAddr] = useState<Addr>({ country: "", first: "", last: "", line1: "", line2: "", city: "", postal: "", phone: "" });
   const [addrComplete, setAddrComplete] = useState(false); // shipping options unlock once the address is filled
-  const [addrCountry, setAddrCountry] = useState(""); // country currently selected in the address element
-  const [addrDefaults, setAddrDefaults] = useState<any>(null); // prefill pushed from the DK address search
-  const [addrKey, setAddrKey] = useState(0); // bump to remount the AddressElement with new defaults
-  const addrValueRef = useRef<any>(null); // latest address-element value (to preserve name/phone on remount)
-  const geoCountry = useCountry(); // IP-detected country — show the DK search to Danish visitors
+  const countryTouched = useRef(false); // don't override a country the shopper picked themselves
+
+  // Prefill the country from the shopper's location once geolocation resolves.
+  useEffect(() => {
+    if (!countryTouched.current && geoCountry) setAddr((a) => (a.country ? a : { ...a, country: geoCountry }));
+  }, [geoCountry]);
 
   const recomputeAsync = async (nextShipping: ShippingId, nextCode: string, nextQty: number, announce = false) => {
     try {
@@ -237,30 +242,6 @@ function CheckoutInner({
     recompute(id, code, qty);
   };
 
-  // A Danish address was chosen in the DAWA search — push street/postcode/city
-  // into the Stripe AddressElement. Elements only reads defaultValues on mount,
-  // so we merge the name/phone the shopper already typed and remount via addrKey.
-  const handleDkPick = (p: DkPick) => {
-    const prev = addrValueRef.current || {};
-    const prevAddr = prev.address || {};
-    setAddrDefaults({
-      name: prev.name,
-      firstName: prev.firstName,
-      lastName: prev.lastName,
-      phone: prev.phone,
-      address: {
-        line1: p.line1,
-        line2: prevAddr.line2 || "",
-        city: p.city,
-        state: "",
-        postal_code: p.postal,
-        country: "DK",
-      },
-    });
-    setAddrCountry("DK");
-    setAddrKey((k) => k + 1);
-  };
-
   const applyCode = () => {
     recompute(shipping, code, qty, true);
   };
@@ -271,11 +252,31 @@ function CheckoutInner({
       setPayErr("Please enter a valid email address.");
       return;
     }
+    if (!addrComplete) {
+      setPayErr("Please complete your shipping address.");
+      return;
+    }
     setPaying(true);
     setPayErr("");
+    // We collect shipping in our own form (so autocomplete can live inside the
+    // Address field), so hand it to Stripe explicitly at confirmation time.
     const { error } = await stripe.confirmPayment({
       elements,
-      confirmParams: { return_url: `${window.location.origin}/checkout/success`, receipt_email: email.trim() },
+      confirmParams: {
+        return_url: `${window.location.origin}/checkout/success`,
+        receipt_email: email.trim(),
+        shipping: {
+          name: `${addr.first} ${addr.last}`.trim() || addr.last,
+          phone: addr.phone,
+          address: {
+            line1: addr.line1,
+            line2: addr.line2 || undefined,
+            city: addr.city,
+            postal_code: addr.postal,
+            country: addr.country,
+          },
+        },
+      },
     });
     // Only reached if there's an immediate validation error (otherwise redirects away).
     if (error) setPayErr(error.message || "Payment could not be completed.");
@@ -341,31 +342,16 @@ function CheckoutInner({
           </Section>
 
           <Section title="Delivery">
-            {/* Stripe's built-in autocomplete (and Google's) doesn't cover Denmark,
-                so Danish visitors get a search backed by DAWA — the official Danish
-                address register — that fills street/postcode/city for them. Other
-                countries keep Stripe's Google-powered autocomplete. */}
-            {(geoCountry === "DK" || addrCountry === "DK") && (
-              <div className="mb-3">
-                <DkAddressSearch onPick={handleDkPick} />
-              </div>
-            )}
-            {/* mode:shipping gives a country dropdown, split name fields and
-                Google-powered address autocomplete that fills city/postcode/region. */}
-            <AddressElement
-              key={addrKey}
-              options={{
-                mode: "shipping",
-                display: { name: "split" },
-                fields: { phone: "always" },
-                autocomplete: MAPS_KEY ? { mode: "google_maps_api", apiKey: MAPS_KEY } : { mode: "automatic" },
-                ...(addrDefaults ? { defaultValues: addrDefaults } : {}),
-              }}
-              onChange={(e: any) => {
-                addrValueRef.current = e?.value;
-                setAddrComplete(!!e?.complete);
-                const cc = e?.value?.address?.country;
-                if (cc) setAddrCountry(cc);
+            {/* Our own shipping form so the address autocomplete can live right
+                inside the Address field (Google Places, the same source Shopify
+                uses — it covers Denmark, with the official DK register as a
+                fallback). The address is handed to Stripe at payment. */}
+            <AddressForm
+              value={addr}
+              onChange={(next, complete) => {
+                if (next.country !== addr.country) countryTouched.current = true;
+                setAddr(next);
+                setAddrComplete(complete);
               }}
             />
           </Section>
@@ -463,8 +449,12 @@ function CheckoutInner({
   );
 }
 
-// A Danish address chosen from the DAWA search, normalised for the AddressElement.
+// The full shipping address collected in our own form (fed to Stripe at payment).
+type Addr = { country: string; first: string; last: string; line1: string; line2: string; city: string; postal: string; phone: string };
+// The street / postcode / city resolved from a chosen autocomplete suggestion.
 type DkPick = { line1: string; postal: string; city: string };
+// A dropdown row — either a Google Places prediction or a DAWA suggestion.
+type Suggestion = { id: string; text: string; src: "google" | "dawa"; dawa?: DawaItem };
 
 type DawaItem = {
   type?: string;
@@ -474,38 +464,137 @@ type DawaItem = {
   adgangsadresse?: { vejnavn?: string; husnr?: string; postnr?: string; postnrnavn?: string };
 };
 
-// Free, official Danish address autocomplete (DAWA / Danmarks Adresseregister —
-// api.dataforsyningen.dk). No API key, no billing, CORS-open. Stripe and Google
-// don't autocomplete Danish addresses, so this fills the gap for DK shoppers.
-function DkAddressSearch({ onPick }: { onPick: (p: DkPick) => void }) {
-  const [q, setQ] = useState("");
-  const [items, setItems] = useState<DawaItem[]>([]);
+// Google Places API (New) — the same source Shopify's checkout uses, so it
+// autocompletes Denmark (and everywhere else). Called straight from the browser
+// with the HTTP-referrer-restricted key, so it's authorised on the live domain.
+// Returns null on any failure so the caller can fall back to DAWA.
+async function googleAutocomplete(input: string, cc: string, token: string): Promise<{ placeId: string; text: string }[] | null> {
+  try {
+    const res = await fetch("https://places.googleapis.com/v1/places:autocomplete", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-Goog-Api-Key": MAPS_KEY },
+      body: JSON.stringify({
+        input,
+        sessionToken: token,
+        ...(cc ? { includedRegionCodes: [cc] } : {}),
+      }),
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    const s = data?.suggestions;
+    if (!Array.isArray(s) || !s.length) return null;
+    return s
+      .map((x: any) => x.placePrediction)
+      .filter((p: any) => p?.placeId)
+      .map((p: any) => ({ placeId: p.placeId, text: p.text?.text || "" }));
+  } catch {
+    return null;
+  }
+}
+
+// Resolve a Google place to street / postcode / city.
+async function googlePlaceDetails(placeId: string, token: string): Promise<DkPick | null> {
+  try {
+    const res = await fetch(
+      `https://places.googleapis.com/v1/places/${encodeURIComponent(placeId)}?sessionToken=${encodeURIComponent(token)}`,
+      { headers: { "X-Goog-Api-Key": MAPS_KEY, "X-Goog-FieldMask": "addressComponents" } }
+    );
+    if (!res.ok) return null;
+    const comps: any[] = (await res.json())?.addressComponents || [];
+    const pick = (type: string) => comps.find((c) => (c.types || []).includes(type));
+    const route = pick("route")?.longText || "";
+    const num = pick("street_number")?.longText || "";
+    const postal = pick("postal_code")?.longText || "";
+    const city = pick("locality")?.longText || pick("postal_town")?.longText || pick("administrative_area_level_2")?.longText || "";
+    // Denmark (and most of Europe) writes "Street Number".
+    const line1 = [route, num].filter(Boolean).join(" ").trim();
+    if (!line1 && !postal && !city) return null;
+    return { line1, postal, city };
+  } catch {
+    return null;
+  }
+}
+
+// Free, official Danish address register (DAWA / Danmarks Adresseregister —
+// api.dataforsyningen.dk). No key, no billing, CORS-open. Used as the fallback
+// so Danish addresses autocomplete even before Google billing is switched on.
+async function dawaAutocomplete(query: string): Promise<Suggestion[]> {
+  try {
+    const res = await fetch(
+      `https://api.dataforsyningen.dk/adresser/autocomplete?per_side=8&fuzzy=&q=${encodeURIComponent(query)}`,
+      { headers: { Accept: "application/json" } }
+    );
+    const data = await res.json();
+    if (!Array.isArray(data)) return [];
+    return data.slice(0, 8).map((it: DawaItem, i: number) => ({
+      id: (it.tekst || "") + i,
+      text: it.forslagstekst || it.tekst || "",
+      src: "dawa" as const,
+      dawa: it,
+    }));
+  } catch {
+    return [];
+  }
+}
+
+function randomToken(): string {
+  try { return crypto.randomUUID(); } catch { return `${Math.random()}`.slice(2); }
+}
+
+// Shared input styling, matched to the Contact email field so the form looks native.
+const INPUT =
+  "w-full rounded-lg border border-[#d9dce1] bg-white px-3.5 py-3 text-[0.95rem] text-ink outline-none transition-colors focus-visible:border-brand focus-visible:ring-1 focus-visible:ring-brand placeholder:text-muted";
+
+// Everything required to ship (first name is optional, like Shopify).
+function isAddrComplete(a: Addr): boolean {
+  return !!(a.country && a.last.trim() && a.line1.trim() && a.city.trim() && a.postal.trim() && a.phone.trim());
+}
+
+// The Address field itself, with autocomplete living *inside* it — Google Places
+// first (the source Shopify uses, so Denmark is covered), DAWA as the DK fallback.
+function AddressLine({
+  country,
+  value,
+  onText,
+  onPick,
+}: {
+  country: string;
+  value: string;
+  onText: (t: string) => void;
+  onPick: (p: DkPick) => void;
+}) {
+  const cc = (country || "").toLowerCase();
+  const [items, setItems] = useState<Suggestion[]>([]);
+  const [src, setSrc] = useState<"google" | "dawa" | "">("");
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(-1);
   const boxRef = useRef<HTMLDivElement>(null);
-  const seq = useRef(0); // guards against out-of-order responses
+  const seq = useRef(0);              // guards against out-of-order responses
+  const tokenRef = useRef(randomToken()); // one Google session token per lookup→select
 
-  // Debounced lookup (≥3 chars). Ignores stale responses via a request counter.
+  // Debounced lookup (≥3 chars, only while the dropdown is open): Google, then DAWA.
   useEffect(() => {
-    const query = q.trim();
-    if (query.length < 3) { setItems([]); return; }
+    const query = value.trim();
+    if (!open || query.length < 3) { setItems([]); setSrc(""); return; }
     const mine = ++seq.current;
     const t = setTimeout(async () => {
-      try {
-        const res = await fetch(
-          `https://api.dataforsyningen.dk/adresser/autocomplete?per_side=8&fuzzy=&q=${encodeURIComponent(query)}`,
-          { headers: { Accept: "application/json" } }
-        );
-        const data = await res.json();
-        if (mine !== seq.current) return; // a newer keystroke already fired
-        setItems(Array.isArray(data) ? data.slice(0, 8) : []);
-        setActive(-1);
-      } catch {
-        if (mine === seq.current) setItems([]);
+      let list: Suggestion[] = [];
+      let source: "google" | "dawa" | "" = "";
+      if (MAPS_KEY) {
+        const g = await googleAutocomplete(query, cc, tokenRef.current);
+        if (mine !== seq.current) return;
+        if (g && g.length) { list = g.map((p) => ({ id: p.placeId, text: p.text, src: "google" as const })); source = "google"; }
       }
-    }, 180);
+      if (!list.length && cc === "dk") {
+        const d = await dawaAutocomplete(query);
+        if (mine !== seq.current) return;
+        if (d.length) { list = d; source = "dawa"; }
+      }
+      if (mine !== seq.current) return;
+      setItems(list); setSrc(source); setActive(-1);
+    }, 200);
     return () => clearTimeout(t);
-  }, [q]);
+  }, [value, cc, open]);
 
   // Close the dropdown when clicking away.
   useEffect(() => {
@@ -516,23 +605,25 @@ function DkAddressSearch({ onPick }: { onPick: (p: DkPick) => void }) {
     return () => document.removeEventListener("mousedown", onDoc);
   }, []);
 
-  const choose = (it: DawaItem) => {
-    const a = it.adresse || it.adgangsadresse;
-    // Full address (has a house number) → fill the form. Otherwise it's a street
-    // or access-address suggestion: drill down by re-querying its text.
+  const close = () => { setOpen(false); setItems([]); setSrc(""); };
+
+  const choose = async (it: Suggestion) => {
+    if (it.src === "google") {
+      const details = await googlePlaceDetails(it.id, tokenRef.current);
+      tokenRef.current = randomToken(); // a Places session ends when details are fetched
+      if (details) onPick(details); else onText(it.text);
+      close();
+      return;
+    }
+    // DAWA: a full address (has a house number) → fill; otherwise drill down.
+    const g = it.dawa!;
+    const a = g.adresse || g.adgangsadresse;
     if (a && a.vejnavn && a.husnr && a.postnr) {
-      const house = [a.husnr, (it.adresse?.etage ? `${it.adresse.etage}.` : ""), it.adresse?.dør].filter(Boolean).join(" ").trim();
-      onPick({
-        line1: `${a.vejnavn} ${house}`.trim(),
-        postal: a.postnr,
-        city: a.postnrnavn || "",
-      });
-      setOpen(false);
-      setItems([]);
-      setQ(it.tekst || `${a.vejnavn} ${a.husnr}`);
+      const house = [a.husnr, g.adresse?.etage ? `${g.adresse.etage}.` : "", g.adresse?.dør].filter(Boolean).join(" ").trim();
+      onPick({ line1: `${a.vejnavn} ${house}`.trim(), postal: a.postnr, city: a.postnrnavn || "" });
+      close();
     } else {
-      const next = (it.forslagstekst || it.tekst || "").trim();
-      setQ(next);
+      onText((g.forslagstekst || g.tekst || "").trim());
       setOpen(true);
     }
   };
@@ -545,48 +636,139 @@ function DkAddressSearch({ onPick }: { onPick: (p: DkPick) => void }) {
     else if (e.key === "Escape") { setOpen(false); }
   };
 
+  const showList = open && items.length > 0;
   return (
     <div ref={boxRef} className="relative">
-      <label htmlFor="dk-addr" className="mb-1.5 block text-[0.9rem] font-medium text-ink">Search your address</label>
+      <label htmlFor="addr-line1" className="mb-1.5 block text-[0.9rem] font-medium text-ink">Address</label>
       <div className="relative">
-        <Search aria-hidden="true" className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
         <input
-          id="dk-addr"
+          id="addr-line1"
           type="text"
-          value={q}
+          value={value}
           autoComplete="off"
-          onChange={(e) => { setQ(e.target.value); setOpen(true); }}
-          onFocus={() => items.length && setOpen(true)}
+          onChange={(e) => { onText(e.target.value); setOpen(true); }}
+          onFocus={() => value.trim().length >= 3 && setOpen(true)}
           onKeyDown={onKey}
-          placeholder="fx Schandorphsvej 44, Ringsted"
+          placeholder="Address"
           role="combobox"
-          aria-expanded={open && items.length > 0}
-          aria-controls="dk-addr-list"
+          aria-expanded={showList}
+          aria-controls="addr-list"
           aria-autocomplete="list"
-          className="w-full rounded-lg border border-[#d9dce1] bg-white py-3 pl-10 pr-3.5 text-[0.95rem] text-ink outline-none transition-colors focus-visible:border-brand focus-visible:ring-1 focus-visible:ring-brand"
+          className={INPUT + " pr-10"}
         />
+        <Search aria-hidden="true" className="pointer-events-none absolute right-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
       </div>
-      {open && items.length > 0 && (
-        <ul
-          id="dk-addr-list"
-          role="listbox"
-          className="absolute z-20 mt-1 max-h-64 w-full overflow-auto rounded-lg border border-line bg-white py-1 shadow-lg"
-        >
-          {items.map((it, i) => (
-            <li
-              key={(it.tekst || "") + i}
-              role="option"
-              aria-selected={i === active}
-              onMouseEnter={() => setActive(i)}
-              onMouseDown={(e) => { e.preventDefault(); choose(it); }}
-              className={`cursor-pointer px-3.5 py-2.5 text-[0.92rem] ${i === active ? "bg-brand-tint text-brand-dark" : "text-ink-2"}`}
-            >
-              {it.forslagstekst || it.tekst}
-            </li>
-          ))}
-        </ul>
+      {showList && (
+        <div className="absolute z-20 mt-1 w-full overflow-hidden rounded-lg border border-line bg-white shadow-lg">
+          <div className="flex items-center justify-between px-3.5 pb-1 pt-2.5">
+            <span className="text-[0.72rem] font-semibold uppercase tracking-wide text-muted">Suggestions</span>
+            <button type="button" aria-label="Close suggestions" onClick={() => setOpen(false)} className="text-muted hover:text-ink">
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+          <ul id="addr-list" role="listbox" className="max-h-64 overflow-auto pb-1">
+            {items.map((it, i) => (
+              <li
+                key={it.id}
+                role="option"
+                aria-selected={i === active}
+                onMouseEnter={() => setActive(i)}
+                onMouseDown={(e) => { e.preventDefault(); choose(it); }}
+                className={`cursor-pointer px-3.5 py-2.5 text-[0.95rem] ${i === active ? "bg-brand-tint text-brand-dark" : "text-ink-2"}`}
+              >
+                {it.text}
+              </li>
+            ))}
+          </ul>
+          <div className="border-t border-line px-3.5 py-2 text-right">
+            <span className="text-[0.72rem] text-muted">
+              powered by <span className="font-semibold text-ink-2">{src === "google" ? "Google" : "Danmarks Adresseregister"}</span>
+            </span>
+          </div>
+        </div>
       )}
-      <p className="mt-1.5 text-[0.8rem] text-muted">Search finds your street & postcode automatically — or fill the fields below.</p>
+    </div>
+  );
+}
+
+// The full Shopify-style shipping form: country, name, autocompleting Address, city…
+function AddressForm({ value, onChange }: { value: Addr; onChange: (next: Addr, complete: boolean) => void }) {
+  const set = (patch: Partial<Addr>) => {
+    const next = { ...value, ...patch };
+    onChange(next, isAddrComplete(next));
+  };
+  const onPick = (p: DkPick) => {
+    const next = { ...value, line1: p.line1 || value.line1, postal: p.postal || value.postal, city: p.city || value.city };
+    onChange(next, isAddrComplete(next));
+  };
+  return (
+    <div className="grid gap-3">
+      {/* Country / region */}
+      <div>
+        <label htmlFor="addr-country" className="mb-1.5 block text-[0.9rem] font-medium text-ink">Country/region</label>
+        <div className="relative">
+          <select
+            id="addr-country"
+            autoComplete="country"
+            value={value.country}
+            onChange={(e) => set({ country: e.target.value })}
+            className={INPUT + " cursor-pointer appearance-none pr-10"}
+          >
+            <option value="" disabled>Select country/region</option>
+            {COUNTRIES.map(([code, name]) =>
+              code === "—" ? (
+                <option key="sep" disabled>{name}</option>
+              ) : (
+                <option key={code} value={code}>{name}</option>
+              )
+            )}
+          </select>
+          <ChevronDown aria-hidden="true" className="pointer-events-none absolute right-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
+        </div>
+      </div>
+
+      {/* Name */}
+      <div className="grid gap-3 sm:grid-cols-2">
+        <div>
+          <label htmlFor="addr-first" className="mb-1.5 block text-[0.9rem] font-medium text-ink">
+            First name <span className="font-normal text-muted">(optional)</span>
+          </label>
+          <input id="addr-first" type="text" autoComplete="given-name" value={value.first} onChange={(e) => set({ first: e.target.value })} className={INPUT} />
+        </div>
+        <div>
+          <label htmlFor="addr-last" className="mb-1.5 block text-[0.9rem] font-medium text-ink">Last name</label>
+          <input id="addr-last" type="text" autoComplete="family-name" value={value.last} onChange={(e) => set({ last: e.target.value })} className={INPUT} />
+        </div>
+      </div>
+
+      {/* Address (autocomplete) */}
+      <AddressLine country={value.country} value={value.line1} onText={(t) => set({ line1: t })} onPick={onPick} />
+
+      {/* Apartment / suite */}
+      <div>
+        <label htmlFor="addr-line2" className="mb-1.5 block text-[0.9rem] font-medium text-ink">
+          Apartment, suite, etc. <span className="font-normal text-muted">(optional)</span>
+        </label>
+        <input id="addr-line2" type="text" autoComplete="address-line2" value={value.line2} onChange={(e) => set({ line2: e.target.value })} className={INPUT} />
+      </div>
+
+      {/* Postal code + City */}
+      <div className="grid gap-3 sm:grid-cols-2">
+        <div>
+          <label htmlFor="addr-postal" className="mb-1.5 block text-[0.9rem] font-medium text-ink">Postal code</label>
+          <input id="addr-postal" type="text" inputMode="numeric" autoComplete="postal-code" value={value.postal} onChange={(e) => set({ postal: e.target.value })} className={INPUT} />
+        </div>
+        <div>
+          <label htmlFor="addr-city" className="mb-1.5 block text-[0.9rem] font-medium text-ink">City</label>
+          <input id="addr-city" type="text" autoComplete="address-level2" value={value.city} onChange={(e) => set({ city: e.target.value })} className={INPUT} />
+        </div>
+      </div>
+
+      {/* Phone */}
+      <div>
+        <label htmlFor="addr-phone" className="mb-1.5 block text-[0.9rem] font-medium text-ink">Phone</label>
+        <input id="addr-phone" type="tel" inputMode="tel" autoComplete="tel" value={value.phone} onChange={(e) => set({ phone: e.target.value })} placeholder="For delivery updates" className={INPUT} />
+      </div>
     </div>
   );
 }
