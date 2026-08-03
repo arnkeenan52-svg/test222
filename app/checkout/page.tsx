@@ -10,7 +10,8 @@ import {
   useElements,
 } from "@stripe/react-stripe-js";
 import { PRODUCTS } from "@/lib/products";
-import { Lock, ShieldCheck, Check, ChevronDown, Tag } from "lucide-react";
+import { useCountry } from "@/components/CurrencyProvider";
+import { Lock, ShieldCheck, Check, ChevronDown, Tag, Search } from "lucide-react";
 
 type ShippingId = "standard" | "express";
 const SHIP: Record<ShippingId, { label: string; cents: number; eta: string }> = {
@@ -170,6 +171,11 @@ function CheckoutInner({
   const [qty, setQty] = useState(initialQty);
   const [email, setEmail] = useState("");
   const [addrComplete, setAddrComplete] = useState(false); // shipping options unlock once the address is filled
+  const [addrCountry, setAddrCountry] = useState(""); // country currently selected in the address element
+  const [addrDefaults, setAddrDefaults] = useState<any>(null); // prefill pushed from the DK address search
+  const [addrKey, setAddrKey] = useState(0); // bump to remount the AddressElement with new defaults
+  const addrValueRef = useRef<any>(null); // latest address-element value (to preserve name/phone on remount)
+  const geoCountry = useCountry(); // IP-detected country — show the DK search to Danish visitors
 
   const recomputeAsync = async (nextShipping: ShippingId, nextCode: string, nextQty: number, announce = false) => {
     try {
@@ -229,6 +235,30 @@ function CheckoutInner({
   const chooseShipping = (id: ShippingId) => {
     setShipping(id);
     recompute(id, code, qty);
+  };
+
+  // A Danish address was chosen in the DAWA search — push street/postcode/city
+  // into the Stripe AddressElement. Elements only reads defaultValues on mount,
+  // so we merge the name/phone the shopper already typed and remount via addrKey.
+  const handleDkPick = (p: DkPick) => {
+    const prev = addrValueRef.current || {};
+    const prevAddr = prev.address || {};
+    setAddrDefaults({
+      name: prev.name,
+      firstName: prev.firstName,
+      lastName: prev.lastName,
+      phone: prev.phone,
+      address: {
+        line1: p.line1,
+        line2: prevAddr.line2 || "",
+        city: p.city,
+        state: "",
+        postal_code: p.postal,
+        country: "DK",
+      },
+    });
+    setAddrCountry("DK");
+    setAddrKey((k) => k + 1);
   };
 
   const applyCode = () => {
@@ -311,16 +341,32 @@ function CheckoutInner({
           </Section>
 
           <Section title="Delivery">
+            {/* Stripe's built-in autocomplete (and Google's) doesn't cover Denmark,
+                so Danish visitors get a search backed by DAWA — the official Danish
+                address register — that fills street/postcode/city for them. Other
+                countries keep Stripe's Google-powered autocomplete. */}
+            {(geoCountry === "DK" || addrCountry === "DK") && (
+              <div className="mb-3">
+                <DkAddressSearch onPick={handleDkPick} />
+              </div>
+            )}
             {/* mode:shipping gives a country dropdown, split name fields and
                 Google-powered address autocomplete that fills city/postcode/region. */}
             <AddressElement
+              key={addrKey}
               options={{
                 mode: "shipping",
                 display: { name: "split" },
                 fields: { phone: "always" },
                 autocomplete: MAPS_KEY ? { mode: "google_maps_api", apiKey: MAPS_KEY } : { mode: "automatic" },
+                ...(addrDefaults ? { defaultValues: addrDefaults } : {}),
               }}
-              onChange={(e: any) => setAddrComplete(!!e?.complete)}
+              onChange={(e: any) => {
+                addrValueRef.current = e?.value;
+                setAddrComplete(!!e?.complete);
+                const cc = e?.value?.address?.country;
+                if (cc) setAddrCountry(cc);
+              }}
             />
           </Section>
 
@@ -413,6 +459,134 @@ function CheckoutInner({
           <Summary quote={quote} shipping={shipping} code={code} setCode={setCode} applyCode={applyCode} codeMsg={codeMsg} qty={qty} onQty={changeQty} ready={addrComplete} />
         </div>
       </aside>
+    </div>
+  );
+}
+
+// A Danish address chosen from the DAWA search, normalised for the AddressElement.
+type DkPick = { line1: string; postal: string; city: string };
+
+type DawaItem = {
+  type?: string;
+  tekst?: string;
+  forslagstekst?: string;
+  adresse?: { vejnavn?: string; husnr?: string; etage?: string | null; dør?: string | null; postnr?: string; postnrnavn?: string };
+  adgangsadresse?: { vejnavn?: string; husnr?: string; postnr?: string; postnrnavn?: string };
+};
+
+// Free, official Danish address autocomplete (DAWA / Danmarks Adresseregister —
+// api.dataforsyningen.dk). No API key, no billing, CORS-open. Stripe and Google
+// don't autocomplete Danish addresses, so this fills the gap for DK shoppers.
+function DkAddressSearch({ onPick }: { onPick: (p: DkPick) => void }) {
+  const [q, setQ] = useState("");
+  const [items, setItems] = useState<DawaItem[]>([]);
+  const [open, setOpen] = useState(false);
+  const [active, setActive] = useState(-1);
+  const boxRef = useRef<HTMLDivElement>(null);
+  const seq = useRef(0); // guards against out-of-order responses
+
+  // Debounced lookup (≥3 chars). Ignores stale responses via a request counter.
+  useEffect(() => {
+    const query = q.trim();
+    if (query.length < 3) { setItems([]); return; }
+    const mine = ++seq.current;
+    const t = setTimeout(async () => {
+      try {
+        const res = await fetch(
+          `https://api.dataforsyningen.dk/adresser/autocomplete?per_side=8&fuzzy=&q=${encodeURIComponent(query)}`,
+          { headers: { Accept: "application/json" } }
+        );
+        const data = await res.json();
+        if (mine !== seq.current) return; // a newer keystroke already fired
+        setItems(Array.isArray(data) ? data.slice(0, 8) : []);
+        setActive(-1);
+      } catch {
+        if (mine === seq.current) setItems([]);
+      }
+    }, 180);
+    return () => clearTimeout(t);
+  }, [q]);
+
+  // Close the dropdown when clicking away.
+  useEffect(() => {
+    const onDoc = (e: MouseEvent) => {
+      if (boxRef.current && !boxRef.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", onDoc);
+    return () => document.removeEventListener("mousedown", onDoc);
+  }, []);
+
+  const choose = (it: DawaItem) => {
+    const a = it.adresse || it.adgangsadresse;
+    // Full address (has a house number) → fill the form. Otherwise it's a street
+    // or access-address suggestion: drill down by re-querying its text.
+    if (a && a.vejnavn && a.husnr && a.postnr) {
+      const house = [a.husnr, (it.adresse?.etage ? `${it.adresse.etage}.` : ""), it.adresse?.dør].filter(Boolean).join(" ").trim();
+      onPick({
+        line1: `${a.vejnavn} ${house}`.trim(),
+        postal: a.postnr,
+        city: a.postnrnavn || "",
+      });
+      setOpen(false);
+      setItems([]);
+      setQ(it.tekst || `${a.vejnavn} ${a.husnr}`);
+    } else {
+      const next = (it.forslagstekst || it.tekst || "").trim();
+      setQ(next);
+      setOpen(true);
+    }
+  };
+
+  const onKey = (e: React.KeyboardEvent) => {
+    if (!open || !items.length) return;
+    if (e.key === "ArrowDown") { e.preventDefault(); setActive((i) => Math.min(items.length - 1, i + 1)); }
+    else if (e.key === "ArrowUp") { e.preventDefault(); setActive((i) => Math.max(0, i - 1)); }
+    else if (e.key === "Enter" && active >= 0) { e.preventDefault(); choose(items[active]); }
+    else if (e.key === "Escape") { setOpen(false); }
+  };
+
+  return (
+    <div ref={boxRef} className="relative">
+      <label htmlFor="dk-addr" className="mb-1.5 block text-[0.9rem] font-medium text-ink">Search your address</label>
+      <div className="relative">
+        <Search aria-hidden="true" className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
+        <input
+          id="dk-addr"
+          type="text"
+          value={q}
+          autoComplete="off"
+          onChange={(e) => { setQ(e.target.value); setOpen(true); }}
+          onFocus={() => items.length && setOpen(true)}
+          onKeyDown={onKey}
+          placeholder="fx Schandorphsvej 44, Ringsted"
+          role="combobox"
+          aria-expanded={open && items.length > 0}
+          aria-controls="dk-addr-list"
+          aria-autocomplete="list"
+          className="w-full rounded-lg border border-[#d9dce1] bg-white py-3 pl-10 pr-3.5 text-[0.95rem] text-ink outline-none transition-colors focus-visible:border-brand focus-visible:ring-1 focus-visible:ring-brand"
+        />
+      </div>
+      {open && items.length > 0 && (
+        <ul
+          id="dk-addr-list"
+          role="listbox"
+          className="absolute z-20 mt-1 max-h-64 w-full overflow-auto rounded-lg border border-line bg-white py-1 shadow-lg"
+        >
+          {items.map((it, i) => (
+            <li
+              key={(it.tekst || "") + i}
+              role="option"
+              aria-selected={i === active}
+              onMouseEnter={() => setActive(i)}
+              onMouseDown={(e) => { e.preventDefault(); choose(it); }}
+              className={`cursor-pointer px-3.5 py-2.5 text-[0.92rem] ${i === active ? "bg-brand-tint text-brand-dark" : "text-ink-2"}`}
+            >
+              {it.forslagstekst || it.tekst}
+            </li>
+          ))}
+        </ul>
+      )}
+      <p className="mt-1.5 text-[0.8rem] text-muted">Search finds your street & postcode automatically — or fill the fields below.</p>
     </div>
   );
 }
