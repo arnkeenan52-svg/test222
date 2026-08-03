@@ -249,7 +249,18 @@ function CheckoutInner({
           <div className={hasExpress ? "mb-6" : ""}>
             {hasExpress && <p className="mb-3 text-center text-[0.9rem] font-medium text-muted">Express checkout</p>}
             <ExpressCheckoutElement
-              options={{ buttonHeight: 48, layout: { maxRows: 2 } }}
+              options={{
+                buttonHeight: 52,
+                buttonTheme: { applePay: "black", googlePay: "black" },
+                buttonType: { applePay: "buy", googlePay: "buy" },
+                // Cohesive black wallet buttons for a premium, Shopify-grade top.
+                // Amazon Pay (gold) and Link (green) are brand-locked colours that
+                // can't be restyled, so they stay out of the express row to avoid a
+                // mismatched "rainbow" — Link still shows for returning customers in
+                // the card form below.
+                paymentMethods: { applePay: "auto", googlePay: "auto", amazonPay: "never", link: "never", paypal: "never" },
+                layout: { maxColumns: 2, maxRows: 1, overflow: "never" },
+              }}
               onReady={(e: any) => setHasExpress(!!e?.availablePaymentMethods)}
               onClick={onExpressClick}
               onShippingAddressChange={({ resolve }: any) => resolve()}
