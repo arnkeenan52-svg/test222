@@ -57,6 +57,7 @@ export function SiteFooter() {
           <a href="/#compare" className="transition-colors hover:text-white">Why FadeClipper</a>
           <a href="/#reviews" className="transition-colors hover:text-white">Reviews</a>
           <a href="/how-to-fade-your-own-hair" className="transition-colors hover:text-white">How to fade your own hair</a>
+          <a href="/guides" className="transition-colors hover:text-white">Fade guides</a>
           <a href="/#faq" className="transition-colors hover:text-white">FAQ</a>
         </nav>
         <nav className="flex flex-col gap-3 text-[0.9rem] text-white/60">

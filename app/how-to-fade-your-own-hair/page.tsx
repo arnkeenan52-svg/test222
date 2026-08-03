@@ -4,8 +4,7 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { Button } from "@/components/ui/button";
 import { Price } from "@/components/Price";
 import { Check, X, ArrowRight } from "lucide-react";
-
-const SITE_URL = "https://fadeclipper.com"; // ← change to your real .com domain
+import { SITE_URL } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "How to Fade Your Own Hair at Home (2026 Guide) + Clipper Comparison | FadeClipper",
@@ -304,6 +303,23 @@ export default function GuidePage() {
               ))}
             </dl>
           </Section>
+
+          {/* deeper guides (topic cluster) */}
+          <section className="pt-12">
+            <h2 className="font-display text-[clamp(1.5rem,3.4vw,2.1rem)] font-bold leading-tight">Go deeper</h2>
+            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              {[
+                ["How to fade the back of your own head", "/guides/how-to-fade-the-back-of-your-own-head"],
+                ["How to do a skin fade at home", "/guides/skin-fade-at-home"],
+                ["Types of fades explained", "/guides/types-of-fades"],
+                ["All fade guides", "/guides"],
+              ].map(([label, href]) => (
+                <a key={href} href={href} className="rounded-3xl border border-line bg-white p-5 font-display font-semibold text-ink transition-colors hover:border-brand/40 hover:text-brand">
+                  {label}
+                </a>
+              ))}
+            </div>
+          </section>
 
           {/* CTA */}
           <div className="mt-12 overflow-hidden rounded-4xl bg-ink p-8 text-center text-white md:p-10">
