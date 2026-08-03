@@ -10,7 +10,7 @@ import {
   useElements,
 } from "@stripe/react-stripe-js";
 import { PRODUCTS } from "@/lib/products";
-import { Lock, ShieldCheck, Check, ChevronDown, Tag, Minus, Plus } from "lucide-react";
+import { Lock, ShieldCheck, Check, ChevronDown, Tag } from "lucide-react";
 
 type ShippingId = "standard" | "express";
 const SHIP: Record<ShippingId, { label: string; cents: number; eta: string }> = {
@@ -360,7 +360,9 @@ function CheckoutInner({
                 })}
               </div>
             ) : (
-              <p className="text-[0.85rem] text-muted">Enter your shipping address to see delivery options.</p>
+              <div className="rounded-lg bg-paper-alt px-4 py-4 text-[0.9rem] text-muted">
+                Enter your shipping address to view available shipping methods.
+              </div>
             )}
           </Section>
 
@@ -432,7 +434,6 @@ function Summary({
   applyCode,
   codeMsg,
   qty,
-  onQty,
   ready = true,
 }: {
   quote: Quote;
@@ -448,40 +449,17 @@ function Summary({
   const [discountOpen, setDiscountOpen] = useState(!!code);
   return (
     <div>
-      <div className="flex items-center gap-4">
+      {/* compact product row — Shopify order-summary style */}
+      <div className="flex items-center gap-3">
         <span className="relative shrink-0">
-          <img src={PRODUCT_IMG} alt={PRODUCT.title} width={64} height={64} className="h-16 w-16 rounded-xl border border-line object-cover" />
-          <span aria-hidden="true" className="absolute -right-2 -top-2 grid h-6 w-6 place-items-center rounded-full bg-ink text-[0.72rem] font-bold text-white tabular-nums">{qty}</span>
+          <img src={PRODUCT_IMG} alt={PRODUCT.title} width={56} height={56} className="h-14 w-14 rounded-lg border border-line object-cover" />
+          <span aria-hidden="true" className="absolute -right-2 -top-2 grid h-5 w-5 place-items-center rounded-full bg-ink text-[0.66rem] font-bold text-white tabular-nums">{qty}</span>
         </span>
         <div className="min-w-0 flex-1">
-          <p className="font-semibold leading-tight">
-            {PRODUCT.title} <span className="sr-only">, quantity {qty}</span>
-          </p>
-          <p className="truncate text-[0.82rem] text-muted">{qty > 1 ? `${money(quote.unitCents)} each` : PRODUCT.sub}</p>
-          {/* quantity stepper — chosen here, not on the product page */}
-          <div className="mt-2 inline-flex items-center rounded-lg border border-line bg-white">
-            <button
-              type="button"
-              aria-label="Decrease quantity"
-              onClick={() => onQty(qty - 1)}
-              disabled={qty <= 1}
-              className="grid h-8 w-8 touch-manipulation place-items-center rounded-l-lg text-ink transition-colors hover:bg-card disabled:opacity-30"
-            >
-              <Minus className="h-3.5 w-3.5" strokeWidth={2.5} />
-            </button>
-            <span aria-live="polite" className="w-8 select-none text-center text-[0.9rem] font-semibold tabular-nums">{qty}</span>
-            <button
-              type="button"
-              aria-label="Increase quantity"
-              onClick={() => onQty(qty + 1)}
-              disabled={qty >= 10}
-              className="grid h-8 w-8 touch-manipulation place-items-center rounded-r-lg text-ink transition-colors hover:bg-card disabled:opacity-30"
-            >
-              <Plus className="h-3.5 w-3.5" strokeWidth={2.5} />
-            </button>
-          </div>
+          <p className="text-[0.92rem] font-semibold leading-tight text-ink">{PRODUCT.title}</p>
+          <p className="truncate text-[0.8rem] text-muted">{qty > 1 ? `${money(quote.unitCents)} each` : PRODUCT.sub}</p>
         </div>
-        <span className="self-start font-semibold tabular-nums">{money(quote.productCents)}</span>
+        <span className="shrink-0 text-[0.92rem] font-semibold tabular-nums">{money(quote.productCents)}</span>
       </div>
 
       {/* discount */}
