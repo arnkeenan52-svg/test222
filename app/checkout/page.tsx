@@ -10,7 +10,7 @@ import {
   useElements,
 } from "@stripe/react-stripe-js";
 import { PRODUCTS } from "@/lib/products";
-import { Lock, ShieldCheck, Check, Tag, Minus, Plus } from "lucide-react";
+import { Lock, ShieldCheck, Check, ChevronDown, Tag, Minus, Plus } from "lucide-react";
 
 type ShippingId = "standard" | "express";
 const SHIP: Record<ShippingId, { label: string; cents: number; eta: string }> = {
@@ -44,6 +44,17 @@ export default function CheckoutPage() {
   const [stripePromise, setStripePromise] = useState<ReturnType<typeof loadStripe> | null>(null);
   const started = useRef(false);
   const qtyRef = useRef(1);
+
+  // The global body is bg-paper (cream); paint html/body white while on checkout
+  // so the iOS status-bar / safe area at the top is pure white (no colour band),
+  // like Shopify. Reverted on unmount.
+  useEffect(() => {
+    const html = document.documentElement, body = document.body;
+    const pH = html.style.backgroundColor, pB = body.style.backgroundColor;
+    html.style.backgroundColor = "#ffffff";
+    body.style.backgroundColor = "#ffffff";
+    return () => { html.style.backgroundColor = pH; body.style.backgroundColor = pB; };
+  }, []);
 
   useEffect(() => {
     if (started.current) return; // run once
@@ -154,6 +165,7 @@ function CheckoutInner({
   const [codeMsg, setCodeMsg] = useState("");
   const [paying, setPaying] = useState(false);
   const [payErr, setPayErr] = useState("");
+  const [summaryOpen, setSummaryOpen] = useState(false);
   const [hasExpress, setHasExpress] = useState(false);
   const [qty, setQty] = useState(initialQty);
   const [email, setEmail] = useState("");
@@ -242,25 +254,33 @@ function CheckoutInner({
 
   return (
     <div className="mx-auto grid max-w-[1100px] gap-0 md:grid-cols-2">
+      {/* mobile collapsible order summary (Shopify style) */}
+      <button
+        onClick={() => setSummaryOpen((v) => !v)}
+        className="flex touch-manipulation items-center justify-between border-b border-line bg-paper-alt px-5 py-3.5 text-[0.9rem] md:hidden"
+        aria-expanded={summaryOpen}
+        aria-controls="order-summary-mobile"
+      >
+        <span className="flex items-center gap-2 font-medium text-brand">
+          Order summary
+          <ChevronDown aria-hidden="true" className={`h-4 w-4 transition-transform ${summaryOpen ? "rotate-180" : ""}`} />
+        </span>
+        <span className="font-display text-[1.15rem] font-bold tabular-nums">{money(quote.total)}</span>
+      </button>
+      {summaryOpen && (
+        <div id="order-summary-mobile" className="border-b border-line bg-paper-alt px-5 py-5 md:hidden">
+          <Summary quote={quote} shipping={shipping} code={code} setCode={setCode} applyCode={applyCode} codeMsg={codeMsg} qty={qty} onQty={changeQty} ready={addrComplete} />
+        </div>
+      )}
+
       {/* form */}
-      <main className="order-1 px-5 py-8 md:py-12 md:pr-12">
+      <main className="order-2 px-5 py-8 md:order-1 md:py-12 md:pr-12">
         <div className="mx-auto max-w-[520px]">
           {/* Express checkout — Apple Pay / Google Pay / Amazon Pay / Link */}
           <div className={hasExpress ? "mb-6" : ""}>
             {hasExpress && <p className="mb-3 text-center text-[0.9rem] font-medium text-muted">Express checkout</p>}
             <ExpressCheckoutElement
-              options={{
-                buttonHeight: 52,
-                buttonTheme: { applePay: "black", googlePay: "black" },
-                buttonType: { applePay: "buy", googlePay: "buy" },
-                // Cohesive black wallet buttons for a premium, Shopify-grade top.
-                // Amazon Pay (gold) and Link (green) are brand-locked colours that
-                // can't be restyled, so they stay out of the express row to avoid a
-                // mismatched "rainbow" — Link still shows for returning customers in
-                // the card form below.
-                paymentMethods: { applePay: "auto", googlePay: "auto", amazonPay: "never", link: "never", paypal: "never" },
-                layout: { maxColumns: 2, maxRows: 1, overflow: "never" },
-              }}
+              options={{ buttonHeight: 48, layout: { maxRows: 2 } }}
               onReady={(e: any) => setHasExpress(!!e?.availablePaymentMethods)}
               onClick={onExpressClick}
               onShippingAddressChange={({ resolve }: any) => resolve()}
@@ -340,9 +360,7 @@ function CheckoutInner({
                 })}
               </div>
             ) : (
-              <div className="rounded-lg border border-dashed border-line bg-paper-alt px-4 py-6 text-center text-[0.88rem] text-muted">
-                Enter your shipping address to see delivery options.
-              </div>
+              <p className="text-[0.85rem] text-muted">Enter your shipping address to see delivery options.</p>
             )}
           </Section>
 
@@ -387,14 +405,8 @@ function CheckoutInner({
         </div>
       </main>
 
-      {/* order summary + product — at the bottom on mobile (Shopify style) */}
-      <section className="order-2 border-t border-line bg-paper-alt px-5 py-8 md:hidden">
-        <h2 className="mb-4 font-display text-[1.05rem] font-bold">Order summary</h2>
-        <Summary quote={quote} shipping={shipping} code={code} setCode={setCode} applyCode={applyCode} codeMsg={codeMsg} qty={qty} onQty={changeQty} ready={addrComplete} />
-      </section>
-
       {/* order summary — sticky sidebar on desktop */}
-      <aside className="order-2 hidden border-l border-line bg-paper-alt px-5 py-12 md:block md:pl-12">
+      <aside className="order-1 hidden border-l border-line bg-paper-alt px-5 py-12 md:order-2 md:block md:pl-12">
         <div className="sticky top-8 max-w-[420px]">
           <Summary quote={quote} shipping={shipping} code={code} setCode={setCode} applyCode={applyCode} codeMsg={codeMsg} qty={qty} onQty={changeQty} ready={addrComplete} />
         </div>
