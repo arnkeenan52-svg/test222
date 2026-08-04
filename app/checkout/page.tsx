@@ -10,6 +10,7 @@ import {
   useElements,
 } from "@stripe/react-stripe-js";
 import { PRODUCTS } from "@/lib/products";
+import { useCurrency } from "@/components/CurrencyProvider";
 import { Lock, ShieldCheck, Check, ChevronDown, Tag } from "lucide-react";
 
 type ShippingId = "standard" | "express";
@@ -19,7 +20,8 @@ const SHIP: Record<ShippingId, { label: string; cents: number; eta: string }> = 
 };
 type Quote = { productCents: number; unitCents: number; quantity: number; shippingCents: number; discountCents: number; total: number; codeOk: boolean };
 
-const money = (cents: number) => `$${(cents / 100).toFixed(2)}`;
+// Prices come back from the API in USD cents; the store charges in USD but the
+// whole site displays the visitor's chosen currency, so convert cents for display.
 const PRODUCT = PRODUCTS.single;
 const PRODUCT_IMG = "/assets/img/packaging.jpg";
 
@@ -160,6 +162,8 @@ function CheckoutInner({
 }) {
   const stripe = useStripe();
   const elements = useElements();
+  const { fmt } = useCurrency();
+  const m = (cents: number) => fmt(cents / 100); // USD cents → chosen-currency display
   const [shipping, setShipping] = useState<ShippingId>("standard");
   const [code, setCode] = useState("");
   const [codeMsg, setCodeMsg] = useState("");
@@ -265,7 +269,7 @@ function CheckoutInner({
           Order summary
           <ChevronDown aria-hidden="true" className={`h-4 w-4 transition-transform ${summaryOpen ? "rotate-180" : ""}`} />
         </span>
-        <span className="font-display text-[1.15rem] font-bold tabular-nums">{money(quote.total)}</span>
+        <span className="font-display text-[1.15rem] font-bold tabular-nums">{m(quote.total)}</span>
       </button>
       {summaryOpen && (
         <div id="order-summary-mobile" className="border-b border-line bg-paper-alt px-5 py-5 md:hidden">
@@ -354,7 +358,7 @@ function CheckoutInner({
                           <span className="text-[0.82rem] text-muted">{s.eta}</span>
                         </span>
                       </span>
-                      <span className="font-semibold tabular-nums">{s.cents === 0 ? "FREE" : money(s.cents)}</span>
+                      <span className="font-semibold tabular-nums">{s.cents === 0 ? "FREE" : m(s.cents)}</span>
                     </label>
                   );
                 })}
@@ -446,6 +450,8 @@ function Summary({
   onQty: (n: number) => void;
   ready?: boolean; // false until the shipping address is filled
 }) {
+  const { fmt, currency } = useCurrency();
+  const m = (cents: number) => fmt(cents / 100); // USD cents → chosen-currency display
   const [discountOpen, setDiscountOpen] = useState(!!code);
   return (
     <div>
@@ -457,9 +463,9 @@ function Summary({
         </span>
         <div className="min-w-0 flex-1">
           <p className="text-[0.92rem] font-semibold leading-tight text-ink">{PRODUCT.title}</p>
-          <p className="truncate text-[0.8rem] text-muted">{qty > 1 ? `${money(quote.unitCents)} each` : PRODUCT.sub}</p>
+          <p className="truncate text-[0.8rem] text-muted">{qty > 1 ? `${m(quote.unitCents)} each` : PRODUCT.sub}</p>
         </div>
-        <span className="shrink-0 text-[0.92rem] font-semibold tabular-nums">{money(quote.productCents)}</span>
+        <span className="shrink-0 text-[0.92rem] font-semibold tabular-nums">{m(quote.productCents)}</span>
       </div>
 
       {/* discount */}
@@ -505,19 +511,19 @@ function Summary({
       <div className="mt-5 space-y-2 border-t border-line pt-4 text-[0.92rem]">
         <div className="flex justify-between text-muted">
           <span>Subtotal</span>
-          <span className="tabular-nums">{money(quote.productCents)}</span>
+          <span className="tabular-nums">{m(quote.productCents)}</span>
         </div>
         {quote.discountCents > 0 && (
           <div className="flex justify-between text-[#1b8a4e]">
             <span>Discount</span>
-            <span className="tabular-nums">&minus;{money(quote.discountCents)}</span>
+            <span className="tabular-nums">&minus;{m(quote.discountCents)}</span>
           </div>
         )}
         <div className="flex justify-between text-muted">
           <span>Shipping{ready ? ` · ${SHIP[shipping].label}` : ""}</span>
           {ready ? (
             <span className={`tabular-nums ${quote.shippingCents === 0 ? "text-[#1b8a4e]" : ""}`}>
-              {quote.shippingCents === 0 ? "Free" : money(quote.shippingCents)}
+              {quote.shippingCents === 0 ? "Free" : m(quote.shippingCents)}
             </span>
           ) : (
             <span className="text-[0.85rem]">Enter address</span>
@@ -526,10 +532,15 @@ function Summary({
         <div className="mt-2 flex items-baseline justify-between border-t border-line pt-3">
           <span className="font-display text-[1.1rem] font-bold">Total</span>
           <span>
-            <span className="mr-1.5 text-[0.72rem] text-muted">USD</span>
-            <span className="font-display text-[1.3rem] font-bold tabular-nums">{money(quote.total)}</span>
+            <span className="mr-1.5 text-[0.72rem] text-muted">{currency.code}</span>
+            <span className="font-display text-[1.3rem] font-bold tabular-nums">{m(quote.total)}</span>
           </span>
         </div>
+        {currency.code !== "USD" && (
+          <p className="pt-1 text-right text-[0.72rem] text-muted">
+            Shown in {currency.code} · charged in USD (${(quote.total / 100).toFixed(2)})
+          </p>
+        )}
       </div>
     </div>
   );
