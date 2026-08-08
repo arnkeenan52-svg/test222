@@ -4,6 +4,7 @@ import { PageShell } from "@/components/PageShell";
 export const metadata: Metadata = {
   title: "Returns & refunds — FadeClipper",
   description: "Our 14-day money-back guarantee, how to start a return, and how refunds work.",
+  alternates: { canonical: "/returns" },
 };
 
 export default function ReturnsPage() {

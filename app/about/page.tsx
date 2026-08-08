@@ -4,6 +4,7 @@ import { PageShell } from "@/components/PageShell";
 export const metadata: Metadata = {
   title: "About us — FadeClipper",
   description: "Why we built FadeClipper — the auto-fading clipper that brings a barber-quality fade home.",
+  alternates: { canonical: "/about" },
 };
 
 export default function AboutPage() {

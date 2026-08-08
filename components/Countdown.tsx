@@ -23,8 +23,18 @@ function remainingMs(now: number) {
   return DAY - into;
 }
 
+function format(ms: number) {
+  const h = Math.floor(ms / 3.6e6);
+  const m = Math.floor((ms % 3.6e6) / 6e4);
+  const s = Math.floor((ms % 6e4) / 1e3);
+  return `${pad(h)}:${pad(m)}:${pad(s)}`;
+}
+
 export function Countdown() {
-  const [label, setLabel] = useState("24:00:00");
+  // Start from the real remaining time (not a 24:00:00 placeholder) so it never
+  // flashes a full day on open. suppressHydrationWarning below absorbs the ~1s
+  // difference between the server-rendered value and first client render.
+  const [label, setLabel] = useState(() => format(remainingMs(Date.now())));
   // serverNow − clientNow: neutralises a wrong device clock so the countdown is
   // the same for everyone, not just everyone whose clock happens to be correct.
   const skew = useRef(0);
@@ -42,13 +52,7 @@ export function Countdown() {
       })
       .catch(() => {});
 
-    const tick = () => {
-      const diff = remainingMs(Date.now() + skew.current);
-      const h = Math.floor(diff / 3.6e6);
-      const m = Math.floor((diff % 3.6e6) / 6e4);
-      const s = Math.floor((diff % 6e4) / 1e3);
-      setLabel(`${pad(h)}:${pad(m)}:${pad(s)}`);
-    };
+    const tick = () => setLabel(format(remainingMs(Date.now() + skew.current)));
 
     tick();
     const id = setInterval(tick, 1000);
@@ -58,5 +62,5 @@ export function Countdown() {
     };
   }, []);
 
-  return <span className="tabular-nums font-semibold">{label}</span>;
+  return <span suppressHydrationWarning className="tabular-nums font-semibold">{label}</span>;
 }

@@ -4,6 +4,7 @@ import { PageShell } from "@/components/PageShell";
 export const metadata: Metadata = {
   title: "Shipping policy — FadeClipper",
   description: "Processing times, delivery estimates, tracking, and shipping costs for FadeClipper orders.",
+  alternates: { canonical: "/shipping" },
 };
 
 export default function ShippingPage() {

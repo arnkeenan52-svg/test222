@@ -1,7 +1,10 @@
 // Central site metadata — single source of truth for URL, brand and socials.
 // Set NEXT_PUBLIC_SITE_URL in Vercel to your live domain; everything (canonical
 // tags, sitemap, Open Graph, JSON-LD) derives from it.
-export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://fadeclipper.com").replace(/\/$/, "");
+// Must be the host that actually serves 200 — the apex 308-redirects to www, so
+// www is canonical. Pointing canonical tags at the apex (a redirect) is what
+// triggers Google's "Duplicate without user-selected canonical".
+export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://www.fadeclipper.com").replace(/\/$/, "");
 export const SITE_NAME = "FadeClipper";
 export const SITE_TAGLINE = "Fade your own hair in minutes";
 export const SITE_DESCRIPTION =
