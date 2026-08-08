@@ -4,6 +4,7 @@ import { PageShell } from "@/components/PageShell";
 export const metadata: Metadata = {
   title: "Terms & conditions — FadeClipper",
   description: "The terms that apply when you use the FadeClipper website and place an order.",
+  alternates: { canonical: "/terms" },
 };
 
 export default function TermsPage() {

@@ -4,6 +4,7 @@ import { PageShell } from "@/components/PageShell";
 export const metadata: Metadata = {
   title: "Privacy policy — FadeClipper",
   description: "How FadeClipper collects, uses, and protects your personal data.",
+  alternates: { canonical: "/privacy" },
 };
 
 export default function PrivacyPage() {

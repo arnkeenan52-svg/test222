@@ -5,6 +5,7 @@ import { ContactForm } from "@/components/ContactForm";
 export const metadata: Metadata = {
   title: "Contact us — FadeClipper",
   description: "Get in touch with the FadeClipper team — we usually reply within one business day.",
+  alternates: { canonical: "/contact" },
 };
 
 export default function ContactPage() {
